@@ -2,26 +2,25 @@
   "name": "interior-design-website",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://wonyoung-R.github.io/designluka_main",
+  "homepage": "https://wonyoung-R.github.io/design_luka",
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
-    "@tailwindcss/postcss": "^4.1.8",
     "framer-motion": "^10.16.4",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^10.2.1",
-    "react": "^18.3.1",
+    "react": "^18.2.0",
     "react-compare-slider": "^2.2.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.5.2",
     "react-lazy-load-image-component": "^1.6.0",
     "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^9.8.8",
     "gh-pages": "^6.3.0",
-    "postcss": "^8.5.4",
+    "postcss": "^7.0.39",
     "tailwindcss": "^3.3.3"
   },
   "scripts": {
@@ -29,7 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "predeploy": "PUBLIC_URL=/design_luka npm run build",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
