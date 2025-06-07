@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/design_luka/static/css/main.c5fb53ac.css",
-    "main.js": "/design_luka/static/js/main.727091d5.js",
+    "main.js": "/design_luka/static/js/main.35c9c6e9.js",
     "static/media/LUKA(W).png": "/design_luka/static/media/LUKA(W).1cba20a6817cd11b426f.png",
     "index.html": "/design_luka/index.html",
     "main.c5fb53ac.css.map": "/design_luka/static/css/main.c5fb53ac.css.map",
-    "main.727091d5.js.map": "/design_luka/static/js/main.727091d5.js.map"
+    "main.35c9c6e9.js.map": "/design_luka/static/js/main.35c9c6e9.js.map"
   },
   "entrypoints": [
     "static/css/main.c5fb53ac.css",
-    "static/js/main.727091d5.js"
+    "static/js/main.35c9c6e9.js"
   ]
 }
