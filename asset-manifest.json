@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/designluka_main/static/css/main.5f7721e3.css",
+    "main.js": "/designluka_main/static/js/main.6948a9d9.js",
+    "static/media/LUKA(W).png": "/designluka_main/static/media/LUKA(W).1cba20a6817cd11b426f.png",
+    "index.html": "/designluka_main/index.html",
+    "main.5f7721e3.css.map": "/designluka_main/static/css/main.5f7721e3.css.map",
+    "main.6948a9d9.js.map": "/designluka_main/static/js/main.6948a9d9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5f7721e3.css",
+    "static/js/main.6948a9d9.js"
+  ]
+}
