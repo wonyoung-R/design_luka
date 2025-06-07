@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Disclosure, Transition } from '@headlessui/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logoWhite from '../images/logo/LUKA(W).png';
 
@@ -151,55 +151,57 @@ export default function Navbar() {
           </div>
 
           {/* Mobile menu panel */}
-          <Transition
-            enter="transition duration-100 ease-out"
-            enterFrom="transform scale-95 opacity-0"
-            enterTo="transform scale-100 opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform scale-100 opacity-100"
-            leaveTo="transform scale-95 opacity-0"
-          >
-            <Disclosure.Panel className="sm:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
-                {navigation.map((item) => (
-                  <div key={item.name}>
-                    <Disclosure.Button
-                      as={Link}
-                      to={item.href}
-                      className={classNames(
-                        location.pathname === item.href || 
-                        (item.submenu && location.pathname.startsWith('/portfolio'))
-                          ? 'bg-accent-light text-primary-dark'
-                          : 'text-primary hover:bg-neutral-light',
-                        'block px-3 py-2 rounded-md text-base font-medium'
-                      )}
-                    >
-                      {item.name}
-                    </Disclosure.Button>
-                    {item.submenu && (
-                      <div className="ml-4 space-y-1">
-                        {item.submenu.map((subItem) => (
-                          <Disclosure.Button
-                            key={subItem.name}
-                            as={Link}
-                            to={subItem.href}
-                            className={classNames(
-                              location.pathname === subItem.href
-                                ? 'bg-accent-light text-primary-dark'
-                                : 'text-primary-light hover:bg-neutral-light',
-                              'block px-3 py-2 rounded-md text-sm'
-                            )}
-                          >
-                            {subItem.name}
-                          </Disclosure.Button>
-                        ))}
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.1 }}
+              >
+                <Disclosure.Panel className="sm:hidden">
+                  <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+                    {navigation.map((item) => (
+                      <div key={item.name}>
+                        <Disclosure.Button
+                          as={Link}
+                          to={item.href}
+                          className={classNames(
+                            location.pathname === item.href || 
+                            (item.submenu && location.pathname.startsWith('/portfolio'))
+                              ? 'bg-accent-light text-primary-dark'
+                              : 'text-primary hover:bg-neutral-light',
+                            'block px-3 py-2 rounded-md text-base font-medium'
+                          )}
+                        >
+                          {item.name}
+                        </Disclosure.Button>
+                        {item.submenu && (
+                          <div className="ml-4 space-y-1">
+                            {item.submenu.map((subItem) => (
+                              <Disclosure.Button
+                                key={subItem.name}
+                                as={Link}
+                                to={subItem.href}
+                                className={classNames(
+                                  location.pathname === subItem.href
+                                    ? 'bg-accent-light text-primary-dark'
+                                    : 'text-primary-light hover:bg-neutral-light',
+                                  'block px-3 py-2 rounded-md text-sm'
+                                )}
+                              >
+                                {subItem.name}
+                              </Disclosure.Button>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    )}
+                    ))}
                   </div>
-                ))}
-              </div>
-            </Disclosure.Panel>
-          </Transition>
+                </Disclosure.Panel>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </Disclosure>
