@@ -79,7 +79,7 @@ export default function HomePage() {
             <div className="relative z-10 h-full flex items-center justify-center text-center text-white/50">
               <div className="max-w-4xl mx-auto px-4">
                 <motion.h1
-                  className="text-4xl md:text-6xl lg:text-7xl font-bold"
+                  className="text-sm md:text-3xl lg:text-4xl font-bold"
                   initial={{ y: 50, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
