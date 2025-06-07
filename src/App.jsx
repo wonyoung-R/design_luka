@@ -13,10 +13,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate page load
+    // Simulate page load - shorter time for development
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, process.env.NODE_ENV === 'development' ? 500 : 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -28,7 +28,8 @@ function App() {
     );
   }
 
-  const basename = process.env.NODE_ENV === 'production' ? '/design_luka' : '';
+  // 개발 환경에서는 basename 사용하지 않음
+  const basename = process.env.NODE_ENV === 'production' ? '/design_luka' : undefined;
 
   return (
     <Router basename={basename}>
