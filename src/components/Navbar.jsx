@@ -6,9 +6,10 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logoWhite from '../images/logo/LUKA(W).png';
 
 const navigation = [
-  { name: 'About', href: '/about', current: false },
-  { 
-    name: 'Portfolio', 
+  { name: 'About LUKA', href: '/about', current: false },
+  { name: 'Business', href: '/business', current: false },
+  {
+    name: 'Portfolio',
     href: '/portfolio', 
     current: false,
     submenu: [
@@ -16,6 +17,7 @@ const navigation = [
       { name: 'Commercial', href: '/portfolio/commercial' }
     ]
   },
+  { name: 'Insight & Contents', href: '/insight', current: false },
   { name: 'Contact', href: '/contact', current: false },
 ];
 
@@ -25,7 +27,12 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [businessOpen, setBusinessOpen] = useState(false);
   const [portfolioOpen, setPortfolioOpen] = useState(false);
+  const [businessTimeout, setBusinessTimeout] = useState(null);
+  const [portfolioTimeout, setPortfolioTimeout] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isPortfolioHovered, setIsPortfolioHovered] = useState(false);
   const location = useLocation();
   
   const isHomePage = location.pathname === '/';
@@ -44,16 +51,20 @@ export default function Navbar() {
     }
   }, [scrolled, isHomePage]);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
+
   return (
     <Disclosure as="nav" className={classNames(
-      'fixed w-full z-40 transition-all duration-300',
+      'fixed w-full z-40 transition-all duration-300 h-16',
       isHomePage 
-        ? 'bg-transparent py-6' 
-        : scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
+        ? 'bg-transparent' 
+        : scrolled ? 'bg-white shadow-md' : 'bg-white'
     )}>
       {({ open }) => (
         <>
-          <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
               {/* Logo - Left side */}
               <motion.div 
@@ -74,56 +85,135 @@ export default function Navbar() {
               </motion.div>
 
               {/* Desktop menu - Right side */}
-              <div className="hidden sm:flex sm:space-x-8">
+              <div className="hidden sm:flex sm:space-x-4 md:space-x-6 lg:space-x-8">
                 {navigation.map((item) => (
                   <div key={item.name} className="relative">
                     {item.submenu ? (
                       <div 
                         className="relative"
-                        onMouseEnter={() => setPortfolioOpen(true)}
-                        onMouseLeave={() => setPortfolioOpen(false)}
+                        onMouseEnter={() => {
+                          if (item.name === 'Business') {
+                            if (businessTimeout) {
+                              clearTimeout(businessTimeout);
+                              setBusinessTimeout(null);
+                            }
+                            setBusinessOpen(true);
+                          } else if (item.name === 'Portfolio') {
+                            if (portfolioTimeout) {
+                              clearTimeout(portfolioTimeout);
+                              setPortfolioTimeout(null);
+                            }
+                            setPortfolioOpen(true);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (item.name === 'Business') {
+                            const timeout = setTimeout(() => {
+                              setBusinessOpen(false);
+                            }, 150);
+                            setBusinessTimeout(timeout);
+                          } else if (item.name === 'Portfolio') {
+                            const timeout = setTimeout(() => {
+                              setPortfolioOpen(false);
+                            }, 150);
+                            setPortfolioTimeout(timeout);
+                          }
+                        }}
                       >
                         <Link
                           to={item.href}
                           className={classNames(
-                            'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200',
-                            location.pathname.startsWith('/portfolio')
-                              ? isHomePage ? 'text-accent' : 'text-accent'
+                            'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200 relative',
+                            location.pathname.startsWith(item.href)
+                              ? isHomePage ? 'text-white' : 'text-accent'
                               : isHomePage 
                                 ? 'text-white/80 hover:text-white' 
-                                : 'text-primary-light hover:text-primary-dark'
+                                : 'text-black hover:text-primary-dark',
+                            'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 after:ease-in-out hover:after:w-full',
+                            isHomePage ? 'after:bg-white' : 'after:bg-black'
                           )}
                         >
                           {item.name}
                         </Link>
                         
                         {/* Dropdown */}
-                        {portfolioOpen && (
-                          <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-                            <div className="py-1">
-                              {item.submenu.map((subItem) => (
-                                <Link
-                                  key={subItem.name}
-                                  to={subItem.href}
-                                  className="block px-4 py-2 text-sm text-primary hover:bg-neutral-light hover:text-primary-dark"
-                                >
-                                  {subItem.name}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        <AnimatePresence>
+                          {(item.name === 'Business' && businessOpen) || (item.name === 'Portfolio' && portfolioOpen) ? (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3, ease: 'easeInOut' }}
+                              className={classNames(
+                                "absolute top-full left-0 mt-1 w-64 backdrop-blur-sm rounded-lg shadow-lg",
+                                isHomePage ? "bg-black/20" : "bg-white/90"
+                              )}
+                            >
+                              <div className="py-2">
+                                {item.submenu.map((subItem) => (
+                                  <div key={subItem.name}>
+                                    {subItem.submenu ? (
+                                      // Nested submenu
+                                      <div className="px-4 py-2">
+                                        <div className={classNames(
+                                          "text-xs font-semibold mb-1",
+                                          isHomePage ? "text-white" : "text-primary-dark"
+                                        )}>
+                                          {subItem.name}
+                                        </div>
+                                        <div className={classNames(
+                                          "pl-2 border-l-2",
+                                          isHomePage ? "border-white/20" : "border-accent/20"
+                                        )}>
+                                          {subItem.submenu.map((nestedItem) => (
+                                            <Link
+                                              key={nestedItem.name}
+                                              to={nestedItem.href}
+                                              className={classNames(
+                                                "block px-2 py-1 text-sm transition-all duration-300 ease-in-out hover:pl-4",
+                                                isHomePage 
+                                                  ? "text-white hover:bg-white/20" 
+                                                  : "text-primary hover:bg-black/10"
+                                              )}
+                                            >
+                                              {nestedItem.name}
+                                            </Link>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      // Regular submenu item
+                                      <Link
+                                        to={subItem.href}
+                                        className={classNames(
+                                          "block px-4 py-2 text-sm transition-all duration-300 ease-in-out hover:pl-6",
+                                          isHomePage 
+                                            ? "text-white hover:bg-white/20" 
+                                            : "text-primary hover:bg-black/10"
+                                        )}
+                                      >
+                                        {subItem.name}
+                                      </Link>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          ) : null}
+                        </AnimatePresence>
                       </div>
                     ) : (
                       <Link
                         to={item.href}
                         className={classNames(
-                          'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200',
+                          'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200 relative',
                           location.pathname === item.href
-                            ? isHomePage ? 'text-accent' : 'text-accent'
+                            ? isHomePage ? 'text-white' : 'text-accent'
                             : isHomePage 
                               ? 'text-white/80 hover:text-white' 
-                              : 'text-primary-light hover:text-primary-dark'
+                              : 'text-black hover:text-primary-dark',
+                          'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 after:ease-in-out hover:after:w-full',
+                          isHomePage ? 'after:bg-white' : 'after:bg-black'
                         )}
                       >
                         {item.name}
@@ -137,7 +227,7 @@ export default function Navbar() {
               <div className="sm:hidden">
                 <Disclosure.Button className={classNames(
                   "inline-flex items-center justify-center p-2 rounded-md hover:bg-neutral-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent",
-                  isHomePage ? "text-white" : "text-primary"
+                  isHomePage ? "text-white" : "text-black"
                 )}>
                   <span className="sr-only">메뉴 열기</span>
                   {open ? (
@@ -160,7 +250,10 @@ export default function Navbar() {
                 transition={{ duration: 0.1 }}
               >
                 <Disclosure.Panel className="sm:hidden">
-                  <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+                  <div className={classNames(
+                    "px-2 pt-2 pb-3 space-y-1 shadow-lg",
+                    isHomePage ? "bg-black/90" : "bg-white"
+                  )}>
                     {navigation.map((item) => (
                       <div key={item.name}>
                         <Disclosure.Button
@@ -169,8 +262,8 @@ export default function Navbar() {
                           className={classNames(
                             location.pathname === item.href || 
                             (item.submenu && location.pathname.startsWith('/portfolio'))
-                              ? 'bg-accent-light text-primary-dark'
-                              : 'text-primary hover:bg-neutral-light',
+                              ? isHomePage ? 'bg-white/20 text-white' : 'bg-accent-light text-primary-dark'
+                              : isHomePage ? 'text-white hover:bg-white/20' : 'text-black hover:bg-neutral-light',
                             'block px-3 py-2 rounded-md text-base font-medium'
                           )}
                         >
@@ -185,8 +278,8 @@ export default function Navbar() {
                                 to={subItem.href}
                                 className={classNames(
                                   location.pathname === subItem.href
-                                    ? 'bg-accent-light text-primary-dark'
-                                    : 'text-primary-light hover:bg-neutral-light',
+                                    ? isHomePage ? 'bg-white/20 text-white' : 'bg-accent-light text-primary-dark'
+                                    : isHomePage ? 'text-white/80 hover:bg-white/20' : 'text-primary-light hover:bg-neutral-light',
                                   'block px-3 py-2 rounded-md text-sm'
                                 )}
                               >

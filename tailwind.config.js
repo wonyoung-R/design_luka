@@ -2,6 +2,17 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      borderRadius: {
+        'none': '0',
+        'sm': '0',
+        DEFAULT: '0',
+        'md': '0',
+        'lg': '0',
+        'xl': '0',
+        '2xl': '0',
+        '3xl': '0',
+        'full': '0',
+      },
       colors: {
         primary: {
           light: "#4B5563",
@@ -21,8 +32,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['"Noto Sans KR"', 'sans-serif'],
+        serif: ['"Playfair Display"', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

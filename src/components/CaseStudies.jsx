@@ -101,7 +101,7 @@ export default function CaseStudies() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            다양한 공간에서 선보인 Design luka의 대표 프로젝트를 소개합니다.
+                            다양한 공간에서 선보인 DESIGN LUKA의 대표 프로젝트를 소개합니다.
           </motion.p>
         </div>
 
