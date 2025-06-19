@@ -283,6 +283,9 @@ export default function PortfolioPage() {
     
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
+    
+    // Add history entry when modal opens
+    window.history.pushState({ modalOpen: true }, '', window.location.href);
   };
 
   const closeModal = () => {
@@ -291,6 +294,11 @@ export default function PortfolioPage() {
     setSelectedImageIndex(0);
     setAllImages([]);
     document.body.style.overflow = 'unset';
+    
+    // Remove history entry when modal closes
+    if (window.history.state?.modalOpen) {
+      window.history.back();
+    }
   };
 
   const goToPreviousImage = () => {
@@ -312,7 +320,7 @@ export default function PortfolioPage() {
   // ESC key to close detail view and modal, arrow keys for modal navigation
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' || event.key === 'Backspace') {
         if (isModalOpen) {
           closeModal();
         } else if (selectedProject) {
@@ -338,6 +346,15 @@ export default function PortfolioPage() {
       }
     };
 
+    // Handle browser back button
+    const handlePopState = () => {
+      if (isModalOpen) {
+        closeModal();
+      } else if (selectedProject) {
+        closeDetailView();
+      }
+    };
+
     if (selectedProject || isModalOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
@@ -345,11 +362,13 @@ export default function PortfolioPage() {
 
     if (isModalOpen) {
       document.addEventListener('wheel', handleWheel, { passive: false });
+      window.addEventListener('popstate', handlePopState);
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('popstate', handlePopState);
       if (!isModalOpen) {
         document.body.style.overflow = 'unset';
       }
