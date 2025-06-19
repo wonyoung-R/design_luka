@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/design_luka/static/css/main.99501af0.css",
-    "main.js": "/design_luka/static/js/main.5084262f.js",
+    "main.js": "/design_luka/static/js/main.d553ba05.js",
     "static/media/main06.jpg": "/design_luka/static/media/main06.bb7b45220229684c088c.jpg",
     "static/media/main05.jpg": "/design_luka/static/media/main05.b296881ae713e7223f42.jpg",
     "static/media/main01.jpg": "/design_luka/static/media/main01.278bcf6b0928aa41b128.jpg",
@@ -13,10 +13,10 @@
     "static/media/LUKA(W).png": "/design_luka/static/media/LUKA(W).1cba20a6817cd11b426f.png",
     "index.html": "/design_luka/index.html",
     "main.99501af0.css.map": "/design_luka/static/css/main.99501af0.css.map",
-    "main.5084262f.js.map": "/design_luka/static/js/main.5084262f.js.map"
+    "main.d553ba05.js.map": "/design_luka/static/js/main.d553ba05.js.map"
   },
   "entrypoints": [
     "static/css/main.99501af0.css",
-    "static/js/main.5084262f.js"
+    "static/js/main.d553ba05.js"
   ]
 }
