@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
 // Import main images
@@ -55,7 +56,7 @@ const slides = [
   }
 ];
 
-export default function HomePage() {
+const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [touchStart, setTouchStart] = useState(null);
@@ -238,4 +239,6 @@ export default function HomePage() {
       </main>
     </>
   );
-} 
+};
+
+export default HomePage; 

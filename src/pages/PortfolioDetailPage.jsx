@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ImageGallery from '../components/ImageGallery';
 
 export default function PortfolioDetailPage() {
   const { id, type } = useParams();
@@ -11,6 +10,8 @@ export default function PortfolioDetailPage() {
   const location = useLocation();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
 
   useEffect(() => {
     // TODO: Fetch project data from Google Sheets/AppSheet
@@ -133,6 +134,80 @@ export default function PortfolioDetailPage() {
     setLoading(false);
   }, [id, type, location.pathname]);
 
+  // 모달 관련 함수들
+  const openModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsModalOpen(true);
+    document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage('');
+    document.body.style.overflow = 'unset'; // 스크롤 복원
+  };
+
+  // ESC 키로 모달 닫기
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && isModalOpen) {
+        closeModal();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen]);
+
+  const MasonryImageGallery = ({ images, openModal }) => {
+    // 이미지별 다양한 높이 비율을 정의
+    const getImageAspectRatio = (index) => {
+      const ratios = [
+        'aspect-[3/4]',   // 세로형
+        'aspect-[4/3]',   // 가로형  
+        'aspect-[1/1]',   // 정사각형
+        'aspect-[5/4]',   // 약간 가로형
+        'aspect-[3/5]',   // 긴 세로형
+        'aspect-[16/9]',  // 와이드
+        'aspect-[4/5]',   // 약간 세로형
+        'aspect-[2/3]',   // 세로형
+      ];
+      return ratios[index % ratios.length];
+    };
+
+    return (
+      <div 
+        className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4"
+        style={{ columnFill: 'balance' }}
+      >
+        {images.map((image, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="break-inside-avoid mb-4"
+          >
+            <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index)}`}>
+              <img
+                src={image}
+                alt={`Gallery image ${index + 1}`}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                onClick={() => openModal(image)}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -161,14 +236,14 @@ export default function PortfolioDetailPage() {
     <>
       <Navbar />
       <main className="pt-16 min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-8">
+        <div className="w-full px-6 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left Column (3) */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="lg:w-3/10 sticky top-24 h-fit"
+              className="lg:w-3/12 sticky top-24 h-fit"
             >
               <div className="space-y-6">
                 {/* Project Type & Info */}
@@ -188,7 +263,7 @@ export default function PortfolioDetailPage() {
                 {/* Contents */}
                 <div className="prose prose-sm max-w-none">
                   {project.contents.split('\n').map((paragraph, index) => (
-                    <p key={index} className="text-gray-600 leading-relaxed">
+                    <p key={index} className="text-gray-600 leading-relaxed mb-4">
                       {paragraph}
                     </p>
                   ))}
@@ -199,25 +274,69 @@ export default function PortfolioDetailPage() {
                   <img
                     src={project.main_img}
                     alt={project.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                    onClick={() => openModal(project.main_img)}
                   />
                 </div>
               </div>
             </motion.div>
 
-            {/* Right Column (7) */}
+            {/* Right Column (7) - Masonry Gallery */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="lg:w-7/10"
+              className="lg:w-9/12"
             >
-              <ImageGallery images={project.sub_imgs} />
+              <MasonryImageGallery images={project.sub_imgs} openModal={openModal} />
             </motion.div>
           </div>
         </div>
       </main>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="relative w-[80vw] h-[80vh] bg-white rounded-lg overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Image */}
+              <div className="w-full h-full flex items-center justify-center p-4">
+                <img
+                  src={selectedImage}
+                  alt="Expanded view"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* <Footer /> */}
     </>
   );
-} 
+}

@@ -13,9 +13,13 @@ const AdminLoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      console.log('로그인 시도:', email);
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/design_luka/admin/dashboard');
+      console.log('로그인 성공:', email);
+      console.log('리다이렉션 경로:', '/design_luka/admin');
+      window.location.href = '/design_luka/admin';
     } catch (error) {
+      console.error('로그인 실패:', error.message);
       setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };

@@ -7,14 +7,14 @@ import logoWhite from '../images/logo/LUKA(W).png';
 
 const navigation = [
   { name: 'About LUKA', href: '/about', current: false },
-  { name: 'Business', href: '/business', current: false },
+  // { name: 'Business', href: '/business', current: false },
   {
     name: 'Portfolio',
     href: '/portfolio', 
     current: false,
     submenu: [
-      { name: 'Residential', href: '/portfolio/residential' },
-      { name: 'Commercial', href: '/portfolio/commercial' }
+      { name: 'Residential', href: '/portfolio?category=residential' },
+      { name: 'Commercial', href: '/portfolio?category=commercial' }
     ]
   },
   { name: 'Insight & Contents', href: '/insight', current: false },

@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
 import { 
   HomeIcon, 
@@ -33,7 +32,19 @@ const features = [
   }
 ];
 
-export default function BusinessPage() {
+const BusinessPage = () => {
+  const bgRef = useRef(null);
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (bgRef.current) {
+        bgRef.current.style.transform = `translateY(-${scrollY * 0.33}px)`;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const businessCategories = [
     {
       id: 'residential',
@@ -76,15 +87,25 @@ export default function BusinessPage() {
   ];
 
   return (
-    <>
+    <div className="relative overflow-x-hidden">
+      {/* 패럴랙스 배경 */}
+      <div
+        ref={bgRef}
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          height: '150%',
+          background: 'linear-gradient(to bottom, #111 0%, #111 10%, #fff 30%, #fff 100%)',
+          transition: 'transform 0.1s linear',
+        }}
+      />
       <Navbar />
-      <main className="pt-16 font-['Noto_Sans_KR']">
+      <main className="pt-16 font-['Noto_Sans_KR'] relative z-10 min-h-screen">
         {/* Hero Section */}
-        <section className="section bg-black text-white min-h-[175px] flex items-start py-12">
-          <div className="container">
+        <section className="min-h-[320px] flex items-center justify-center text-white">
+          <div className="w-full px-4">
             <div className="text-center max-w-4xl mx-auto">
               <motion.h1
-                className="text-4xl md:text-5xl font-bold mb-6"
+                className="text-4xl md:text-5xl font-['Noto_Sans_KR'] font-bold mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -93,7 +114,7 @@ export default function BusinessPage() {
                 Business
               </motion.h1>
               <motion.p
-                className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto"
+                className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto font-['Noto_Sans_KR']"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -106,8 +127,8 @@ export default function BusinessPage() {
         </section>
 
         {/* Business Categories */}
-        <section className="section bg-white">
-          <div className="container">
+        <section className="bg-transparent">
+          <div className="w-full px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <motion.span
                 className="inline-block px-3 py-1 text-sm font-medium bg-accent-light/10 text-accent rounded-full mb-4"
@@ -138,7 +159,7 @@ export default function BusinessPage() {
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {/* Residential */}
               <motion.div
                 className="group relative overflow-hidden rounded-xl bg-neutral-lightest"
@@ -199,8 +220,8 @@ export default function BusinessPage() {
         </section>
 
         {/* Features Section */}
-        <section className="section bg-neutral-lightest">
-          <div className="container">
+        <section className="bg-transparent">
+          <div className="w-full px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <motion.span
                 className="inline-block px-3 py-1 text-sm font-medium bg-accent-light/10 text-accent rounded-full mb-4"
@@ -231,7 +252,7 @@ export default function BusinessPage() {
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
@@ -252,7 +273,8 @@ export default function BusinessPage() {
           </div>
         </section>
       </main>
-      {/* <Footer /> */}
-    </>
+    </div>
   );
-} 
+};
+
+export default BusinessPage;

@@ -6,7 +6,7 @@ const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 const SPREADSHEET_ID = '1gkwg3WZW_0F9NIfo8Bit7PkXwAdrbBTqp-4KgpdVdZw';
 
 // Google Apps Script Web App URL
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyXvdH5ip6Xaqh9jfzRx-rBz2LWYpvqnWkkyCHPitEXbOfMDxk6im_u75rZeXqSc5si/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxtKmmDhEbotU2JjwoGrGWEJ9t1su3EEVdADRLpDJ9emmA389VPgKURqxqi-roCOmBI/exec';
 
 // Global variables
 let gapi = null;
@@ -148,7 +148,7 @@ export const submitQnAForm = async (formData) => {
       },
       body: JSON.stringify({
         name: formData.name,
-        phone: formattedPhone, // 수정된 전화번호 사용
+        phone: formattedPhone,
         email: formData.email,
         message: formData.message,
         emailConsent: formData.emailConsent
@@ -156,6 +156,7 @@ export const submitQnAForm = async (formData) => {
     });
 
     console.log('Form submission response:', response);
+    
     // no-cors 모드에서는 response를 확인할 수 없으므로,
     // 항상 성공으로 처리하고 서버 측에서 에러를 처리
     return { status: 'success' };

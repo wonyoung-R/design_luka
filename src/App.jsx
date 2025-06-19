@@ -4,7 +4,6 @@ import { AuthProvider } from './contexts/AuthContext';
 
 // Components
 import ScrollToTop from './components/ScrollToTop';
-import Footer from './components/Footer';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -15,12 +14,18 @@ import InsightPage from './pages/InsightPage';
 import ContactPage from './pages/ContactPage';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import AdminLoginPage from './pages/AdminLoginPage';
+import InsightDetailPage from './pages/InsightDetailPage';
 
 // Business sub-pages
 import TotalLivingPage from './pages/business/TotalLivingPage';
 import ReliteLivingPage from './pages/business/ReliteLivingPage';
 import TotalBizPage from './pages/business/TotalBizPage';
 import BizConsultingPage from './pages/business/BizConsultingPage';
+
+// Admin pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import PortfolioManagement from './pages/admin/PortfolioManagement';
+import InsightManagement from './pages/admin/InsightManagement';
 
 function App() {
   return (
@@ -44,19 +49,21 @@ function App() {
             
             {/* Portfolio Routes */}
             <Route path="/portfolio" element={<PortfolioPage />} />
-            <Route path="/portfolio/residential/:id" element={<PortfolioDetailPage />} />
-            <Route path="/portfolio/commercial/:id" element={<PortfolioDetailPage />} />
+            <Route path="/portfolio/:id" element={<PortfolioDetailPage />} />
             
             {/* Insight Route */}
             <Route path="/insight" element={<InsightPage />} />
+            <Route path="/insight/:id" element={<InsightDetailPage />} />
             
             {/* Contact Route */}
             <Route path="/contact" element={<ContactPage />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/portfolio" element={<PortfolioManagement />} />
+            <Route path="/admin/insight" element={<InsightManagement />} />
           </Routes>
-          <Footer />
         </div>
       </AuthProvider>
     </Router>
