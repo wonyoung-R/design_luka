@@ -462,16 +462,6 @@ export default function PortfolioPage() {
               {/* Style */}
               <p className="text-md text-gray-500 font-['Noto_Sans_KR']">{project.style}</p>
 
-              {/* Main image */}
-              <div className="aspect-[4/3] overflow-hidden rounded-xl">
-                <img
-                  src={project.mainImage}
-                  alt={project.title}
-                  className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-                  onClick={() => openModal(project.mainImage)}
-                />
-              </div>
-
               {/* Description */}
               <div className="prose prose-sm max-w-none">
                 <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR']">
@@ -484,7 +474,7 @@ export default function PortfolioPage() {
             </div>
           </motion.div>
 
-          {/* Right side - Image gallery */}
+          {/* Right side - Image gallery (including main image) */}
           <motion.div
             className="w-2/3 p-16 overflow-y-auto"
             initial={{ x: 100, opacity: 0 }}
@@ -492,13 +482,31 @@ export default function PortfolioPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div className="columns-1 md:columns-2 gap-6 space-y-6">
+              {/* Main image first */}
+              <motion.div
+                className="break-inside-avoid mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <div className="relative overflow-hidden rounded-xl aspect-[4/3]">
+                  <img
+                    src={project.mainImage}
+                    alt={project.title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                    onClick={() => openModal(project.mainImage)}
+                  />
+                </div>
+              </motion.div>
+
+              {/* Sub images */}
               {project.subImages.map((image, index) => (
                 <motion.div
                   key={index}
                   className="break-inside-avoid mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                  transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
                 >
                   <div className={`relative overflow-hidden rounded-xl ${
                     index % 4 === 0 ? 'aspect-[3/4]' :
