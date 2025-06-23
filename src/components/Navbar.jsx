@@ -60,7 +60,7 @@ export default function Navbar() {
       'fixed w-full z-40 transition-all duration-300 h-16',
       isHomePage 
         ? 'bg-transparent' 
-        : scrolled ? 'bg-white shadow-md' : 'bg-white'
+        : scrolled ? 'bg-white/70 backdrop-blur-sm shadow-md' : 'bg-white'
     )}>
       {({ open }) => (
         <>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -12,6 +12,8 @@ import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
 import main07 from '../images/main/main07.jpg';
 import main08 from '../images/main/main08.jpg';
+
+const SLIDE_DURATION = 6000; // 6초로 통일
 
 const slides = [
   {
@@ -61,35 +63,70 @@ const HomePage = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [direction, setDirection] = useState(0);
+  const [progressKey, setProgressKey] = useState(0);
+  
+  const timerRef = useRef(null);
+  const autoPlayTimeoutRef = useRef(null);
 
-  // 자동 슬라이드 기능
+  // 통합된 슬라이드 변경 함수
+  const handleSlideChange = useCallback((newSlide, newDirection = 1) => {
+    // 기존 타이머들 클리어
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (autoPlayTimeoutRef.current) {
+      clearTimeout(autoPlayTimeoutRef.current);
+      autoPlayTimeoutRef.current = null;
+    }
+
+    setDirection(newDirection);
+    setCurrentSlide(newSlide);
+    setProgressKey(prev => prev + 1); // Progress bar 리셋
+    
+    // 자동재생 일시정지 후 재개
+    setIsAutoPlay(false);
+    autoPlayTimeoutRef.current = setTimeout(() => {
+      setIsAutoPlay(true);
+    }, 8000);
+  }, []);
+
+  // 자동 슬라이드 기능 - 완전 재작성
   useEffect(() => {
     if (!isAutoPlay) return;
     
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 10800); // 9000 * 1.2 = 10800ms (20% 느리게)
+    timerRef.current = setInterval(() => {
+      setCurrentSlide((prev) => {
+        const nextSlide = (prev + 1) % slides.length;
+        setDirection(1);
+        setProgressKey(prevKey => prevKey + 1);
+        return nextSlide;
+      });
+    }, SLIDE_DURATION);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [isAutoPlay]);
 
   const goToSlide = useCallback((index) => {
-    setCurrentSlide(index);
-    setIsAutoPlay(false);
-    setTimeout(() => setIsAutoPlay(true), 10000); // 10초 후 자동재생 재개
-  }, []);
+    const newDirection = index > currentSlide ? 1 : -1;
+    handleSlideChange(index, newDirection);
+  }, [currentSlide, handleSlideChange]);
 
   const goToPrevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setIsAutoPlay(false);
-    setTimeout(() => setIsAutoPlay(true), 10000);
-  }, []);
+    const prevSlide = (currentSlide - 1 + slides.length) % slides.length;
+    handleSlideChange(prevSlide, -1);
+  }, [currentSlide, handleSlideChange]);
 
   const goToNextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-    setIsAutoPlay(false);
-    setTimeout(() => setIsAutoPlay(true), 10000);
-  }, []);
+    const nextSlide = (currentSlide + 1) % slides.length;
+    handleSlideChange(nextSlide, 1);
+  }, [currentSlide, handleSlideChange]);
 
   // 터치 이벤트 핸들러 (모바일 스와이프)
   const minSwipeDistance = 50;
@@ -132,6 +169,18 @@ const HomePage = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [goToPrevSlide, goToNextSlide]);
 
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (autoPlayTimeoutRef.current) {
+        clearTimeout(autoPlayTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -141,14 +190,41 @@ const HomePage = () => {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync" custom={direction}>
           <motion.div
             key={currentSlide}
             className="absolute inset-0"
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
+            custom={direction}
+            variants={{
+              enter: (direction) => ({
+                x: direction > 0 ? 1000 : -1000,
+                opacity: 1
+              }),
+              center: {
+                zIndex: 1,
+                x: 0,
+                opacity: 1
+              },
+              exit: (direction) => ({
+                zIndex: 0,
+                x: direction < 0 ? 1000 : -1000,
+                opacity: 1
+              })
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { 
+                type: "tween", 
+                duration: 3.0, 
+                ease: [0.19, 1, 0.22, 1] // easeOutExpo
+              },
+              opacity: { 
+                duration: 0.3,
+                ease: [0.19, 1, 0.22, 1]
+              }
+            }}
           >
             {/* Background Image - 전체 화면 최적화 */}
             <div 
@@ -170,7 +246,7 @@ const HomePage = () => {
               className="absolute bottom-8 right-8 z-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.8 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
             >
               <div className="text-white/30 text-xs sm:text-sm font-light tracking-widest">
                 DESIGN LUKA
@@ -182,20 +258,20 @@ const HomePage = () => {
         {/* Navigation Arrows - 데스크톱용 */}
         <button
           onClick={goToPrevSlide}
-          className="hidden sm:flex absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300 items-center justify-center group"
+          className="hidden sm:flex absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
           aria-label="이전 슬라이드"
         >
-          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         
         <button
           onClick={goToNextSlide}
-          className="hidden sm:flex absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-300 items-center justify-center group"
+          className="hidden sm:flex absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
           aria-label="다음 슬라이드"
         >
-          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -206,7 +282,7 @@ const HomePage = () => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 hover:scale-125 ${
                 index === currentSlide 
                   ? 'bg-white scale-125' 
                   : 'bg-white/40 hover:bg-white/60'
@@ -216,16 +292,29 @@ const HomePage = () => {
           ))}
         </div>
 
-        {/* Progress Bar */}
+        {/* Progress Bar with Gradient */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-20">
           <motion.div
-            className="h-full bg-white/60"
+            key={progressKey}
+            className="h-full bg-gradient-to-r from-white/60 to-white/80"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
-            key={currentSlide}
-            transition={{ duration: 10.8, ease: "linear" }}
+            transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
           />
         </div>
+
+        {/* Auto-play Status Indicator */}
+        {!isAutoPlay && (
+          <motion.div
+            className="absolute top-4 right-4 z-20 bg-black/50 text-white/70 text-xs px-2 py-1 rounded-full backdrop-blur-sm"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            일시정지
+          </motion.div>
+        )}
 
         {/* Mobile Touch Instruction */}
         <motion.div

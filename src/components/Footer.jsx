@@ -7,22 +7,56 @@ import {
   MapPinIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-primary-dark text-white pt-5 pb-2">
+    <footer className="bg-primary-dark text-white pt-5 pb-2 font-noto-sans-kr">
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+
+          {/* Contact Information */}
+          <div className="md:col-span-6">
+            <img 
+              src={lukaSlogan} 
+              alt="LUKA Slogan" 
+              className="h-8 w-auto mb-4 filter brightness-0 invert"
+            />
+            <ul className="space-y-1 mb-4">
+              <li className="flex items-start">
+                <MapPinIcon className="w-3 h-3 text-accent mr-2 mt-0.5" />
+                <span className="text-neutral-light text-xs">
+                  서울특별시 서초구 사평대로57길 131, 2층<br />
+                  (반포동, 웰빙센타 휴리재)
+                </span>
+              </li>
+              <li className="flex items-center">
+                <PhoneIcon className="w-3 h-3 text-accent mr-2" />
+                <span className="text-neutral-light text-xs">02-6405-0075</span>
+              </li>
+              <li className="flex items-center">
+                <EnvelopeIcon className="w-3 h-3 text-accent mr-2" />
+                <span className="text-neutral-light text-xs">design_luka@naver.com</span>
+              </li>
+              <li className="flex items-start">
+                <ClockIcon className="w-3 h-3 text-accent mr-2 mt-0.5" />
+                <div>
+                  <p className="text-neutral-light text-xs">평일: 09:00 - 18:00</p>
+                  <p className="text-neutral-light text-xs">주말 및 공휴일 휴무</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
           {/* Logo and Description */}
-          <div className="md:col-span-4">
-            <h2 className="text-lg font-serif font-bold mb-2">DESIGN LUKA</h2>
+          <div className="md:col-span-6">
             <p className="text-neutral-light mb-3 text-xs">
-              공간의 가치를 재창조하는 인테리어 디자인 스튜디오. 
-              실용적이고 아름다운 공간을 위한 최적의 솔루션을 제공합니다.
+              고객님의 삶을 Fine하게 해드리기 위해<br />
+              고객님께서 머무르는 공간을 Shine하게 만들어 드립니다. 
             </p>
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 mb-4">
               <a 
                 href="https://www.instagram.com/design_luka_official" 
                 target="_blank"
@@ -55,95 +89,22 @@ export default function Footer() {
                 </svg>
               </a>
             </div>
-          </div>
-          
-          {/* Quick Links */}
-          <div className="md:col-span-2">
-            <h3 className="text-xs font-medium mb-2">Navigation</h3>
-            <ul className="space-y-0.5">
-              <li>
-                <Link to="/" className="text-neutral-light hover:text-white transition-colors text-xs">Home</Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-neutral-light hover:text-white transition-colors text-xs">About LUKA</Link>
-              </li>
-              <li>
-                <Link to="/business" className="text-neutral-light hover:text-white transition-colors text-xs">Business</Link>
-              </li>
-              <li>
-                <Link to="/portfolio" className="text-neutral-light hover:text-white transition-colors text-xs">Portfolio</Link>
-              </li>
-              <li>
-                <Link to="/insight" className="text-neutral-light hover:text-white transition-colors text-xs">Insight & Contents</Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-neutral-light hover:text-white transition-colors text-xs">Contact</Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Portfolio Links */}
-          <div className="md:col-span-2">
-            <h3 className="text-xs font-medium mb-2">Business</h3>
-            <ul className="space-y-0.5">
-              <li>
-                <Link to="/business/residential/total-living" className="text-neutral-light hover:text-white transition-colors text-xs">Total Living</Link>
-              </li>
-              <li>
-                <Link to="/business/residential/relite-living" className="text-neutral-light hover:text-white transition-colors text-xs">Re:Lite Living</Link>
-              </li>
-              <li>
-                <Link to="/business/commercial/total-biz" className="text-neutral-light hover:text-white transition-colors text-xs">Total Biz</Link>
-              </li>
-              <li>
-                <Link to="/business/commercial/biz-consulting" className="text-neutral-light hover:text-white transition-colors text-xs">Biz Consulting</Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Contact Information */}
-          <div className="md:col-span-4">
-            <h3 className="text-xs font-medium mb-2">Contact Info</h3>
-            <ul className="space-y-1">
-              <li className="flex items-start">
-                <MapPinIcon className="w-3 h-3 text-accent mr-2 mt-0.5" />
-                <span className="text-neutral-light text-xs">
-                  서울특별시 서초구 사평대로57길 131, 2층<br />
-                  (반포동, 웰빙센타 휴리재)
-                </span>
-              </li>
-              <li className="flex items-center">
-                <PhoneIcon className="w-3 h-3 text-accent mr-2" />
-                <span className="text-neutral-light text-xs">02-6405-0075</span>
-              </li>
-              <li className="flex items-center">
-                <EnvelopeIcon className="w-3 h-3 text-accent mr-2" />
-                <span className="text-neutral-light text-xs">design_luka@naver.com</span>
-              </li>
-              <li className="flex items-start">
-                <ClockIcon className="w-3 h-3 text-accent mr-2 mt-0.5" />
-                <div>
-                  <p className="text-neutral-light text-xs">평일: 09:00 - 18:00</p>
-                  <p className="text-neutral-light text-xs">주말 및 공휴일 휴무</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        {/* Bottom Bar */}
-        <div className="pt-2 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-xs text-neutral-light">
-          <div className="mb-1 md:mb-0">
-            <div className="text-xs">&copy; {currentYear} DESIGN LUKA. All rights reserved.</div>
-            <div className="text-xs mt-0.5">
-              루카앤컴퍼니 주식회사 | 대표자: 김규민 | 사업자 등록번호: 669-87-02507
+            
+            {/* Bottom Bar Info moved here */}
+            <div className="pt-2 border-t border-white/10">
+              <div className="text-xs text-neutral-light mb-1">
+                &copy; {currentYear} DESIGN LUKA. All rights reserved.
+              </div>
+              <div className="text-xs text-neutral-light mb-2">
+                루카앤컴퍼니 주식회사 | 대표자: 김규민 | 사업자 등록번호: 669-87-02507
+              </div>
+              <div className="flex flex-wrap gap-x-4">
+                <a href="#" className="hover:text-white transition-colors text-xs">Privacy Policy</a>
+                <a href="#" className="hover:text-white transition-colors text-xs">Terms of Service</a>
+                <a href="#" className="hover:text-white transition-colors text-xs">Sitemap</a>
+                <Link to="/admin/login" className="hover:text-white transition-colors text-xs">관리자</Link>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-wrap justify-center gap-x-4">
-            <a href="#" className="hover:text-white transition-colors mb-1 md:mb-0 text-xs">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors mb-1 md:mb-0 text-xs">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors mb-1 md:mb-0 text-xs">Sitemap</a>
-            <Link to="/admin/login" className="hover:text-white transition-colors mb-1 md:mb-0 text-xs">관리자</Link>
           </div>
         </div>
       </div>

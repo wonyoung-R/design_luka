@@ -378,29 +378,29 @@ export default function PortfolioPage() {
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {
     return (
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
-            className="break-inside-avoid group relative overflow-hidden rounded-2xl cursor-pointer"
+            className="group relative overflow-hidden rounded-2xl cursor-pointer"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             onClick={() => handleProjectClick(project)}
           >
-            <div className={`relative ${project.aspectRatio} overflow-hidden`}>
+            <div className="relative aspect-[4/5] overflow-hidden">
               <img
                 src={project.image}
                 alt={project.title}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
               />
               
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* Full overlay on hover */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/70 transition-all duration-500" />
               
               {/* Hover content */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
                 <div className="text-center text-white px-6">
                   <h3 className="text-xl font-bold mb-2 font-['Noto_Sans_KR']">{project.title}</h3>
                   <p className="text-sm text-gray-200 mb-1 font-['Noto_Sans_KR']">{project.type}</p>
@@ -540,178 +540,154 @@ export default function PortfolioPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Navbar placeholder */}
-            <div className="h-16 bg-white border-b border-gray-100" />
-            
-            <main className="w-full">
-              {/* Hero Section - Simplified */}
-              <section className="py-0 bg-gradient-to-br from-gray-50 to-white">
-                <div className="w-full px-4">
+            {/* Hero Section - Simplified */}
+            <section className="py-0 bg-gradient-to-br from-gray-50 to-white">
+              <div className="w-full px-4">
+                <motion.div
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Portfolio</h1>
+                </motion.div>
+                <section className="py-8"></section>
+              </div>
+            </section>
+
+            {/* Category and Filter Section - Moved here */}
+            <section className="py-4 bg-white border-b border-gray-100">
+              <div className="w-full px-4">
+                <div className="flex flex-col lg:flex-row gap-6">
+                  
+                  {/* Tab Navigation */}
                   <motion.div
-                    className="text-center"
+                    className="flex flex-wrap gap-3"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.6 }}
                   >
-                    <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Portfolio</h1>
-                    <p className="text-lg text-gray-600 font-['Noto_Sans_KR']">DESIGN LUKA의 프로젝트를 소개합니다</p>
-                  </motion.div>
-                  <section className="py-8"></section>
-                </div>
-              </section>
-
-              {/* Main Content */}
-              <section className="pb-16">
-                <div className="w-full px-4">
-                  <div className="flex flex-col lg:flex-row gap-8">
-                    
-                    {/* Left Sidebar - 3/12 */}
-                    <div className="lg:w-3/12 pl-4">
-                      <div className="sticky top-24 space-y-8">
-                        
-                        {/* Tab Navigation */}
-                        <motion.div
-                          className="space-y-3"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6 }}
-                        >
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 font-['Noto_Sans_KR']">
-                            카테고리
-                          </h3>
-                          {tabs.map((tab) => (
-                            <button
-                              key={tab.id}
-                              onClick={() => setActiveTab(tab.id)}
-                              className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 font-['Noto_Sans_KR'] ${
-                                activeTab === tab.id
-                                  ? 'bg-gray-900 text-white shadow-lg'
-                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                              }`}
-                            >
-                              {tab.label}
-                            </button>
-                          ))}
-                        </motion.div>
-
-                        {/* Filter Section */}
-                        <motion.div
-                          className="space-y-4"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 0.1 }}
-                        >
-                          <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors font-['Noto_Sans_KR']"
-                          >
-                            <span>필터</span>
-                            <svg
-                              className={`w-4 h-4 transform transition-transform duration-300 ${
-                                showFilters ? 'rotate-180' : ''
-                              }`}
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-
-                          <AnimatePresence>
-                            {showFilters && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="bg-gray-50 rounded-xl p-4 space-y-3"
-                              >
-                                {activeTab === 'residential' ? (
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-3 font-['Noto_Sans_KR']">평수</h4>
-                                    <div className="space-y-2">
-                                      {filterOptions.residential.area.map((area) => (
-                                        <label key={area} className="flex items-center text-sm font-['Noto_Sans_KR']">
-                                          <input
-                                            type="checkbox"
-                                            checked={selectedFilters.area.includes(area)}
-                                            onChange={() => toggleFilter('area', area)}
-                                            className="mr-3 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                                          />
-                                          <span className="text-gray-600">{area}</span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-3 font-['Noto_Sans_KR']">공간 유형</h4>
-                                    <div className="space-y-2">
-                                      {filterOptions.commercial.type.map((type) => (
-                                        <label key={type} className="flex items-center text-sm font-['Noto_Sans_KR']">
-                                          <input
-                                            type="checkbox"
-                                            checked={selectedFilters.type.includes(type)}
-                                            onChange={() => toggleFilter('type', type)}
-                                            className="mr-3 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                                          />
-                                          <span className="text-gray-600">{type}</span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </motion.div>
-
-                        {/* Project Count */}
-                        <motion.div
-                          className="text-sm text-gray-500 font-['Noto_Sans_KR']"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.6, delay: 0.2 }}
-                        >
-                          총 {getProjectsToShow().length}개 프로젝트
-                        </motion.div>
-                      </div>
-                    </div>
-
-                    {/* Right Content - 9/12 */}
-                    <div className="lg:w-9/12 pr-4">
-                      <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 font-['Noto_Sans_KR'] ${
+                          activeTab === tab.id
+                            ? 'bg-gray-900 text-white shadow-lg'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-gray-200'
+                        }`}
                       >
-                        <LayoutGroup>
-                          <MasonryGallery projects={getProjectsToShow()} />
-                        </LayoutGroup>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+                        {tab.label}
+                      </button>
+                    ))}
+                  </motion.div>
 
-              {/* Fixed CTA Button */}
-              <motion.div
-                className="fixed bottom-8 right-8 z-40"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-medium font-['Noto_Sans_KR']"
-                  onClick={() => window.location.href = '/design_luka/contact'}
+                  {/* Filter Section */}
+                  <motion.div
+                    className="flex items-center gap-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                  >
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors font-['Noto_Sans_KR'] border border-gray-200"
+                    >
+                      <span>필터</span>
+                      <svg
+                        className={`w-4 h-4 transform transition-transform duration-300 ${
+                          showFilters ? 'rotate-180' : ''
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    <AnimatePresence>
+                      {showFilters && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.3 }}
+                          className="flex gap-4"
+                        >
+                          {activeTab === 'residential' ? (
+                            <div className="flex flex-wrap gap-2">
+                              {filterOptions.residential.area.map((area) => (
+                                <label key={area} className="flex items-center text-sm font-['Noto_Sans_KR']">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedFilters.area.includes(area)}
+                                    onChange={() => toggleFilter('area', area)}
+                                    className="mr-2 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                                  />
+                                  <span className="text-gray-600">{area}</span>
+                                </label>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="flex flex-wrap gap-2">
+                              {filterOptions.commercial.type.map((type) => (
+                                <label key={type} className="flex items-center text-sm font-['Noto_Sans_KR']">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedFilters.type.includes(type)}
+                                    onChange={() => toggleFilter('type', type)}
+                                    className="mr-2 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                                  />
+                                  <span className="text-gray-600">{type}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Project Count */}
+                    <div className="text-sm text-gray-500 font-['Noto_Sans_KR']">
+                      총 {getProjectsToShow().length}개 프로젝트
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </section>
+
+            {/* Main Content */}
+            <section className="pb-16">
+              <div className="w-full px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  이런 공간 우리도 가능할까요?
-                </motion.button>
-              </motion.div>
-            </main>
+                  <LayoutGroup>
+                    <MasonryGallery projects={getProjectsToShow()} />
+                  </LayoutGroup>
+                </motion.div>
+              </div>
+            </section>
+
+            {/* Fixed CTA Button */}
+            <motion.div
+              className="fixed bottom-8 right-8 z-40"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+            >
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-medium font-['Noto_Sans_KR']"
+                onClick={() => window.location.href = '/design_luka/contact'}
+              >
+                이런 공간 우리도 가능할까요?
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

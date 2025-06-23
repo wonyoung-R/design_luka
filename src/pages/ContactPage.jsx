@@ -5,6 +5,8 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { submitQnAForm } from '../utils/googleSheetsApi';
+import residentialBtn from '../images/btn/regidential_btn.jpg';
+import commercialBtn from '../images/btn/commercia_btn.jpg';
 
 
 
@@ -71,7 +73,7 @@ export default function ContactPage() {
         message: formData.message,
         emailConsent: formData.emailConsent
       });
-
+      
       console.log('Form submission result:', result);
 
       setSubmitStatus('success');
@@ -115,14 +117,7 @@ export default function ContactPage() {
               >
                 Contact Us
               </motion.h1>
-              <motion.p 
-                className="text-lg text-gray-500 font-light font-['Noto_Sans_KR'] max-w-2xl mx-auto"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                DESIGN LUKA와 함께 당신만의 특별한 공간을 만들어보세요
-              </motion.p>
+              
             </motion.div>
           </div>
         </section>
@@ -202,60 +197,68 @@ export default function ContactPage() {
                     </motion.p>
 
                     {/* Service Type Buttons */}
-                    <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                       <motion.button
                         onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl p-8"
+                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
+                        style={{ aspectRatio: '4/3' }}
                         whileHover={{ y: -4 }}
                         whileTap={{ scale: 0.98 }}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
                       >
-                        {/* Background - 검은 배경이 아래에서 위로 올라오는 효과 */}
-                        <div className="absolute inset-0 bg-gray-900 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                          <img 
+                            src={residentialBtn} 
+                            alt="주거 공간" 
+                            className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
+                          />
+                        </div>
                         
-                        {/* Content */}
-                        <div className="relative z-10">
-                          <div className="w-16 h-16 bg-gray-100 group-hover:bg-white rounded-2xl flex items-center justify-center mb-6 mx-auto transition-colors duration-500">
-                            <svg className="w-8 h-8 text-gray-600 group-hover:text-gray-900 transition-colors duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
+                        {/* Overlay Text */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              주거 공간
+                            </h3>
+                            <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              Residential
+                            </p>
                           </div>
-                          <h3 className="text-2xl font-bold mb-2 text-gray-900 group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
-                            주거 공간
-                          </h3>
-                          <p className="text-gray-600 group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
-                            Residential
-                          </p>
                         </div>
                       </motion.button>
 
                       <motion.button
                         onClick={() => openModal('https://tally.so/r/waDP7q')}
-                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl p-8"
+                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
+                        style={{ aspectRatio: '4/3' }}
                         whileHover={{ y: -4 }}
                         whileTap={{ scale: 0.98 }}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.5 }}
                       >
-                        {/* Background - 검은 배경이 아래에서 위로 올라오는 효과 */}
-                        <div className="absolute inset-0 bg-gray-900 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                        {/* Background Image */}
+                        <div className="absolute inset-0">
+                          <img 
+                            src={commercialBtn} 
+                            alt="상업 공간" 
+                            className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
+                          />
+                        </div>
                         
-                        {/* Content */}
-                        <div className="relative z-10">
-                          <div className="w-16 h-16 bg-gray-100 group-hover:bg-white rounded-2xl flex items-center justify-center mb-6 mx-auto transition-colors duration-500">
-                            <svg className="w-8 h-8 text-gray-600 group-hover:text-gray-900 transition-colors duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
+                        {/* Overlay Text */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              상업 공간
+                            </h3>
+                            <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              Commercial
+                            </p>
                           </div>
-                          <h3 className="text-2xl font-bold mb-2 text-gray-900 group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
-                            상업 공간
-                          </h3>
-                          <p className="text-gray-600 group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
-                            Commercial
-                          </p>
                         </div>
                       </motion.button>
                     </div>

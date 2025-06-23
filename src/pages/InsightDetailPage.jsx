@@ -233,16 +233,16 @@ const InsightDetailPage = () => {
               >
                 {insight.title}
               </motion.h1>
-              <motion.div
+          <motion.div
                 className="flex items-center gap-4 text-gray-600"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-              >
+          >
                 <span className="text-sm font-medium">
                   {formatDate(insight.date)}
                 </span>
-              </motion.div>
+          </motion.div>
             </div>
           </div>
 
@@ -342,11 +342,11 @@ const InsightDetailPage = () => {
                       ),
                       // 단락에 애니메이션 추가
                       p: ({ node, ...props }) => (
-                        <motion.p
+                      <motion.p
                           {...props}
-                          className="text-gray-700 leading-relaxed mb-6 text-lg"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
+                        className="text-gray-700 leading-relaxed mb-6 text-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.6, delay: 0.3 }}
                         />
                       ),

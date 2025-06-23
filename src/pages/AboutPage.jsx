@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
+import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
 
 // Mock imports for demo (실제 프로젝트에서는 아래 imports 사용)
 // import Navbar from '../components/Navbar';
@@ -50,34 +51,28 @@ const AboutPage = () => {
       {/* Navbar */}
       <Navbar />
 
-      <main className="pt-16 min-h-screen">
+      <main className="pt-0 min-h-screen">
         
         {/* About LUKA + 소개글 섹션 */}
         <section className="py-0 w-full">
           <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center min-h-screen">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center min-h-[70vh]">
               
               {/* About LUKA 제목 */}
               <div className="text-center md:text-left p-8 md:p-16 lg:p-20 min-h-[50vh] md:min-h-0 flex flex-col justify-center">
-                <motion.h1
-                  className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 md:mb-8 scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
+                <motion.div
+                  className="flex justify-center md:justify-start"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  About LUKA
-                </motion.h1>
-                <motion.p
-                  className="text-lg md:text-xl lg:text-2xl text-gray-600 font-light scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                  공간을 통해 삶의 가치를<br />
-                  높이는 디자인 스튜디오
-                </motion.p>
+                  <img 
+                    src={lukaSlogan} 
+                    alt="LUKA Slogan" 
+                    className="max-w-full h-auto min-h-[60vh] object-contain scale-50"
+                  />
+                </motion.div>
               </div>
 
               {/* 소개글 */}
@@ -110,7 +105,7 @@ const AboutPage = () => {
         {/* CUSTOMIZE 섹션 */}
         <section className="py-0 w-full bg-gray-50">
           <div className="w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
               <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
@@ -131,7 +126,7 @@ const AboutPage = () => {
               </div>
 
               {/* 이미지 */}
-              <div className="order-2 h-[50vh] lg:h-screen">
+              <div className="order-2 h-[50vh] lg:h-[70vh]">
                 <motion.div
                   className="h-full"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -154,10 +149,10 @@ const AboutPage = () => {
         {/* DESIGN 섹션 */}
         <section className="py-0 w-full">
           <div className="w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 이미지 */}
-              <div className="order-2 lg:order-1 h-[50vh] lg:h-screen">
+              <div className="order-2 lg:order-1 h-[50vh] lg:h-[70vh]">
                 <motion.div
                   className="h-full"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -197,7 +192,7 @@ const AboutPage = () => {
         {/* STABILITY 섹션 */}
         <section className="py-0 w-full bg-gray-50">
           <div className="w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
               <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
@@ -218,7 +213,7 @@ const AboutPage = () => {
               </div>
 
               {/* 이미지 */}
-              <div className="order-2 h-[50vh] lg:h-screen">
+              <div className="order-2 h-[50vh] lg:h-[70vh]">
                 <motion.div
                   className="h-full"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -241,12 +236,13 @@ const AboutPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="text-xl font-bold mb-4 font-['Noto_Sans_KR']">DESIGN LUKA</div>
-          <p className="text-gray-400 font-['Noto_Sans_KR']">
-            공간에 생명을 불어넣는 디자인
-          </p>
+      <footer className="bg-black text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center flex justify-center items-center">
+          <img 
+            src={lukaSlogan} 
+            alt="LUKA Slogan" 
+            className="w-[13%] h-auto object-contain filter invert brightness-0"
+          />
         </div>
       </footer>
     </div>
