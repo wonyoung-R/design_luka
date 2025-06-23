@@ -60,42 +60,28 @@ const slides = [
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [direction, setDirection] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
   
   const timerRef = useRef(null);
-  const autoPlayTimeoutRef = useRef(null);
 
   // 통합된 슬라이드 변경 함수
   const handleSlideChange = useCallback((newSlide, newDirection = 1) => {
-    // 기존 타이머들 클리어
+    // 기존 타이머 클리어
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
-    }
-    if (autoPlayTimeoutRef.current) {
-      clearTimeout(autoPlayTimeoutRef.current);
-      autoPlayTimeoutRef.current = null;
     }
 
     setDirection(newDirection);
     setCurrentSlide(newSlide);
     setProgressKey(prev => prev + 1); // Progress bar 리셋
-    
-    // 자동재생 일시정지 후 재개
-    setIsAutoPlay(false);
-    autoPlayTimeoutRef.current = setTimeout(() => {
-      setIsAutoPlay(true);
-    }, 8000);
   }, []);
 
-  // 자동 슬라이드 기능 - 완전 재작성
+  // 자동 슬라이드 기능
   useEffect(() => {
-    if (!isAutoPlay) return;
-    
     timerRef.current = setInterval(() => {
       setCurrentSlide((prev) => {
         const nextSlide = (prev + 1) % slides.length;
@@ -111,7 +97,7 @@ const HomePage = () => {
         timerRef.current = null;
       }
     };
-  }, [isAutoPlay]);
+  }, []);
 
   const goToSlide = useCallback((index) => {
     const newDirection = index > currentSlide ? 1 : -1;
@@ -174,9 +160,6 @@ const HomePage = () => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
-      }
-      if (autoPlayTimeoutRef.current) {
-        clearTimeout(autoPlayTimeoutRef.current);
       }
     };
   }, []);
@@ -302,19 +285,6 @@ const HomePage = () => {
             transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
           />
         </div>
-
-        {/* Auto-play Status Indicator */}
-        {!isAutoPlay && (
-          <motion.div
-            className="absolute top-4 right-4 z-20 bg-black/50 text-white/70 text-xs px-2 py-1 rounded-full backdrop-blur-sm"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-          >
-            일시정지
-          </motion.div>
-        )}
 
         {/* Mobile Touch Instruction */}
         <motion.div
