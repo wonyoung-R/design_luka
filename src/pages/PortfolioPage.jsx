@@ -541,7 +541,7 @@ export default function PortfolioPage() {
             transition={{ duration: 0.5 }}
           >
             {/* Hero Section - Simplified */}
-            <section className="py-0 bg-gradient-to-br from-gray-50 to-white">
+            <section className="pt-16 pb-0 bg-gradient-to-br from-gray-50 to-white">
               <div className="w-full px-4">
                 <motion.div
                   className="text-center"
