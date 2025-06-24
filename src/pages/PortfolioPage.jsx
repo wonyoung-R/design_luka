@@ -59,18 +59,15 @@ export default function PortfolioPage() {
           // 프로젝트를 타입별로 분류하고 이미지 형태 변환
           const formattedData = { residential: [], commercial: [] };
           
-          console.log('Firebase 데이터:', data); // 디버깅용
-          
           Object.entries(data).forEach(([id, project]) => {
-            console.log(`프로젝트 ${id} 이미지 데이터:`, project.images); // 디버깅용
-            
             // 모든 이미지를 하나의 배열로 통합
             const allImages = project.images && project.images.length > 0 
               ? project.images.map(img => {
-                  console.log('이미지 객체:', img); // 디버깅용
-                  
                   // 구글 드라이브 이미지 URL을 직접 접근 가능한 형태로 변환
-                  if (img.url && img.url.includes('drive.google.com')) {
+                  if (img.id) {
+                    // 파일 ID가 있으면 직접 구글 드라이브 URL 생성
+                    return `https://drive.google.com/uc?id=${img.id}`;
+                  } else if (img.url && img.url.includes('drive.google.com')) {
                     // 기존 URL이 uc?id= 형태인지 확인하고, 아니면 변환
                     if (img.url.includes('uc?id=')) {
                       return img.url;
@@ -81,17 +78,11 @@ export default function PortfolioPage() {
                         return `https://drive.google.com/uc?id=${fileId}`;
                       }
                     }
-                    // 파일 ID만 있는 경우
-                    if (img.id) {
-                      return `https://drive.google.com/uc?id=${img.id}`;
-                    }
                   }
                   // 구글 드라이브가 아닌 경우 원본 URL 반환
                   return img.url || img.driveUrl || `https://drive.google.com/uc?id=${img.id}`;
                 }).filter(url => url) // 빈 URL 제거
-              : ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'];
-            
-            console.log(`프로젝트 ${id} 변환된 이미지:`, allImages); // 디버깅용
+              : ['https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'];
             
             const formattedProject = {
               id,
@@ -125,11 +116,11 @@ export default function PortfolioPage() {
                 area: '34py',
                 type: '아파트',
                 style: '포트폴리오 관리에서 프로젝트를 추가해주세요',
-                image: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                image: 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
                 aspectRatio: 'aspect-[4/5]',
                 images: [
-                  'https://images.unsplash.com/photo-1600210492493-0946911123ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                  'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+                  'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+                  'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
                 ]
               }
             ],
@@ -331,7 +322,7 @@ export default function PortfolioPage() {
                 alt={project.title}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                 onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                  e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
                 }}
               />
               
@@ -435,7 +426,7 @@ export default function PortfolioPage() {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                     onClick={() => openModal(project.images[0])}
                     onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                      e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
                     }}
                   />
                 </div>
@@ -461,7 +452,7 @@ export default function PortfolioPage() {
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                       onClick={() => openModal(image)}
                       onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                        e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
                       }}
                     />
                   </div>
@@ -669,7 +660,7 @@ export default function PortfolioPage() {
                   className="max-w-full max-h-full object-contain select-none"
                   onClick={(e) => e.stopPropagation()}
                   onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                    e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
                   }}
                 />
               </div>
