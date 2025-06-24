@@ -78,6 +78,16 @@ const HomePage = () => {
     setDirection(newDirection);
     setCurrentSlide(newSlide);
     setProgressKey(prev => prev + 1); // Progress bar 리셋
+
+    // 자동 슬라이드 타이머 재시작
+    timerRef.current = setInterval(() => {
+      setCurrentSlide((prev) => {
+        const nextSlide = (prev + 1) % slides.length;
+        setDirection(1);
+        setProgressKey(prevKey => prevKey + 1);
+        return nextSlide;
+      });
+    }, SLIDE_DURATION - 1000); // 슬라이드 전환을 1초 일찍 시작
   }, []);
 
   // 자동 슬라이드 기능
@@ -89,7 +99,7 @@ const HomePage = () => {
         setProgressKey(prevKey => prevKey + 1);
         return nextSlide;
       });
-    }, SLIDE_DURATION);
+    }, SLIDE_DURATION - 1000); // 슬라이드 전환을 1초 일찍 시작
 
     return () => {
       if (timerRef.current) {
@@ -200,7 +210,7 @@ const HomePage = () => {
             transition={{
               x: { 
                 type: "tween", 
-                duration: 3.0, 
+                duration: 2.0, 
                 ease: [0.19, 1, 0.22, 1] // easeOutExpo
               },
               opacity: { 
@@ -282,7 +292,10 @@ const HomePage = () => {
             className="h-full bg-gradient-to-r from-white/60 to-white/80"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
-            transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+            transition={{ 
+              duration: (SLIDE_DURATION - 1000) / 1000, 
+              ease: [0.19, 1, 0.22, 1] // easeOutExpo로 변경하여 더 부드럽게
+            }}
           />
         </div>
 
