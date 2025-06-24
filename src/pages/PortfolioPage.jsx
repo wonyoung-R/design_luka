@@ -62,7 +62,22 @@ export default function PortfolioPage() {
           Object.entries(data).forEach(([id, project]) => {
             // 모든 이미지를 하나의 배열로 통합
             const allImages = project.images && project.images.length > 0 
-              ? project.images.map(img => img.url)
+              ? project.images.map(img => {
+                  // 구글 드라이브 이미지 URL을 직접 접근 가능한 형태로 변환
+                  if (img.url && img.url.includes('drive.google.com')) {
+                    // 기존 URL이 uc?id= 형태인지 확인하고, 아니면 변환
+                    if (img.url.includes('uc?id=')) {
+                      return img.url;
+                    } else if (img.url.includes('/file/d/')) {
+                      // /file/d/{fileId}/view 형태를 uc?id={fileId} 형태로 변환
+                      const fileId = img.url.match(/\/file\/d\/([^\/]+)/)?.[1];
+                      if (fileId) {
+                        return `https://drive.google.com/uc?id=${fileId}`;
+                      }
+                    }
+                  }
+                  return img.url;
+                })
               : ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'];
             
             const formattedProject = {
@@ -302,6 +317,9 @@ export default function PortfolioPage() {
                 src={project.image}
                 alt={project.title}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                }}
               />
               
               {/* Full overlay on hover */}
@@ -379,20 +397,6 @@ export default function PortfolioPage() {
                   }
                 </p>
               </div>
-
-              {/* 구글 드라이브 링크 (원본 프로젝트 데이터가 있는 경우) */}
-              {project.originalProject?.folderId && (
-                <div>
-                  <a
-                    href={`https://drive.google.com/drive/folders/${project.originalProject.folderId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                  >
-                    구글 드라이브에서 보기 →
-                  </a>
-                </div>
-              )}
             </div>
           </motion.div>
 
@@ -417,6 +421,9 @@ export default function PortfolioPage() {
                     alt={project.title}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                     onClick={() => openModal(project.images[0])}
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                    }}
                   />
                 </div>
               </motion.div>
@@ -440,6 +447,9 @@ export default function PortfolioPage() {
                       alt={`${project.title} detail ${index + 1}`}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                       onClick={() => openModal(image)}
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                      }}
                     />
                   </div>
                 </motion.div>
@@ -645,6 +655,9 @@ export default function PortfolioPage() {
                   alt="Expanded view"
                   className="max-w-full max-h-full object-contain select-none"
                   onClick={(e) => e.stopPropagation()}
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                  }}
                 />
               </div>
             </motion.div>
