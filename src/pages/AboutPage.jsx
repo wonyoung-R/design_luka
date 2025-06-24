@@ -3,6 +3,9 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
 import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
+import lukaCustomize from '../images/aboutluka/luka_cusotmize.png';
+import lukaDesign from '../images/aboutluka/luka_design.png';
+import lukaStability from '../images/aboutluka/luka_stability.png';
 
 // Mock imports for demo (실제 프로젝트에서는 아래 imports 사용)
 // import Navbar from '../components/Navbar';
@@ -51,7 +54,7 @@ const AboutPage = () => {
       {/* Navbar */}
       <Navbar />
 
-      <main className="pt-0 min-h-screen">
+      <main className="pt-16 min-h-screen">
         
         {/* About LUKA + 소개글 섹션 */}
         <section className="py-0 w-full">
@@ -70,7 +73,7 @@ const AboutPage = () => {
                   <img 
                     src={lukaSlogan} 
                     alt="LUKA Slogan" 
-                    className="max-w-full h-auto min-h-[60vh] object-contain scale-50"
+                    className="max-w-full h-auto min-h-[50vh] object-contain scale-65"
                   />
                 </motion.div>
               </div>
@@ -78,21 +81,21 @@ const AboutPage = () => {
               {/* 소개글 */}
               <div className="p-8 md:p-16 lg:p-20 min-h-[50vh] md:min-h-0 flex flex-col justify-center">
                 <motion.div
-                  className="text-base md:text-lg leading-relaxed space-y-4 md:space-y-6 scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
+                  className="text-sm md:text-base leading-relaxed space-y-4 md:space-y-6 scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
                   <p>
-                    DESIGN LUKA의 이름은 슬로베니아어로 '빛'을 의미하는 'LUKA'에서 비롯되었습니다. 
-                    이는 우리가 디자인하는 모든 공간에 담긴 철학을 반영한 이름으로 단순한 리모델링을 넘어서 
-                    라이프스타일과 브랜드에 맞춘 맞춤형 디자인을 통해 세련되고 감각적인 공간을 창조합니다.
+                    <b>DESIGN LUKA</b>의 이름은 <b>슬로베니아어로 '빛'을 의미하는 'LUKA'</b>에서 비롯되었습니다. <br />
+                    이는 우리가 디자인하는 모든 공간에 담긴 철학을 반영한 이름으로 단순한 리모델링을 넘어서 <br />
+                    <b>라이프스타일과 브랜드에 맞춘 맞춤형 디자인</b>을 통해 세련되고 감각적인 공간을 창조합니다.
                   </p>
                   <p>
-                    저희는 강남구, 서초구, 송파구를 중심으로 서울 전역에서 다양한 인테리어 프로젝트를 진행하고 있으며 
-                    2022년 4월 1일에 설립되어 서울 서초구에 두 개의 오피스를 운영하고 있습니다. 
-                    논현점은 서초구 사평대로 57길 131 웰빙센타 휴리재 2층에 위치하고 있으며 
+                    저희는 강남구, 서초구, 송파구를 중심으로 <b>서울 전역에서 다양한 인테리어 프로젝트</b>를 진행하고 있으며 <br />
+                    2022년 4월 1일에 설립되어 서울 서초구에 두 개의 오피스를 운영하고 있습니다. <br />
+                    논현점은 서초구 사평대로 57길 131 웰빙센타 휴리재 2층에 위치하고 있으며 <br />
                     반포점은 서초구 반포대로 287, 107호에 자리잡고 있습니다.
                   </p>
                 </motion.div>
@@ -116,11 +119,10 @@ const AboutPage = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">CUSTOMIZE</h2>
-                  <p className="text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 font-['Noto_Sans_KR']">
-                    단순한 리모델링을 넘어, 주거와 상업공간 모두 
-                    고객의 라이프스타일과 비즈니스 니즈에 맞춘 
-                    맞춤형 디자인으로 세련되고 감각적인 공간을 창조합니다.
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">CUSTOMIZE</h2>
+                  <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
+                    단순한 리모델링을 넘어, 주거와 상업공간 모두 고객의 라이프스타일과 
+                    <br /> 비즈니스 니즈에 맞춘 맞춤형 디자인으로 세련되고 감각적인 공간을 창조합니다.  
                   </p>
                 </motion.div>
               </div>
@@ -135,7 +137,7 @@ const AboutPage = () => {
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80" 
+                    src={lukaCustomize} 
                     alt="커스터마이즈 인테리어" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
@@ -161,7 +163,7 @@ const AboutPage = () => {
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=900&q=80" 
+                    src={lukaDesign} 
                     alt="디자인 인테리어" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
@@ -177,9 +179,9 @@ const AboutPage = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">DESIGN</h2>
-                  <p className="text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 font-['Noto_Sans_KR']">
-                    DESIGN LUKA의 주거 및 상업공간 전문 디자이너들이 
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">DESIGN</h2>
+                  <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
+                    DESIGN LUKA의 주거 및 상업공간 전문 디자이너들이 <br />
                     최신 트렌드를 반영한 감각적인 공간을 기획하고 제안합니다.
                   </p>
                 </motion.div>
@@ -203,11 +205,10 @@ const AboutPage = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">STABILITY</h2>
-                  <p className="text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 font-['Noto_Sans_KR']">
-                    시공 이후에도 지속적인 관리와 유지보수 서비스를 통해 
-                    주거·상업 공간 모두에서 고객이 오랜 시간 만족할 수 있도록 
-                    최선을 다하고 있습니다.
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">STABILITY</h2>
+                  <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
+                    시공 이후에도 지속적인 관리와 유지보수 서비스를 통해 <br />
+                    주거·상업 공간 모두에서 고객이 오랜 시간 만족할 수 있도록 최선을 다하고 있습니다.
                   </p>
                 </motion.div>
               </div>
@@ -222,7 +223,7 @@ const AboutPage = () => {
                   transition={{ duration: 0.8, delay: 0.2 }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=80" 
+                    src={lukaStability} 
                     alt="안정성 인테리어" 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />

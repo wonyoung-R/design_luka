@@ -6,6 +6,9 @@ import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import { insightsRef } from '../firebase/config';
 import { addTestInsights } from '../utils/testData';
+import InsightDetailModal from './InsightDetailModal';
+import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
+
 
 // Firebase imports (실제 프로젝트에서 사용)
 //import { database, insightsRef } from '../firebase/config';
@@ -15,6 +18,9 @@ export default function InsightPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInsightIndex, setSelectedInsightIndex] = useState(null);
 
   // 안전한 날짜 처리 함수
   const formatDate = (dateValue) => {
@@ -299,6 +305,37 @@ export default function InsightPage() {
     ? insights 
     : insights.filter(insight => insight.category === activeTab);
 
+  // Modal open/close handlers
+  const openModal = (index) => {
+    setSelectedInsightIndex(index);
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedInsightIndex(null);
+  };
+  // Prev/Next navigation
+  const handlePrev = () => {
+    if (selectedInsightIndex > 0) {
+      setSelectedInsightIndex(selectedInsightIndex - 1);
+    }
+  };
+  const handleNext = () => {
+    if (selectedInsightIndex < filteredInsights.length - 1) {
+      setSelectedInsightIndex(selectedInsightIndex + 1);
+    }
+  };
+
+  // ESC/뒤로가기 핸들링
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
+
   // Masonry layout component
   const MasonryGrid = ({ insights }) => {
     return (
@@ -312,7 +349,7 @@ export default function InsightPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             whileHover={{ y: -4 }}
-            onClick={() => window.location.href = `/design_luka/insight/${insight.id}`}
+            onClick={() => openModal(index)}
           >
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Thumbnail */}
@@ -442,15 +479,15 @@ export default function InsightPage() {
 
   // Main render
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+    <div className="flex flex-col min-h-screen bg-white font-['Noto_Sans_KR']">
       {/* Navbar */}
       <Navbar />
       
 
       {/* Main Content */}
-      <main className="pt-16 py-0">
+      <main className="flex-1 pt-16 py-0 font-['Noto_Sans_KR']">
         {/* Hero Section - Simplified */}
-        <section className="py-0 bg-gradient-to-br from-gray-50 to-white">
+        <section className="py-0 bg-gradient-to-br from-gray-50 to-white font-['Noto_Sans_KR']">
           <div className="w-full px-4">
             <motion.div
               className="text-center"
@@ -459,7 +496,6 @@ export default function InsightPage() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Insight and Contents</h1>
-              <p className="text-lg text-gray-600 font-['Noto_Sans_KR']">영감을 주는 공간 이야기</p>
             </motion.div>
           </div>
           <section className="py-8"></section>
@@ -468,10 +504,10 @@ export default function InsightPage() {
         {/* Content Section */}
         <section className="">
           <div className="w-full px-4">
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-8 font-['Noto_Sans_KR']">
               
               {/* Left Sidebar - 3/12 */}
-              <div className="lg:w-3/12 pl-4">
+              <div className="lg:w-3/12 pl-4 font-['Noto_Sans_KR']">
                 <div className="sticky top-24 space-y-8">
                   
                   {/* Category Navigation */}
@@ -481,7 +517,7 @@ export default function InsightPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 font-['Noto_Sans_KR']">
                       카테고리
                     </h3>
                     <LayoutGroup>
@@ -489,7 +525,7 @@ export default function InsightPage() {
                         <motion.button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
-                          className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden ${
+                          className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden font-['Noto_Sans_KR'] ${
                             activeTab === tab.id
                               ? 'text-white'
                               : 'text-gray-600 hover:text-gray-900'
@@ -508,7 +544,7 @@ export default function InsightPage() {
                           }`} />
                           
                           {/* Text */}
-                          <span className="relative z-10">{tab.label}</span>
+                          <span className="relative z-10 font-['Noto_Sans_KR']">{tab.label}</span>
                           
                           {/* Active indicator */}
                           {activeTab === tab.id && (
@@ -521,29 +557,6 @@ export default function InsightPage() {
                         </motion.button>
                       ))}
                     </LayoutGroup>
-                  </motion.div>
-
-                  {/* Content Count */}
-                  <motion.div
-                    className="text-sm text-gray-500"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                  >
-                    총 {filteredInsights.length}개 콘텐츠
-                  </motion.div>
-
-                  {/* Additional Info */}
-                  <motion.div
-                    className="bg-gray-50 rounded-xl p-4"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                  >
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">최신 업데이트</h4>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      매주 새로운 인테리어 트렌드와 팁을 업데이트합니다.
-                    </p>
                   </motion.div>
                 </div>
               </div>
@@ -572,14 +585,25 @@ export default function InsightPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="text-xl font-bold mb-4">DESIGN LUKA</div>
-          <p className="text-gray-400 font-['Noto_Sans_KR']">
-            공간에 생명을 불어넣는 디자인
-          </p>
+      <footer className="bg-black text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center flex justify-center items-center">
+          <img 
+            src={lukaSlogan} 
+            alt="LUKA Slogan" 
+            className="w-[13%] h-auto object-contain filter invert brightness-0"
+          />
         </div>
       </footer>
+
+      {/* Modal */}
+      {isModalOpen && selectedInsightIndex !== null && (
+        <InsightDetailModal
+          insight={filteredInsights[selectedInsightIndex]}
+          onClose={closeModal}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      )}
     </div>
   );
 }

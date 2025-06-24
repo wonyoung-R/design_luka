@@ -225,10 +225,12 @@ export default function PortfolioPage() {
       if (activeTab === 'residential') {
         const areaMatch = selectedFilters.area.length === 0 || 
           selectedFilters.area.some(area => {
-            if (area === '20평 미만') return parseInt(project.area) < 20;
-            if (area === '20-30평') return parseInt(project.area) >= 20 && parseInt(project.area) < 30;
-            if (area === '30-40평') return parseInt(project.area) >= 30 && parseInt(project.area) < 40;
-            if (area === '40평 이상') return parseInt(project.area) >= 40;
+            const areaNum = parseInt(project.area);
+            if (area === '20평▼') return areaNum < 20;
+            if (area === '30평형') return areaNum >= 30 && areaNum < 40;
+            if (area === '40평형') return areaNum >= 40 && areaNum < 50;
+            if (area === '50평형') return areaNum >= 50 && areaNum < 60;
+            if (area === '60평▲') return areaNum >= 60;
             return false;
           });
         return areaMatch;
@@ -551,112 +553,62 @@ export default function PortfolioPage() {
                 >
                   <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Portfolio</h1>
                 </motion.div>
-                <section className="py-8"></section>
+                <section className="py-1"></section>
               </div>
             </section>
 
-            {/* Category and Filter Section - Moved here */}
-            <section className="py-4 bg-white border-b border-gray-100">
-              <div className="w-full px-4">
-                <div className="flex flex-col lg:flex-row gap-6">
-                  
-                  {/* Tab Navigation */}
-                  <motion.div
-                    className="flex flex-wrap gap-3"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+            {/* 카테고리 선택 버튼 (히어로 아래, 여백 없이 센터정렬) */}
+            <div className="w-full flex justify-center items-center bg-white">
+              <div className="flex gap-4 py-0">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-64 h-12 rounded-xl text-lg  transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
+                      activeTab === tab.id
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-white text-gray-900 hover:bg-gray-50'
+                    }`}
                   >
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 font-['Noto_Sans_KR'] ${
-                          activeTab === tab.id
-                            ? 'bg-gray-900 text-white shadow-lg'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-gray-200'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </motion.div>
-
-                  {/* Filter Section */}
-                  <motion.div
-                    className="flex items-center gap-4"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                  >
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors font-['Noto_Sans_KR'] border border-gray-200"
-                    >
-                      <span>필터</span>
-                      <svg
-                        className={`w-4 h-4 transform transition-transform duration-300 ${
-                          showFilters ? 'rotate-180' : ''
-                        }`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-
-                    <AnimatePresence>
-                      {showFilters && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.3 }}
-                          className="flex gap-4"
-                        >
-                          {activeTab === 'residential' ? (
-                            <div className="flex flex-wrap gap-2">
-                              {filterOptions.residential.area.map((area) => (
-                                <label key={area} className="flex items-center text-sm font-['Noto_Sans_KR']">
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedFilters.area.includes(area)}
-                                    onChange={() => toggleFilter('area', area)}
-                                    className="mr-2 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                                  />
-                                  <span className="text-gray-600">{area}</span>
-                                </label>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="flex flex-wrap gap-2">
-                              {filterOptions.commercial.type.map((type) => (
-                                <label key={type} className="flex items-center text-sm font-['Noto_Sans_KR']">
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedFilters.type.includes(type)}
-                                    onChange={() => toggleFilter('type', type)}
-                                    className="mr-2 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                                  />
-                                  <span className="text-gray-600">{type}</span>
-                                </label>
-                              ))}
-                            </div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Project Count */}
-                    <div className="text-sm text-gray-500 font-['Noto_Sans_KR']">
-                      총 {getProjectsToShow().length}개 프로젝트
-                    </div>
-                  </motion.div>
-                </div>
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-            </section>
+            </div>
+            <section className="py-1"></section>
 
+
+            {/* 필터 체크박스 (버튼 없이 바로 노출) */}
+            <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
+              <div className="flex flex-wrap gap-4">
+                {activeTab === 'residential' ? (
+                  ['20평▼', '30평형', '40평형', '50평형', '60평▲'].map((area) => (
+                    <label key={area} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.area.includes(area)}
+                        onChange={() => toggleFilter('area', area)}
+                        className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                      />
+                      <span className="text-gray-700">{area}</span>
+                    </label>
+                  ))
+                ) : (
+                  ['카페', '레스토랑', '사무실', '상가', '뷰티샵'].map((type) => (
+                    <label key={type} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.type.includes(type)}
+                        onChange={() => toggleFilter('type', type)}
+                        className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                      />
+                      <span className="text-gray-700">{type}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </div>
+            <section class="py-2"></section>
             {/* Main Content */}
             <section className="pb-16">
               <div className="w-full px-4">
@@ -682,7 +634,7 @@ export default function PortfolioPage() {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl font-medium font-['Noto_Sans_KR']"
+                className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR']"
                 onClick={() => window.location.href = '/design_luka/contact'}
               >
                 이런 공간 우리도 가능할까요?

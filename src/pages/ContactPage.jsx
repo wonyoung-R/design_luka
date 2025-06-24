@@ -11,12 +11,6 @@ import commercialBtn from '../images/btn/commercia_btn.jpg';
 
 
 
-// Mock imports for demo (실제 프로젝트에서는 아래 imports 사용)
-// import Navbar from '../components/Navbar';
-// import Footer from '../components/Footer';
-// import { XMarkIcon } from '@heroicons/react/24/outline';
-// import { submitQnAForm } from '../utils/googleSheetsApi';
-
 const tabs = [
   { id: 'consultation', label: '상담 신청' },
   { id: 'qna', label: '고객 Q&A' }
@@ -101,7 +95,7 @@ export default function ContactPage() {
       {/* Main Content */}
       <main className="pt-16 flex-1 flex flex-col">
         {/* Hero Section - Simplified */}
-        <section className="py-0 bg-gradient-to-br from-gray-50 to-white">
+        <section className="py-0 bg-white from-gray-50 to-white">
           <div className="w-full px-4">
             <motion.div
               className="text-center max-w-4xl mx-auto"
@@ -110,7 +104,7 @@ export default function ContactPage() {
               transition={{ duration: 0.8 }}
             >
               <motion.h1 
-                className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight font-['Noto_Sans_KR']"
+                className="text-4xl md:text-5xl font-black text-gray-600 mb-4 tracking-tight font-['Noto_Sans_KR']"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -128,45 +122,23 @@ export default function ContactPage() {
             <div className="max-w-4xl mx-auto">
               
               {/* Tab Navigation */}
-              <motion.div
-                className="flex justify-center mb-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <LayoutGroup>
-                  <div className="flex bg-gray-100 rounded-2xl p-0">
-                    {tabs.map((tab, index) => (
-                      <motion.button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`relative px-8 py-3 text-sm font-semibold transition-all duration-300 rounded-xl ${
-                          activeTab === tab.id
-                            ? 'text-white'
-                            : 'text-gray-600 hover:text-gray-900'
-                        }`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        {/* Background */}
-                        {activeTab === tab.id && (
-                          <motion.div
-                            className="absolute inset-0 bg-gray-900 rounded-xl"
-                            layoutId="activeTab"
-                            transition={{ duration: 0.3 }}
-                          />
-                        )}
-                        
-                        {/* Text */}
-                        <span className="relative z-10">{tab.label}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </LayoutGroup>
-              </motion.div>
+              <div className="flex justify-center mb-12">
+                <div className="flex bg-gray-100 rounded-2xl p-0 justify-center">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-64 h-12 rounded-xl text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
+                        activeTab === tab.id
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="font-bold">{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* Tab Content */}
               <AnimatePresence mode="wait">
@@ -188,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-gray-600 mb-12 font-['Noto_Sans_KR']"
+                      className="text-gray-600 mb-6 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -197,16 +169,16 @@ export default function ContactPage() {
                     </motion.p>
 
                     {/* Service Type Buttons */}
-                    <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                      <motion.button
+                    <motion.div
+                      className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.8 }}
+                    >
+                      <button
                         onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
+                        className="group relative overflow-hidden bg-transparent min-h-[220px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
                         style={{ aspectRatio: '4/3' }}
-                        whileHover={{ y: -4 }}
-                        whileTap={{ scale: 0.98 }}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
                       >
                         {/* Background Image */}
                         <div className="absolute inset-0">
@@ -216,7 +188,6 @@ export default function ContactPage() {
                             className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
                           />
                         </div>
-                        
                         {/* Overlay Text */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="text-center">
@@ -228,17 +199,11 @@ export default function ContactPage() {
                             </p>
                           </div>
                         </div>
-                      </motion.button>
-
-                      <motion.button
+                      </button>
+                      <button
                         onClick={() => openModal('https://tally.so/r/waDP7q')}
-                        className="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
+                        className="group relative overflow-hidden bg-transparent min-h-[220px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
                         style={{ aspectRatio: '4/3' }}
-                        whileHover={{ y: -4 }}
-                        whileTap={{ scale: 0.98 }}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
                       >
                         {/* Background Image */}
                         <div className="absolute inset-0">
@@ -248,7 +213,6 @@ export default function ContactPage() {
                             className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
                           />
                         </div>
-                        
                         {/* Overlay Text */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="text-center">
@@ -260,8 +224,8 @@ export default function ContactPage() {
                             </p>
                           </div>
                         </div>
-                      </motion.button>
-                    </div>
+                      </button>
+                    </motion.div>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -271,7 +235,7 @@ export default function ContactPage() {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-6">
                       <motion.h2 
                         className="text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
                         initial={{ opacity: 0, y: 20 }}

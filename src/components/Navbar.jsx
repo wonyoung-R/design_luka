@@ -123,7 +123,7 @@ export default function Navbar() {
                         <Link
                           to={item.href}
                           className={classNames(
-                            'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200 relative',
+                            'inline-flex items-center px-1 pt-1 text-sm font-normal font-[\'Noto_Sans_KR\'] transition-colors duration-200 relative',
                             location.pathname.startsWith(item.href)
                               ? isHomePage ? 'text-white' : 'text-accent'
                               : isHomePage 
@@ -206,7 +206,7 @@ export default function Navbar() {
                       <Link
                         to={item.href}
                         className={classNames(
-                          'inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200 relative',
+                          'inline-flex items-center px-1 pt-1 text-sm font-normal font-[\'Noto_Sans_KR\'] transition-colors duration-200 relative',
                           location.pathname === item.href
                             ? isHomePage ? 'text-white' : 'text-accent'
                             : isHomePage 
@@ -264,7 +264,7 @@ export default function Navbar() {
                             (item.submenu && location.pathname.startsWith('/portfolio'))
                               ? isHomePage ? 'bg-white/20 text-white' : 'bg-accent-light text-primary-dark'
                               : isHomePage ? 'text-white hover:bg-white/20' : 'text-black hover:bg-neutral-light',
-                            'block px-3 py-2 rounded-md text-base font-medium'
+                            'block px-3 py-2 rounded-md text-base font-normal font-[\'Noto_Sans_KR\']'
                           )}
                         >
                           {item.name}
