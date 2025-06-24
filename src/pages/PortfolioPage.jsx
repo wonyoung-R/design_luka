@@ -59,10 +59,16 @@ export default function PortfolioPage() {
           // 프로젝트를 타입별로 분류하고 이미지 형태 변환
           const formattedData = { residential: [], commercial: [] };
           
+          console.log('Firebase 데이터:', data); // 디버깅용
+          
           Object.entries(data).forEach(([id, project]) => {
+            console.log(`프로젝트 ${id} 이미지 데이터:`, project.images); // 디버깅용
+            
             // 모든 이미지를 하나의 배열로 통합
             const allImages = project.images && project.images.length > 0 
               ? project.images.map(img => {
+                  console.log('이미지 객체:', img); // 디버깅용
+                  
                   // 구글 드라이브 이미지 URL을 직접 접근 가능한 형태로 변환
                   if (img.url && img.url.includes('drive.google.com')) {
                     // 기존 URL이 uc?id= 형태인지 확인하고, 아니면 변환
@@ -75,10 +81,17 @@ export default function PortfolioPage() {
                         return `https://drive.google.com/uc?id=${fileId}`;
                       }
                     }
+                    // 파일 ID만 있는 경우
+                    if (img.id) {
+                      return `https://drive.google.com/uc?id=${img.id}`;
+                    }
                   }
-                  return img.url;
-                })
+                  // 구글 드라이브가 아닌 경우 원본 URL 반환
+                  return img.url || img.driveUrl || `https://drive.google.com/uc?id=${img.id}`;
+                }).filter(url => url) // 빈 URL 제거
               : ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'];
+            
+            console.log(`프로젝트 ${id} 변환된 이미지:`, allImages); // 디버깅용
             
             const formattedProject = {
               id,
