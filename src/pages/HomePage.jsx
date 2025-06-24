@@ -64,6 +64,7 @@ const HomePage = () => {
   const [touchEnd, setTouchEnd] = useState(null);
   const [direction, setDirection] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   
   const timerRef = useRef(null);
 
@@ -107,6 +108,15 @@ const HomePage = () => {
         timerRef.current = null;
       }
     };
+  }, []);
+
+  // 첫 번째 로드 후 isFirstLoad를 false로 설정
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsFirstLoad(false);
+    }, 100); // 첫 번째 슬라이드가 렌더링된 후 바로 false로 설정
+
+    return () => clearTimeout(timer);
   }, []);
 
   const goToSlide = useCallback((index) => {
@@ -190,7 +200,7 @@ const HomePage = () => {
             custom={direction}
             variants={{
               enter: (direction) => ({
-                x: direction > 0 ? 1000 : -1000,
+                x: isFirstLoad ? 0 : (direction > 0 ? 1000 : -1000),
                 opacity: 1
               }),
               center: {
@@ -210,11 +220,11 @@ const HomePage = () => {
             transition={{
               x: { 
                 type: "tween", 
-                duration: 2.0, 
+                duration: isFirstLoad ? 0 : 2.0, 
                 ease: [0.19, 1, 0.22, 1] // easeOutExpo
               },
               opacity: { 
-                duration: 0.3,
+                duration: isFirstLoad ? 0 : 0.3,
                 ease: [0.19, 1, 0.22, 1]
               }
             }}
