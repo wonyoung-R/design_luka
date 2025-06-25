@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { database } from '../firebase/config';
@@ -29,6 +29,133 @@ export default function PortfolioPage() {
     area: [],
     type: []
   });
+  const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [imageLoadStates, setImageLoadStates] = useState({});
+  const [imageErrorStates, setImageErrorStates] = useState({});
+  
+  // 무한루프 방지를 위한 ref 추가
+  const loadedImagesRef = useRef(new Set()); // 이미 로드된 이미지들 추적
+  const errorAttemptsRef = useRef({}); // 에러 시도 횟수 추적
+
+  // Function to get optimized Google Drive URL
+  const getOptimizedDriveUrl = (fileId) => {
+    if (!fileId) return null;
+    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  };
+
+  // Function to convert any Google Drive URL to optimized format
+  const convertToOptimizedUrl = (url) => {
+    if (!url) return null;
+    
+    // 이미 최적화된 URL인 경우
+    if (url.includes('uc?export=view&id=')) {
+      return url;
+    }
+    
+    // 파일 ID 추출
+    let fileId = null;
+    
+    // /file/d/{fileId}/view 형태
+    const fileMatch = url.match(/\/file\/d\/([^\/]+)/);
+    if (fileMatch) {
+      fileId = fileMatch[1];
+    }
+    
+    // uc?id={fileId} 형태
+    const ucMatch = url.match(/[?&]id=([^&]+)/);
+    if (ucMatch) {
+      fileId = ucMatch[1];
+    }
+    
+    if (fileId) {
+      return getOptimizedDriveUrl(fileId);
+    }
+    
+    return url;
+  };
+
+  // Fallback image URLs (더 안정적인 Unsplash 이미지 사용)
+  const fallbackImages = [
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  ];
+
+  // Function to get fallback image
+  const getFallbackImage = (index = 0) => {
+    return fallbackImages[index % fallbackImages.length];
+  };
+
+  // 무한루프 방지된 이미지 로드 핸들러
+  const handleImageLoad = useCallback((projectId, imageIndex = 0) => {
+    const imageKey = `${projectId}-${imageIndex}`;
+    
+    // 이미 처리된 이미지라면 무시
+    if (loadedImagesRef.current.has(imageKey)) {
+      return;
+    }
+    
+    console.log(`Image loaded successfully (ONCE): ${imageKey}`);
+    
+    // 로드된 이미지로 마킹
+    loadedImagesRef.current.add(imageKey);
+    
+    // state 업데이트 (한 번만)
+    setImageLoadStates(prev => {
+      if (prev[imageKey]) return prev; // 이미 true면 업데이트 안함
+      return {
+        ...prev,
+        [imageKey]: true
+      };
+    });
+
+    // 에러 상태 리셋
+    if (errorAttemptsRef.current[imageKey]) {
+      delete errorAttemptsRef.current[imageKey];
+      setImageErrorStates(prev => {
+        const newState = { ...prev };
+        delete newState[imageKey];
+        return newState;
+      });
+    }
+  }, []);
+
+  // 무한루프 방지된 이미지 에러 핸들러
+  const handleImageError = useCallback((e, projectId, imageIndex = 0) => {
+    const imageKey = `${projectId}-${imageIndex}`;
+    const currentAttempts = errorAttemptsRef.current[imageKey] || 0;
+    
+    // 이미 최대 시도 횟수에 도달했으면 무시
+    if (currentAttempts >= 3) {
+      return;
+    }
+
+    const newAttempts = currentAttempts + 1;
+    errorAttemptsRef.current[imageKey] = newAttempts;
+    
+    console.log(`Image error for ${imageKey}, attempt: ${newAttempts}`);
+
+    // 최대 3번 재시도 후 최종 placeholder 사용
+    if (newAttempts >= 3) {
+      console.log(`Max attempts reached for ${imageKey}, using final placeholder`);
+      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzE3OS4wOSAxNTAgMTYyIDE2Ny4wOSAxNjIgMTg4QzE2MiAyMDguOTEgMTc5LjA5IDIyNiAyMDAgMjI2QzIyMC45MSAyMjYgMjM4IDIwOC45MSAyMzggMTg4QzIzOCAxNjcuMDkgMjIwLjkxIDE1MCAyMDAgMTUwWk0yMDAgMjQ2QzE3OS4wOSAyNDYgMTYyIDI2My4wOSAxNjIgMjg0QzE2MiAzMDQuOTEgMTc5LjA5IDMyMiAyMDAgMzIyQzIyMC45MSAzMjIgMjM4IDMwNC45MSAyMzggMjg0QzIzOCAyNjMuMDkgMjIwLjkxIDI0NiAyMDAgMjQ2WiIgZmlsbD0iIzlDQTBBNiIvPgo8L3N2Zz4K';
+      
+      setImageErrorStates(prev => ({
+        ...prev,
+        [imageKey]: { attempts: newAttempts, isFinal: true }
+      }));
+      return;
+    }
+
+    // Fallback 이미지 시도
+    const fallbackIndex = Math.min(newAttempts - 1, fallbackImages.length - 1);
+    e.target.src = fallbackImages[fallbackIndex];
+    
+    setImageErrorStates(prev => ({
+      ...prev,
+      [imageKey]: { attempts: newAttempts, isFinal: false }
+    }));
+  }, [fallbackImages]);
 
   // Filter options
   const filterOptions = {
@@ -56,45 +183,42 @@ export default function PortfolioPage() {
         const data = snapshot.val();
         
         if (data) {
-          // 프로젝트를 타입별로 분류하고 이미지 형태 변환
           const formattedData = { residential: [], commercial: [] };
           
           Object.entries(data).forEach(([id, project]) => {
-            // 모든 이미지를 하나의 배열로 통합
-            const allImages = project.images && project.images.length > 0 
-              ? project.images.map(img => {
-                  // 구글 드라이브 이미지 URL을 직접 접근 가능한 형태로 변환
-                  if (img.id) {
-                    // 파일 ID가 있으면 직접 구글 드라이브 URL 생성
-                    return `https://drive.google.com/uc?id=${img.id}`;
-                  } else if (img.url && img.url.includes('drive.google.com')) {
-                    // 기존 URL이 uc?id= 형태인지 확인하고, 아니면 변환
-                    if (img.url.includes('uc?id=')) {
-                      return img.url;
-                    } else if (img.url.includes('/file/d/')) {
-                      // /file/d/{fileId}/view 형태를 uc?id={fileId} 형태로 변환
-                      const fileId = img.url.match(/\/file\/d\/([^\/]+)/)?.[1];
-                      if (fileId) {
-                        return `https://drive.google.com/uc?id=${fileId}`;
-                      }
-                    }
+            let allImages = [];
+            
+            if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+              allImages = project.images
+                .map(img => {
+                  if (img?.id) {
+                    return getOptimizedDriveUrl(img.id);
+                  } else if (img?.url) {
+                    return convertToOptimizedUrl(img.url);
                   }
-                  // 구글 드라이브가 아닌 경우 원본 URL 반환
-                  return img.url || img.driveUrl || `https://drive.google.com/uc?id=${img.id}`;
-                }).filter(url => url) // 빈 URL 제거
-              : ['https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'];
+                  return null;
+                })
+                .filter(url => url);
+            }
+            
+            if (allImages.length === 0) {
+              allImages = [fallbackImages[0]];
+            }
+            
+            // 로그를 한 번만 출력
+            console.log(`Project ${id} final images (${allImages.length} images):`, allImages);
             
             const formattedProject = {
               id,
-              title: project.title,
-              location: project.address,
+              title: project.title || `프로젝트 ${id}`,
+              location: project.address || '위치 정보 없음',
               area: project.type === 'residential' ? project.area : project.businessType,
-              type: project.type === 'residential' ? '아파트' : businessTypeLabels[project.businessType],
-              style: project.style || (project.type === 'residential' ? '모던 스타일' : '모던 인테리어'),
-              image: allImages[0], // 첫 번째 이미지를 섬네일로 사용
-              aspectRatio: 'aspect-[4/5]', // 기본 비율
-              images: allImages, // 모든 이미지를 하나의 배열로 저장
-              originalProject: project // 원본 프로젝트 데이터 보관
+              type: project.type === 'residential' ? '아파트' : (project.businessType || '상업공간'),
+              style: project.style || '모던 스타일',
+              image: allImages[0],
+              aspectRatio: 'aspect-[4/5]',
+              images: allImages,
+              originalProject: project
             };
             
             if (project.type === 'residential') {
@@ -116,12 +240,9 @@ export default function PortfolioPage() {
                 area: '34py',
                 type: '아파트',
                 style: '포트폴리오 관리에서 프로젝트를 추가해주세요',
-                image: 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+                image: fallbackImages[0],
                 aspectRatio: 'aspect-[4/5]',
-                images: [
-                  'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-                  'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-                ]
+                images: [fallbackImages[0], fallbackImages[1]]
               }
             ],
             commercial: []
@@ -131,7 +252,7 @@ export default function PortfolioPage() {
     };
 
     loadProjectsFromFirebase();
-  }, []);
+  }, [fallbackImages]);
 
   // URL 파라미터에서 카테고리 읽어오기
   useEffect(() => {
@@ -176,6 +297,33 @@ export default function PortfolioPage() {
     }));
   };
 
+  const handleCategoryClick = (category, event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    console.log('Category clicked:', category);
+    setActiveTab(category);
+  };
+
+  const handleFilterChange = (category, value, event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    console.log('Filter changed:', category, value);
+    toggleFilter(category, value);
+  };
+
+  const handleCTAClick = (event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    console.log('CTA clicked - navigating to contact');
+    window.location.href = '/design_luka/contact';
+  };
+
   const getProjectsToShow = () => {
     switch (activeTab) {
       case 'residential':
@@ -187,11 +335,19 @@ export default function PortfolioPage() {
     }
   };
 
-  const handleProjectClick = (project) => {
+  const handleProjectClick = (project, event) => {
+    // 이벤트가 있으면 기본 동작 방지
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    console.log('Project clicked:', project);
     setSelectedProject(project);
   };
 
   const closeDetailView = () => {
+    console.log('Closing detail view');
     setSelectedProject(null);
   };
 
@@ -216,6 +372,7 @@ export default function PortfolioPage() {
   };
 
   const closeModal = () => {
+    console.log('Closing modal');
     setIsModalOpen(false);
     setSelectedImage('');
     setSelectedImageIndex(0);
@@ -248,6 +405,7 @@ export default function PortfolioPage() {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape' || event.key === 'Backspace') {
+        event.preventDefault();
         if (isModalOpen) {
           closeModal();
         } else if (selectedProject) {
@@ -255,8 +413,10 @@ export default function PortfolioPage() {
         }
       } else if (isModalOpen) {
         if (event.key === 'ArrowLeft') {
+          event.preventDefault();
           goToPreviousImage();
         } else if (event.key === 'ArrowRight') {
+          event.preventDefault();
           goToNextImage();
         }
       }
@@ -274,7 +434,8 @@ export default function PortfolioPage() {
     };
 
     // Handle browser back button
-    const handlePopState = () => {
+    const handlePopState = (event) => {
+      event.preventDefault();
       if (isModalOpen) {
         closeModal();
       } else if (selectedProject) {
@@ -314,16 +475,15 @@ export default function PortfolioPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
-            onClick={() => handleProjectClick(project)}
+            onClick={(event) => handleProjectClick(project, event)}
           >
             <div className="relative aspect-[4/5] overflow-hidden">
-              <img
+              <ProjectImage
                 src={project.image}
                 alt={project.title}
+                projectId={project.id}
+                imageIndex={0}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                onError={(e) => {
-                  e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
-                }}
               />
               
               {/* Full overlay on hover */}
@@ -420,13 +580,16 @@ export default function PortfolioPage() {
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
                 <div className="relative overflow-hidden rounded-xl aspect-[4/3]">
-                  <img
+                  <ProjectImage
                     src={project.images[0]}
                     alt={project.title}
+                    projectId={project.id}
+                    imageIndex={0}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                    onClick={() => openModal(project.images[0])}
-                    onError={(e) => {
-                      e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      openModal(project.images[0]);
                     }}
                   />
                 </div>
@@ -446,13 +609,16 @@ export default function PortfolioPage() {
                     index % 4 === 1 ? 'aspect-[4/3]' :
                     index % 4 === 2 ? 'aspect-[1/1]' : 'aspect-[4/5]'
                   }`}>
-                    <img
+                    <ProjectImage
                       src={image}
                       alt={`${project.title} detail ${index + 1}`}
+                      projectId={project.id}
+                      imageIndex={index + 1}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                      onClick={() => openModal(image)}
-                      onError={(e) => {
-                        e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        openModal(image);
                       }}
                     />
                   </div>
@@ -465,8 +631,59 @@ export default function PortfolioPage() {
     );
   };
 
+  // 개선된 이미지 컴포넌트 - 중복 이벤트 방지
+  const ProjectImage = ({ src, alt, projectId, imageIndex = 0, className, onClick }) => {
+    const imageKey = `${projectId}-${imageIndex}`;
+    const isLoaded = imageLoadStates[imageKey];
+    const errorState = imageErrorStates[imageKey];
+    const imageRef = useRef(null);
+
+    // 이미지 로드 핸들러 - 한 번만 실행되도록 처리
+    const handleLoad = useCallback((e) => {
+      // 이미지가 실제로 완전히 로드되었는지 확인
+      if (e.target.complete && e.target.naturalWidth > 0) {
+        handleImageLoad(projectId, imageIndex);
+      }
+    }, [projectId, imageIndex, handleImageLoad]);
+
+    const handleError = useCallback((e) => {
+      handleImageError(e, projectId, imageIndex);
+    }, [projectId, imageIndex, handleImageError]);
+
+    return (
+      <div className="relative">
+        <img
+          ref={imageRef}
+          src={src}
+          alt={alt}
+          className={className}
+          onClick={onClick}
+          onError={handleError}
+          onLoad={handleLoad}
+          // 중요: loading="lazy"를 제거하거나 조건부로 사용
+          loading={imageIndex === 0 ? "eager" : "lazy"}
+        />
+        
+        {/* 로딩 오버레이 - 조건 개선 */}
+        {!isLoaded && !errorState?.isFinal && (
+          <div className="absolute inset-0 bg-gray-200 flex items-center justify-center rounded-xl">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // 컴포넌트 언마운트 시 정리
+  useEffect(() => {
+    return () => {
+      loadedImagesRef.current.clear();
+      errorAttemptsRef.current = {};
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+    <div className="min-h-screen bg-white">
       {/* Main content - only show if no project is selected */}
       <Navbar />
       <AnimatePresence>
@@ -475,6 +692,7 @@ export default function PortfolioPage() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
+            className="font-['Noto_Sans_KR']"
           >
             {/* Hero Section - Simplified */}
             <section className="pt-16 pb-0 bg-gradient-to-br from-gray-50 to-white">
@@ -497,7 +715,7 @@ export default function PortfolioPage() {
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={(event) => handleCategoryClick(tab.id, event)}
                     className={`w-64 h-12 rounded-xl text-lg  transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
                       activeTab === tab.id
                         ? 'bg-gray-900 text-white'
@@ -521,7 +739,7 @@ export default function PortfolioPage() {
                       <input
                         type="checkbox"
                         checked={selectedFilters.area.includes(area)}
-                        onChange={() => toggleFilter('area', area)}
+                        onChange={(event) => handleFilterChange('area', area, event)}
                         className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                       />
                       <span className="text-gray-700">{area}</span>
@@ -533,7 +751,7 @@ export default function PortfolioPage() {
                       <input
                         type="checkbox"
                         checked={selectedFilters.type.includes(type)}
-                        onChange={() => toggleFilter('type', type)}
+                        onChange={(event) => handleFilterChange('type', type, event)}
                         className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                       />
                       <span className="text-gray-700">{type}</span>
@@ -569,7 +787,7 @@ export default function PortfolioPage() {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR']"
-                onClick={() => window.location.href = '/design_luka/contact'}
+                onClick={handleCTAClick}
               >
                 이런 공간 우리도 가능할까요?
               </motion.button>
@@ -654,14 +872,13 @@ export default function PortfolioPage() {
                 onClick={goToNextImage}
                 title="클릭하여 다음 이미지 보기"
               >
-                <img
+                <ProjectImage
                   src={selectedImage}
                   alt="Expanded view"
+                  projectId={selectedProject.id}
+                  imageIndex={selectedImageIndex}
                   className="max-w-full max-h-full object-contain select-none"
                   onClick={(e) => e.stopPropagation()}
-                  onError={(e) => {
-                    e.target.src = 'https://drive.google.com/uc?id=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
-                  }}
                 />
               </div>
             </motion.div>
