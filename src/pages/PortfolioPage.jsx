@@ -185,17 +185,35 @@ export default function PortfolioPage() {
         if (data) {
           const formattedData = { residential: [], commercial: [] };
           
+          console.log('Raw Firebase data:', data);
+          
           Object.entries(data).forEach(([id, project]) => {
+            console.log(`Processing project ${id}:`, project);
+            console.log(`Project images:`, project.images);
+            
             let allImages = [];
             
             if (project.images && Array.isArray(project.images) && project.images.length > 0) {
               allImages = project.images
                 .map(img => {
-                  if (img?.id) {
-                    return getOptimizedDriveUrl(img.id);
-                  } else if (img?.url) {
-                    return convertToOptimizedUrl(img.url);
+                  console.log(`Processing image for project ${id}:`, img);
+                  
+                  // 이미지 객체가 문자열인 경우 (직접 URL)
+                  if (typeof img === 'string') {
+                    return convertToOptimizedUrl(img);
                   }
+                  
+                  // 이미지 객체가 객체인 경우
+                  if (img && typeof img === 'object') {
+                    if (img.id) {
+                      return getOptimizedDriveUrl(img.id);
+                    } else if (img.url) {
+                      return convertToOptimizedUrl(img.url);
+                    } else if (img.driveUrl) {
+                      return convertToOptimizedUrl(img.driveUrl);
+                    }
+                  }
+                  
                   return null;
                 })
                 .filter(url => url);
