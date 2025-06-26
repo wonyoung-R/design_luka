@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { database } from '../firebase/config';
@@ -8,6 +8,42 @@ import Footer from '../components/Footer';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { submitQnAForm } from '../utils/googleSheetsApi';
 
+// Fallback image URLs (컴포넌트 외부로 이동)
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+];
+
+// URL 변환 함수들 (컴포넌트 외부로 이동)
+const getOptimizedCloudinaryUrl = (url) => {
+  if (!url) return null;
+  
+  // 이미 Cloudinary URL인 경우 최적화
+  if (url.includes('cloudinary.com')) {
+    // 이미 최적화된 URL인 경우 그대로 반환
+    if (url.includes('/upload/')) {
+      return url;
+    }
+    
+    // 기본 Cloudinary URL을 최적화된 형태로 변환
+    return url.replace('/upload/', '/upload/f_auto,q_auto/');
+  }
+  
+  return url;
+};
+
+const convertToOptimizedUrl = (url) => {
+  if (!url) return null;
+  
+  // Cloudinary URL인 경우
+  if (url.includes('cloudinary.com')) {
+    return getOptimizedCloudinaryUrl(url);
+  }
+  
+  // 기타 URL은 그대로 반환
+  return url;
+};
 
 const tabs = [
   { id: 'residential', label: '주거 공간' },
@@ -37,53 +73,9 @@ export default function PortfolioPage() {
   const loadedImagesRef = useRef(new Set()); // 이미 로드된 이미지들 추적
   const errorAttemptsRef = useRef({}); // 에러 시도 횟수 추적
 
-  // Function to get optimized Google Drive URL
-  const getOptimizedDriveUrl = (fileId) => {
-    if (!fileId) return null;
-    return `https://drive.google.com/uc?export=view&id=${fileId}`;
-  };
-
-  // Function to convert any Google Drive URL to optimized format
-  const convertToOptimizedUrl = (url) => {
-    if (!url) return null;
-    
-    // 이미 최적화된 URL인 경우
-    if (url.includes('uc?export=view&id=')) {
-      return url;
-    }
-    
-    // 파일 ID 추출
-    let fileId = null;
-    
-    // /file/d/{fileId}/view 형태
-    const fileMatch = url.match(/\/file\/d\/([^\/]+)/);
-    if (fileMatch) {
-      fileId = fileMatch[1];
-    }
-    
-    // uc?id={fileId} 형태
-    const ucMatch = url.match(/[?&]id=([^&]+)/);
-    if (ucMatch) {
-      fileId = ucMatch[1];
-    }
-    
-    if (fileId) {
-      return getOptimizedDriveUrl(fileId);
-    }
-    
-    return url;
-  };
-
-  // Fallback image URLs (더 안정적인 Unsplash 이미지 사용)
-  const fallbackImages = [
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-  ];
-
   // Function to get fallback image
   const getFallbackImage = (index = 0) => {
-    return fallbackImages[index % fallbackImages.length];
+    return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   };
 
   // 무한루프 방지된 이미지 로드 핸들러
@@ -148,14 +140,14 @@ export default function PortfolioPage() {
     }
 
     // Fallback 이미지 시도
-    const fallbackIndex = Math.min(newAttempts - 1, fallbackImages.length - 1);
-    e.target.src = fallbackImages[fallbackIndex];
+    const fallbackIndex = Math.min(newAttempts - 1, FALLBACK_IMAGES.length - 1);
+    e.target.src = FALLBACK_IMAGES[fallbackIndex];
     
     setImageErrorStates(prev => ({
       ...prev,
       [imageKey]: { attempts: newAttempts, isFinal: false }
     }));
-  }, [fallbackImages]);
+  }, []);
 
   // Filter options
   const filterOptions = {
@@ -205,12 +197,13 @@ export default function PortfolioPage() {
                   
                   // 이미지 객체가 객체인 경우
                   if (img && typeof img === 'object') {
-                    if (img.id) {
-                      return getOptimizedDriveUrl(img.id);
-                    } else if (img.url) {
+                    // Cloudinary URL이 있는 경우
+                    if (img.url) {
                       return convertToOptimizedUrl(img.url);
-                    } else if (img.driveUrl) {
-                      return convertToOptimizedUrl(img.driveUrl);
+                    }
+                    // Cloudinary ID가 있는 경우 (public_id)
+                    else if (img.id) {
+                      return `https://res.cloudinary.com/dti1gtd3u/image/upload/f_auto,q_auto/${img.id}`;
                     }
                   }
                   
@@ -220,7 +213,7 @@ export default function PortfolioPage() {
             }
             
             if (allImages.length === 0) {
-              allImages = [fallbackImages[0]];
+              allImages = [FALLBACK_IMAGES[0]];
             }
             
             // 로그를 한 번만 출력
@@ -258,9 +251,9 @@ export default function PortfolioPage() {
                 area: '34py',
                 type: '아파트',
                 style: '포트폴리오 관리에서 프로젝트를 추가해주세요',
-                image: fallbackImages[0],
+                image: FALLBACK_IMAGES[0],
                 aspectRatio: 'aspect-[4/5]',
-                images: [fallbackImages[0], fallbackImages[1]]
+                images: [FALLBACK_IMAGES[0], FALLBACK_IMAGES[1]]
               }
             ],
             commercial: []
@@ -270,7 +263,7 @@ export default function PortfolioPage() {
     };
 
     loadProjectsFromFirebase();
-  }, [fallbackImages]);
+  }, []);
 
   // URL 파라미터에서 카테고리 읽어오기
   useEffect(() => {
@@ -307,12 +300,19 @@ export default function PortfolioPage() {
   };
 
   const toggleFilter = (category, value) => {
-    setSelectedFilters(prev => ({
-      ...prev,
-      [category]: prev[category].includes(value)
-        ? prev[category].filter(item => item !== value)
-        : [...prev[category], value]
-    }));
+    setSelectedFilters(prev => {
+      const prevArr = prev[category] || [];
+      let newArr;
+      if (prevArr.includes(value)) {
+        newArr = prevArr.filter(item => item !== value);
+      } else {
+        newArr = [...prevArr, value];
+      }
+      return {
+        ...prev,
+        [category]: newArr
+      };
+    });
   };
 
   const handleCategoryClick = (category, event) => {
@@ -325,10 +325,6 @@ export default function PortfolioPage() {
   };
 
   const handleFilterChange = (category, value, event) => {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
     console.log('Filter changed:', category, value);
     toggleFilter(category, value);
   };
@@ -440,17 +436,6 @@ export default function PortfolioPage() {
       }
     };
 
-    const handleWheel = (event) => {
-      if (isModalOpen && allImages.length > 1) {
-        event.preventDefault();
-        if (event.deltaY > 0) {
-          goToNextImage();
-        } else {
-          goToPreviousImage();
-        }
-      }
-    };
-
     // Handle browser back button
     const handlePopState = (event) => {
       event.preventDefault();
@@ -467,13 +452,11 @@ export default function PortfolioPage() {
     }
 
     if (isModalOpen) {
-      document.addEventListener('wheel', handleWheel, { passive: false });
       window.addEventListener('popstate', handlePopState);
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('wheel', handleWheel);
       window.removeEventListener('popstate', handlePopState);
       if (!isModalOpen) {
         document.body.style.overflow = 'unset';
@@ -535,7 +518,7 @@ export default function PortfolioPage() {
         {/* Close button */}
         <button
           onClick={closeDetailView}
-          className="fixed top-6 right-6 z-60 w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+          className="fixed top-3 right-3 z-60 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
           title="포트폴리오로 돌아가기"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -546,12 +529,12 @@ export default function PortfolioPage() {
         <div className="flex h-full">
           {/* Left side - Project info */}
           <motion.div
-            className="w-1/3 p-16 flex flex-col justify-center bg-gray-50"
+            className="w-1/3 p-16 flex flex-col justify-start bg-white"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="space-y-6">
+            <div className="space-y-6 text-left">
               {/* Project type & info */}
               <div className="flex items-center gap-2 text-sm text-gray-600 font-['Noto_Sans_KR']">
                 <span className="px-3 py-1 bg-gray-200 rounded-full">
@@ -562,17 +545,17 @@ export default function PortfolioPage() {
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl font-bold text-gray-900 font-['Noto_Sans_KR']">{project.title}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 font-['Noto_Sans_KR'] text-left">{project.title}</h1>
 
               {/* Location */}
-              <p className="text-lg text-gray-600 font-['Noto_Sans_KR']">{project.location}</p>
+              <p className="text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
 
               {/* Style */}
-              <p className="text-md text-gray-500 font-['Noto_Sans_KR']">{project.style}</p>
+              <p className="text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
 
               {/* Description */}
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR']">
+                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left">
                   {activeTab === 'residential' ? 
                     `${project.style} 스타일의 아파트 인테리어 프로젝트입니다. 주거 공간의 기능성과 심미성을 모두 고려한 설계로, 일상 속 편안함과 세련된 분위기를 동시에 구현했습니다.` :
                     `${project.style} 스타일의 ${project.type} 인테리어 프로젝트입니다. 공간의 특성을 살린 디자인으로, 실용성과 아름다움을 조화롭게 구현했습니다.`
@@ -753,24 +736,36 @@ export default function PortfolioPage() {
               <div className="flex flex-wrap gap-4">
                 {activeTab === 'residential' ? (
                   ['20평▼', '30평형', '40평형', '50평형', '60평▲'].map((area) => (
-                    <label key={area} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                    <label
+                      key={area}
+                      htmlFor={`area-checkbox-${area}`}
+                      className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                    >
                       <input
+                        id={`area-checkbox-${area}`}
+                        key={area}
                         type="checkbox"
                         checked={selectedFilters.area.includes(area)}
                         onChange={(event) => handleFilterChange('area', area, event)}
-                        className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                        className="accent-black rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                       />
                       <span className="text-gray-700">{area}</span>
                     </label>
                   ))
                 ) : (
                   ['카페', '레스토랑', '사무실', '상가', '뷰티샵'].map((type) => (
-                    <label key={type} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                    <label
+                      key={type}
+                      htmlFor={`type-checkbox-${type}`}
+                      className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                    >
                       <input
+                        id={`type-checkbox-${type}`}
+                        key={type}
                         type="checkbox"
                         checked={selectedFilters.type.includes(type)}
                         onChange={(event) => handleFilterChange('type', type, event)}
-                        className="rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                        className="accent-black rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                       />
                       <span className="text-gray-700">{type}</span>
                     </label>
@@ -829,7 +824,7 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
             onClick={closeModal}
           >
             <motion.div
@@ -837,16 +832,16 @@ export default function PortfolioPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="relative w-[90vw] h-[90vh] bg-white rounded-lg overflow-hidden shadow-2xl"
+              className="relative max-w-[95vw] max-h-[95vh] bg-white rounded-lg overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                className="absolute top-3 right-3 z-20 w-8 h-8 bg-black/70 hover:bg-black/90 text-white rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg"
                 title="닫기 (ESC)"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -855,10 +850,10 @@ export default function PortfolioPage() {
               {allImages.length > 1 && (
                 <button
                   onClick={goToPreviousImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
                   title="이전 이미지 (←)"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
@@ -868,10 +863,10 @@ export default function PortfolioPage() {
               {allImages.length > 1 && (
                 <button
                   onClick={goToNextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
                   title="다음 이미지 (→)"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -879,14 +874,14 @@ export default function PortfolioPage() {
 
               {/* Image Counter */}
               {allImages.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR']">
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR']">
                   {selectedImageIndex + 1} / {allImages.length}
                 </div>
               )}
 
-              {/* Image */}
+              {/* Image Container */}
               <div 
-                className="w-full h-full flex items-center justify-center p-4 cursor-pointer"
+                className="relative flex items-center justify-center cursor-pointer"
                 onClick={goToNextImage}
                 title="클릭하여 다음 이미지 보기"
               >
@@ -895,9 +890,45 @@ export default function PortfolioPage() {
                   alt="Expanded view"
                   projectId={selectedProject.id}
                   imageIndex={selectedImageIndex}
-                  className="max-w-full max-h-full object-contain select-none"
+                  className="max-w-full max-h-[95vh] object-contain select-none"
                   onClick={(e) => e.stopPropagation()}
                 />
+                
+                {/* Left Arrow Overlay */}
+                {allImages.length > 1 && (
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPreviousImage();
+                    }}
+                    title="이전 이미지"
+                  >
+                    <div className="w-12 h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center transition-colors duration-200">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Right Arrow Overlay */}
+                {allImages.length > 1 && (
+                  <div 
+                    className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextImage();
+                    }}
+                    title="다음 이미지"
+                  >
+                    <div className="w-12 h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center transition-colors duration-200">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

@@ -78,16 +78,28 @@ const PortfolioManagement = () => {
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
 
     try {
+      console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Cloudinary settings:', {
+        cloud_name: CLOUDINARY_CLOUD_NAME,
+        upload_preset: 'ml_default'
+      });
+      
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
         method: 'POST',
         body: formData
       });
 
+      console.log('Upload response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`Cloudinary 업로드 실패: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Cloudinary error response:', errorText);
+        throw new Error(`Cloudinary 업로드 실패: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('Upload success:', result);
+      
       return {
         id: result.public_id,
         url: result.secure_url,
@@ -237,7 +249,11 @@ const PortfolioManagement = () => {
             <p className="text-gray-800 font-medium">☁️ Cloudinary 설정 정보</p>
             <p className="text-gray-600 text-sm">Cloud Name: <code className="bg-gray-200 px-1 rounded">{CLOUDINARY_CLOUD_NAME}</code></p>
             <p className="text-gray-600 text-sm mt-1">API Key: <code className="bg-gray-200 px-1 rounded">{CLOUDINARY_API_KEY}</code></p>
+            <p className="text-gray-600 text-sm mt-1">Upload Preset: <code className="bg-gray-200 px-1 rounded">ml_default</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
+            <p className="text-gray-500 text-xs mt-2">
+              ⚠️ Cloudinary Dashboard에서 Upload Preset이 설정되어 있는지 확인하세요
+            </p>
           </div>
 
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
