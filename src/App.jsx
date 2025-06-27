@@ -1,5 +1,6 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // # 제거하려면 이 줄 사용
 import { AuthProvider } from './contexts/AuthContext';
 
 // Components
@@ -63,6 +64,9 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/portfolio" element={<PortfolioManagement />} />
             <Route path="/admin/insight" element={<InsightManagement />} />
+            
+            {/* Catch all route - 잘못된 경로는 홈으로 리다이렉트 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </AuthProvider>

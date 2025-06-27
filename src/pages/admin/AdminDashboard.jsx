@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
@@ -7,6 +7,41 @@ import { runDataMigration } from '../../utils/updateExistingInsights';
 const AdminDashboard = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+
+  // 인증 상태 확인
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/admin/login', { replace: true });
+    }
+  }, [currentUser, navigate]);
+
+  // URL이 잘못된 경우 메인 페이지로 리다이렉트
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const currentHash = window.location.hash;
+    
+    // 잘못된 admin 경로나 해시가 있는 경우 처리
+    if (currentPath !== '/admin' && currentPath.startsWith('/admin')) {
+      navigate('/admin', { replace: true });
+    }
+    
+    // 해시가 있는 경우 제거
+    if (currentHash && currentHash !== '#/admin') {
+      window.history.replaceState(null, '', '/admin');
+    }
+  }, [navigate]);
+
+  // 로딩 중이거나 인증되지 않은 경우
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">인증 확인 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     try {

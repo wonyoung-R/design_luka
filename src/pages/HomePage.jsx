@@ -13,7 +13,7 @@ import main06 from '../images/main/main06.jpg';
 import main07 from '../images/main/main07.jpg';
 import main08 from '../images/main/main08.jpg';
 
-const SLIDE_DURATION = 6000; // 6초로 통일
+const SLIDE_DURATION = 3000; // 3초로 변경
 
 const slides = [
   {
@@ -65,6 +65,8 @@ const HomePage = () => {
   const [direction, setDirection] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
   
   const timerRef = useRef(null);
 
@@ -91,8 +93,8 @@ const HomePage = () => {
     }, SLIDE_DURATION - 1000); // 슬라이드 전환을 1초 일찍 시작
   }, []);
 
-  // 자동 슬라이드 기능
-  useEffect(() => {
+  // 자동 슬라이드 시작 함수
+  const startAutoSlide = useCallback(() => {
     timerRef.current = setInterval(() => {
       setCurrentSlide((prev) => {
         const nextSlide = (prev + 1) % slides.length;
@@ -100,7 +102,12 @@ const HomePage = () => {
         setProgressKey(prevKey => prevKey + 1);
         return nextSlide;
       });
-    }, SLIDE_DURATION - 1000); // 슬라이드 전환을 1초 일찍 시작
+    }, SLIDE_DURATION);
+  }, []);
+
+  // 자동 슬라이드 기능
+  useEffect(() => {
+    startAutoSlide();
 
     return () => {
       if (timerRef.current) {
@@ -108,7 +115,7 @@ const HomePage = () => {
         timerRef.current = null;
       }
     };
-  }, []);
+  }, [startAutoSlide]);
 
   // 첫 번째 로드 후 isFirstLoad를 false로 설정
   useEffect(() => {
@@ -135,30 +142,62 @@ const HomePage = () => {
   }, [currentSlide, handleSlideChange]);
 
   // 터치 이벤트 핸들러 (모바일 스와이프)
-  const minSwipeDistance = 50;
+  const minSwipeDistance = 15;
 
   const onTouchStart = (e) => {
+    console.log('Touch start:', e.targetTouches[0].clientX);
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+    setDragOffset(0);
+    
+    // 드래그 중일 때 자동 슬라이드 중지
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   };
 
   const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    if (!touchStart) return;
+    
+    const currentTouch = e.targetTouches[0].clientX;
+    const offset = currentTouch - touchStart;
+    setDragOffset(offset);
+    setTouchEnd(currentTouch);
   };
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+  const onTouchEnd = (e) => {
+    console.log('Touch end:', touchStart, touchEnd);
+    setIsDragging(false);
+    
+    if (!touchStart || !touchEnd) {
+      setDragOffset(0);
+      // 자동 슬라이드 재시작
+      startAutoSlide();
+      return;
+    }
     
     const distance = touchStart - touchEnd;
+    console.log('Swipe distance:', distance);
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
+      console.log('Left swipe detected');
+      setDragOffset(0);
       goToNextSlide();
-    }
-    if (isRightSwipe) {
+    } else if (isRightSwipe) {
+      console.log('Right swipe detected');
+      setDragOffset(0);
       goToPrevSlide();
+    } else {
+      // 스와이프가 충분하지 않으면 원래 위치로 돌아감
+      setDragOffset(0);
     }
+    
+    // 자동 슬라이드 재시작
+    startAutoSlide();
   };
 
   // 키보드 내비게이션
@@ -200,7 +239,7 @@ const HomePage = () => {
             custom={direction}
             variants={{
               enter: (direction) => ({
-                x: isFirstLoad ? 0 : (direction > 0 ? 1000 : -1000),
+                x: isFirstLoad ? 0 : (direction > 0 ? '100%' : '-100%'),
                 opacity: 1
               }),
               center: {
@@ -210,22 +249,25 @@ const HomePage = () => {
               },
               exit: (direction) => ({
                 zIndex: 0,
-                x: direction < 0 ? 1000 : -1000,
+                x: direction < 0 ? '100%' : '-100%',
                 opacity: 1
               })
             }}
             initial="enter"
             animate="center"
             exit="exit"
+            style={{
+              x: isDragging && Math.abs(dragOffset) > 5 ? dragOffset : 0
+            }}
             transition={{
               x: { 
                 type: "tween", 
-                duration: isFirstLoad ? 0 : 2.0, 
-                ease: [0.19, 1, 0.22, 1] // easeOutExpo
+                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.2), 
+                ease: isDragging ? "linear" : [0.25, 0.46, 0.45, 0.94]
               },
               opacity: { 
                 duration: isFirstLoad ? 0 : 0.3,
-                ease: [0.19, 1, 0.22, 1]
+                ease: [0.25, 0.46, 0.45, 0.94]
               }
             }}
           >
@@ -236,8 +278,27 @@ const HomePage = () => {
                 backgroundImage: `url(${slides[currentSlide].image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed'
+                backgroundRepeat: 'no-repeat'
+              }}
+            />
+            
+            {/* Preload next and previous images for smooth transitions */}
+            <div 
+              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+              style={{
+                backgroundImage: `url(${slides[(currentSlide + 1) % slides.length].image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            />
+            <div 
+              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+              style={{
+                backgroundImage: `url(${slides[(currentSlide - 1 + slides.length) % slides.length].image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat'
               }}
             />
             
@@ -261,26 +322,26 @@ const HomePage = () => {
         {/* Navigation Arrows - 데스크톱용 */}
         <button
           onClick={goToPrevSlide}
-          className="hidden sm:flex absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
           aria-label="이전 슬라이드"
         >
-          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         
         <button
           onClick={goToNextSlide}
-          className="hidden sm:flex absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
           aria-label="다음 슬라이드"
         >
-          <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
           </svg>
         </button>
 
         {/* Slide Indicators */}
-        <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-4">
+        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3 lg:space-x-4">
           {slides.map((_, index) => (
             <button
               key={index}
@@ -303,8 +364,8 @@ const HomePage = () => {
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ 
-              duration: (SLIDE_DURATION - 1000) / 1000, 
-              ease: [0.19, 1, 0.22, 1] // easeOutExpo로 변경하여 더 부드럽게
+              duration: SLIDE_DURATION / 1000, 
+              ease: [0.25, 0.46, 0.45, 0.94]
             }}
           />
         </div>

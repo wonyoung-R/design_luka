@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import Navbar from '../components/Navbar';
@@ -71,6 +71,8 @@ export default function PortfolioPage() {
   // 무한루프 방지를 위한 ref 추가
   const loadedImagesRef = useRef(new Set()); // 이미 로드된 이미지들 추적
   const errorAttemptsRef = useRef({}); // 에러 시도 횟수 추적
+
+  const navigate = useNavigate();
 
   // Function to get fallback image
   const getFallbackImage = (index = 0) => {
@@ -334,7 +336,7 @@ export default function PortfolioPage() {
       event.stopPropagation();
     }
     console.log('CTA clicked - navigating to contact');
-    window.location.href = '/contact';
+    navigate('/contact');
   };
 
   const getProjectsToShow = () => {
@@ -461,7 +463,7 @@ export default function PortfolioPage() {
         document.body.style.overflow = 'unset';
       }
     };
-  }, [selectedProject, isModalOpen, selectedImageIndex, allImages]);
+  }, [selectedProject, isModalOpen, selectedImageIndex, allImages, navigate]);
 
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {

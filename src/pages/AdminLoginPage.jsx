@@ -17,7 +17,7 @@ const AdminLoginPage = () => {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('로그인 성공:', email);
       console.log('리다이렉션 경로:', '/admin');
-      window.location.href = '/admin';
+      navigate('/admin', { replace: true });
     } catch (error) {
       console.error('로그인 실패:', error.message);
       setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');

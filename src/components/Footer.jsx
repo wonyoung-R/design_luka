@@ -43,7 +43,7 @@ export default function Footer() {
                 <a href="#" className="hidden hover:text-white transition-colors text-xs">Privacy Policy</a>
                 <a href="#" className="hidden hover:text-white transition-colors text-xs">Terms of Service</a>
                 <a href="#" className="hidden hover:text-white transition-colors text-xs">Sitemap</a>
-                <Link to="/admin/login" className="hidden md:block hover:text-white transition-colors text-xs">관리자</Link>
+                <Link to="/admin" className="hidden md:block hover:text-white transition-colors text-xs">관리자</Link>
               </div>
             </div>
           </div>
