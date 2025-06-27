@@ -15,6 +15,48 @@ import main08 from '../images/main/main08.jpg';
 
 const SLIDE_DURATION = 6000; // 6초로 통일
 
+const slides = [
+  {
+    id: 1,
+    image: main01,
+    title: '신반포 APT 25py'
+  },
+  {
+    id: 2,
+    image: main02,
+    title: '관악 드림타운 33py'
+  },
+  {
+    id: 3,
+    image: main03,
+    title: '럭셔리 아파트'
+  },
+  {
+    id: 4,
+    image: main04,
+    title: '상업 공간 디자인'
+  },
+  {
+    id: 5,
+    image: main05,
+    title: 'Design LUKA'
+  },
+  {
+    id: 6,
+    image: main06,
+    title: '모던 인테리어'
+  },
+  {
+    id: 7,
+    image: main07,
+    title: '프리미엄 공간'
+  },
+  {
+    id: 8,
+    image: main08,
+    title: '엘레간트 디자인'
+  }
+];
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

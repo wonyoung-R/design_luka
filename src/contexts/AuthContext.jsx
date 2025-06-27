@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const createAdminAccount = async () => {
       try {
-        await createUserWithEmailAndPassword(auth, 'admin@designluka.com', 'admin');
+        await createUserWithEmailAndPassword(auth, 'admin@designluka.com', 'admin123');
       } catch (error) {
         // If user already exists, ignore the error
         if (error.code !== 'auth/email-already-in-use') {
