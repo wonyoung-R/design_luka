@@ -117,12 +117,12 @@ export default function ContactPage() {
         </section>
 
         {/* Content Section */}
-        <section className="flex-1 py-4 md:py-8 flex flex-col justify-center">
+        <section className="flex-1 py-8 md:py-12">
           <div className="w-full px-4">
             <div className="max-w-4xl mx-auto">
               
               {/* Tab Navigation */}
-              <div className="flex justify-center mb-4 md:mb-6">
+              <div className="flex justify-center mb-6 md:mb-8">
                 <div className="flex gap-0 md:gap-4 py-0 w-full md:w-auto px-4 md:px-0">
                   {tabs.map((tab) => (
                     <button
@@ -149,10 +149,10 @@ export default function ContactPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="text-center flex-1 flex flex-col justify-center"
+                    className="text-center"
                   >
                     <motion.h2 
-                      className="hidden md:block text-2xl md:text-3xl font-bold mb-2 md:mb-4 font-['Noto_Sans_KR']"
+                      className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-sm md:text-base text-gray-600 mb-4 md:mb-6 font-['Noto_Sans_KR']"
+                      className="text-sm md:text-base text-gray-600 mb-6 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -192,10 +192,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <h3 className="text-3xl font-bold mb-3 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
                                 주거 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
                                 Residential
                               </p>
                             </div>
@@ -219,10 +219,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <h3 className="text-3xl font-bold mb-3 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
                                 상업 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
                                 Commercial
                               </p>
                             </div>
