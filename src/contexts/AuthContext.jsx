@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
-import { createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -11,30 +11,6 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Create admin account if it doesn't exist
-  useEffect(() => {
-    const createAdminAccount = async () => {
-      try {
-        // Firebase가 초기화되었는지 확인
-        if (auth) {
-          await createUserWithEmailAndPassword(auth, 'admin@designluka.com', 'admin123');
-        }
-      } catch (error) {
-        // If user already exists, ignore the error
-        if (error.code !== 'auth/email-already-in-use') {
-          console.error('Error creating admin account:', error);
-        }
-      }
-    };
-
-    // 약간의 지연 후 실행하여 Firebase 초기화 완료 보장
-    const timer = setTimeout(() => {
-      createAdminAccount();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Listen for auth state changes
   useEffect(() => {
