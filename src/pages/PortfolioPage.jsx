@@ -168,6 +168,18 @@ export default function PortfolioPage() {
     beauty: '뷰티샵'
   };
 
+  // businessType을 한글로 변환하는 함수 추가
+  const convertBusinessTypeToKorean = (businessType) => {
+    const typeMap = {
+      'cafe': '카페',
+      'restaurant': '레스토랑', 
+      'office': '사무실',
+      'retail': '상가',
+      'beauty': '뷰티샵'
+    };
+    return typeMap[businessType] || businessType;
+  };
+
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
     const loadProjectsFromFirebase = () => {
@@ -225,7 +237,7 @@ export default function PortfolioPage() {
               title: project.title || `프로젝트 ${id}`,
               location: project.address || '위치 정보 없음',
               area: project.type === 'residential' ? project.area : project.businessType,
-              type: project.type === 'residential' ? '아파트' : (project.businessType || '상업공간'),
+              type: project.type === 'residential' ? '아파트' : convertBusinessTypeToKorean(project.businessType || '상업공간'),
               style: project.style || '모던 스타일',
               image: allImages[0],
               aspectRatio: 'aspect-[4/5]',
@@ -279,7 +291,19 @@ export default function PortfolioPage() {
 
   // Filter projects based on selected filters
   const filteredProjects = (projects) => {
+    console.log('Filtering projects:', {
+      activeTab,
+      selectedFilters,
+      totalProjects: projects.length
+    });
+    
     return projects.filter(project => {
+      console.log('Checking project:', {
+        id: project.id,
+        type: project.type,
+        area: project.area
+      });
+      
       if (activeTab === 'residential') {
         const areaMatch = selectedFilters.area.length === 0 || 
           selectedFilters.area.some(area => {
@@ -291,10 +315,16 @@ export default function PortfolioPage() {
             if (area === '60평▲') return areaNum >= 60;
             return false;
           });
+        console.log('Residential area match:', areaMatch);
         return areaMatch;
       } else {
         const typeMatch = selectedFilters.type.length === 0 || 
           selectedFilters.type.includes(project.type);
+        console.log('Commercial type match:', {
+          projectType: project.type,
+          selectedTypes: selectedFilters.type,
+          typeMatch
+        });
         return typeMatch;
       }
     });
