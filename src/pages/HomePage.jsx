@@ -310,14 +310,14 @@ const HomePage = () => {
         </div>
 
         {/* Mobile Touch Instruction */}
-        <motion.div
+        {/* <motion.div
           className="sm:hidden absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 text-white/40 text-xs text-center"
           initial={{ opacity: 1 }}
           animate={{ opacity: [1, 0.5, 1] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
           좌우로 스와이프하여 이동
-        </motion.div>
+        </motion.div> */}
       </main>
     </>
   );

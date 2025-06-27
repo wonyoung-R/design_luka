@@ -335,7 +335,7 @@ export default function PortfolioPage() {
       event.stopPropagation();
     }
     console.log('CTA clicked - navigating to contact');
-    window.location.href = '/design_luka/contact';
+    window.location.href = '/contact';
   };
 
   const getProjectsToShow = () => {
@@ -467,7 +467,7 @@ export default function PortfolioPage() {
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
@@ -526,15 +526,15 @@ export default function PortfolioPage() {
           </svg>
         </button>
 
-        <div className="flex h-full">
+        <div className="flex flex-col md:flex-row h-full">
           {/* Left side - Project info */}
           <motion.div
-            className="w-1/3 p-16 flex flex-col justify-start bg-white"
+            className="w-full md:w-1/3 p-4 md:p-16 flex flex-col justify-start bg-white"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="space-y-6 text-left">
+            <div className="space-y-4 md:space-y-6 text-left">
               {/* Project type & info */}
               <div className="flex items-center gap-2 text-sm text-gray-600 font-['Noto_Sans_KR']">
                 <span className="px-3 py-1 bg-gray-200 rounded-full">
@@ -545,17 +545,17 @@ export default function PortfolioPage() {
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl font-bold text-gray-900 font-['Noto_Sans_KR'] text-left">{project.title}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 font-['Noto_Sans_KR'] text-left">{project.title}</h1>
 
               {/* Location */}
-              <p className="text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
+              <p className="text-base md:text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
 
               {/* Style */}
-              <p className="text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
+              <p className="text-sm md:text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
 
               {/* Description */}
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left">
+                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left text-sm md:text-base">
                   {activeTab === 'residential' ? 
                     `${project.style} 스타일의 아파트 인테리어 프로젝트입니다. 주거 공간의 기능성과 심미성을 모두 고려한 설계로, 일상 속 편안함과 세련된 분위기를 동시에 구현했습니다.` :
                     `${project.style} 스타일의 ${project.type} 인테리어 프로젝트입니다. 공간의 특성을 살린 디자인으로, 실용성과 아름다움을 조화롭게 구현했습니다.`
@@ -567,20 +567,20 @@ export default function PortfolioPage() {
 
           {/* Right side - Image gallery (including main image) */}
           <motion.div
-            className="w-2/3 p-16 overflow-y-auto"
+            className="w-full md:w-2/3 p-4 md:p-16 overflow-y-auto"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="columns-1 md:columns-2 gap-6 space-y-6">
+            <div className="columns-1 md:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6">
               {/* Main image first */}
               <motion.div
-                className="break-inside-avoid mb-6"
+                className="break-inside-avoid mb-4 md:mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <div className="relative overflow-hidden rounded-xl aspect-[4/3]">
+                <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
                   <ProjectImage
                     src={project.images[0]}
                     alt={project.title}
@@ -600,16 +600,12 @@ export default function PortfolioPage() {
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
-                  className="break-inside-avoid mb-6"
+                  className="break-inside-avoid mb-4 md:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
                 >
-                  <div className={`relative overflow-hidden rounded-xl ${
-                    index % 4 === 0 ? 'aspect-[3/4]' :
-                    index % 4 === 1 ? 'aspect-[4/3]' :
-                    index % 4 === 2 ? 'aspect-[1/1]' : 'aspect-[4/5]'
-                  }`}>
+                  <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
                     <ProjectImage
                       src={image}
                       alt={`${project.title} detail ${index + 1}`}
@@ -712,12 +708,12 @@ export default function PortfolioPage() {
 
             {/* 카테고리 선택 버튼 (히어로 아래, 여백 없이 센터정렬) */}
             <div className="w-full flex justify-center items-center bg-white">
-              <div className="flex gap-4 py-0">
+              <div className="flex gap-0 md:gap-4 py-0 w-full md:w-auto px-4 md:px-0">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={(event) => handleCategoryClick(tab.id, event)}
-                    className={`w-64 h-12 rounded-xl text-lg  transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
+                    className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
                       activeTab === tab.id
                         ? 'bg-gray-900 text-white'
                         : 'bg-white text-gray-900 hover:bg-gray-50'
@@ -733,13 +729,13 @@ export default function PortfolioPage() {
 
             {/* 필터 체크박스 (버튼 없이 바로 노출) */}
             <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-2 md:gap-4 justify-center max-w-full px-4">
                 {activeTab === 'residential' ? (
                   ['20평▼', '30평형', '40평형', '50평형', '60평▲'].map((area) => (
                     <label
                       key={area}
                       htmlFor={`area-checkbox-${area}`}
-                      className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                      className="flex items-center text-sm md:text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
                     >
                       <input
                         id={`area-checkbox-${area}`}
@@ -757,7 +753,7 @@ export default function PortfolioPage() {
                     <label
                       key={type}
                       htmlFor={`type-checkbox-${type}`}
-                      className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                      className="flex items-center text-sm md:text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
                     >
                       <input
                         id={`type-checkbox-${type}`}
@@ -776,7 +772,7 @@ export default function PortfolioPage() {
             <section class="py-2"></section>
             {/* Main Content */}
             <section className="pb-16">
-              <div className="w-full px-4">
+              <div className="w-full px-2 md:px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -791,7 +787,7 @@ export default function PortfolioPage() {
 
             {/* Fixed CTA Button */}
             <motion.div
-              className="fixed bottom-8 right-8 z-40"
+              className="fixed bottom-4 md:bottom-8 right-4 md:right-8 z-40"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
@@ -799,7 +795,7 @@ export default function PortfolioPage() {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR']"
+                className="px-4 md:px-8 py-3 md:py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR'] text-sm md:text-base"
                 onClick={handleCTAClick}
               >
                 이런 공간 우리도 가능할까요?
@@ -881,8 +877,12 @@ export default function PortfolioPage() {
 
               {/* Image Container */}
               <div 
-                className="relative flex items-center justify-center cursor-pointer"
-                onClick={goToNextImage}
+                className="relative flex items-center justify-center cursor-pointer max-w-full max-h-[95vh] bg-black"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToNextImage();
+                }}
                 title="클릭하여 다음 이미지 보기"
               >
                 <ProjectImage
@@ -891,7 +891,10 @@ export default function PortfolioPage() {
                   projectId={selectedProject.id}
                   imageIndex={selectedImageIndex}
                   className="max-w-full max-h-[95vh] object-contain select-none"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                 />
                 
                 {/* Left Arrow Overlay */}
@@ -899,6 +902,7 @@ export default function PortfolioPage() {
                   <div 
                     className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       goToPreviousImage();
                     }}
@@ -917,6 +921,7 @@ export default function PortfolioPage() {
                   <div 
                     className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       goToNextImage();
                     }}

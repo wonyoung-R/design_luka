@@ -40,16 +40,16 @@ export default function Footer() {
                 루카앤컴퍼니 주식회사 | 대표자: 김규민 | 사업자 등록번호: 669-87-02507
               </div>
               <div className="flex flex-wrap gap-x-4">
-                <a href="#" className="hover:text-white transition-colors text-xs">Privacy Policy</a>
-                <a href="#" className="hover:text-white transition-colors text-xs">Terms of Service</a>
-                <a href="#" className="hover:text-white transition-colors text-xs">Sitemap</a>
-                <Link to="/admin/login" className="hover:text-white transition-colors text-xs">관리자</Link>
+                <a href="#" className="hidden hover:text-white transition-colors text-xs">Privacy Policy</a>
+                <a href="#" className="hidden hover:text-white transition-colors text-xs">Terms of Service</a>
+                <a href="#" className="hidden hover:text-white transition-colors text-xs">Sitemap</a>
+                <Link to="/admin/login" className="hidden md:block hover:text-white transition-colors text-xs">관리자</Link>
               </div>
             </div>
           </div>
 
           {/* Contact Information */}
-          <div className="md:col-span-6 flex flex-col items-end text-right">
+          <div className="md:col-span-6 flex flex-col items-start md:items-end text-left md:text-right">
             <ul className="space-y-1 mb-4">
               <li className="flex items-start">
                 <MapPinIcon className="w-3 h-3 text-accent mr-2 mt-0.5" />
@@ -76,7 +76,7 @@ export default function Footer() {
             </ul>
             
             {/* Social Media Links */}
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 self-start md:self-end">
               <a 
                 href="https://www.instagram.com/design_luka_official" 
                 target="_blank"

@@ -29,7 +29,7 @@ import InsightManagement from './pages/admin/InsightManagement';
 
 function App() {
   return (
-    <Router basename="/design_luka">
+    <Router>
       <AuthProvider>
         <div className="App">
           <ScrollToTop />

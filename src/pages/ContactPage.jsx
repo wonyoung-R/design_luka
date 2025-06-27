@@ -122,13 +122,13 @@ export default function ContactPage() {
             <div className="max-w-4xl mx-auto">
               
               {/* Tab Navigation */}
-              <div className="flex justify-center mb-12">
-                <div className="flex bg-gray-100 rounded-2xl p-0 justify-center">
+              <div className="flex justify-center mb-8 md:mb-12">
+                <div className="flex gap-0 md:gap-4 py-0 w-full md:w-auto px-4 md:px-0">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-64 h-12 rounded-xl text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
+                      className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
                         activeTab === tab.id
                           ? 'bg-gray-900 text-white'
                           : 'bg-white text-gray-900 hover:bg-gray-50'
@@ -152,7 +152,7 @@ export default function ContactPage() {
                     className="text-center"
                   >
                     <motion.h2 
-                      className="text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
+                      className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-gray-600 mb-6 font-['Noto_Sans_KR']"
+                      className="text-sm md:text-base text-gray-600 mb-6 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -237,7 +237,7 @@ export default function ContactPage() {
                   >
                     <div className="text-center mb-6">
                       <motion.h2 
-                        className="text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
+                        className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
@@ -245,7 +245,7 @@ export default function ContactPage() {
                         고객 Q&A
                       </motion.h2>
                       <motion.p 
-                        className="text-gray-600 font-['Noto_Sans_KR']"
+                        className="text-sm md:text-base text-gray-600 font-['Noto_Sans_KR']"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
