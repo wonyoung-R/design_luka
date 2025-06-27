@@ -139,7 +139,7 @@ const AboutPage = () => {
                   <img 
                     src={lukaCustomize} 
                     alt="커스터마이즈 인테리어" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover"
                   />
                 </motion.div>
               </div>
@@ -165,7 +165,7 @@ const AboutPage = () => {
                   <img 
                     src={lukaDesign} 
                     alt="디자인 인테리어" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover"
                   />
                 </motion.div>
               </div>
@@ -225,7 +225,7 @@ const AboutPage = () => {
                   <img 
                     src={lukaStability} 
                     alt="안정성 인테리어" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover"
                   />
                 </motion.div>
               </div>

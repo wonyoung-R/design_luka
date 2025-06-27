@@ -13,9 +13,9 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-black text-white pt-8 pb-6 font-noto-sans-kr">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+    <footer className="bg-black text-white font-noto-sans-kr">
+      <div className="container py-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
           {/* Logo and Company Info */}
           <div className="md:col-span-6">

@@ -291,58 +291,64 @@ export default function PortfolioPage() {
 
   // Filter projects based on selected filters
   const filteredProjects = (projects) => {
-    console.log('Filtering projects:', {
-      activeTab,
-      selectedFilters,
-      totalProjects: projects.length
-    });
-    
     return projects.filter(project => {
-      console.log('Checking project:', {
-        id: project.id,
-        type: project.type,
-        area: project.area
-      });
-      
       if (activeTab === 'residential') {
-        const areaMatch = selectedFilters.area.length === 0 || 
-          selectedFilters.area.some(area => {
-            const areaNum = parseInt(project.area);
-            if (area === '20평▼') return areaNum < 20;
-            if (area === '30평형') return areaNum >= 30 && areaNum < 40;
-            if (area === '40평형') return areaNum >= 40 && areaNum < 50;
-            if (area === '50평형') return areaNum >= 50 && areaNum < 60;
-            if (area === '60평▲') return areaNum >= 60;
-            return false;
-          });
-        console.log('Residential area match:', areaMatch);
-        return areaMatch;
-      } else {
-        const typeMatch = selectedFilters.type.length === 0 || 
-          selectedFilters.type.includes(project.type);
-        console.log('Commercial type match:', {
-          projectType: project.type,
-          selectedTypes: selectedFilters.type,
-          typeMatch
+        // 주거공간 필터
+        if (selectedFilters.area.length === 0 || selectedFilters.area.includes("전체")) {
+          return true;
+        }
+        
+        const areaNum = parseInt(project.area);
+        
+        // 선택된 필터 중 하나라도 조건에 맞으면 true 반환
+        return selectedFilters.area.some(filter => {
+          switch (filter) {
+            case "10PY":
+              return areaNum < 20;
+            case "20PY":
+              return areaNum >= 20 && areaNum < 30;
+            case "30PY":
+              return areaNum >= 30 && areaNum < 40;
+            case "40PY":
+              return areaNum >= 40 && areaNum < 50;
+            case "50PY~":
+              return areaNum >= 50;
+            default:
+              return false;
+          }
         });
-        return typeMatch;
+      } else {
+        // 상업공간 필터
+        if (selectedFilters.type.length === 0 || selectedFilters.type.includes("전체")) {
+          return true;
+        }
+        return selectedFilters.type.includes(project.type);
       }
     });
   };
 
-  const toggleFilter = (category, value) => {
+  const handleFilterChange = (category, value) => {
     setSelectedFilters(prev => {
-      const prevArr = prev[category] || [];
-      let newArr;
-      if (prevArr.includes(value)) {
-        newArr = prevArr.filter(item => item !== value);
+      if (value === "전체") {
+        // 전체를 누르면 해당 카테고리만 전체 선택
+        return {
+          ...prev,
+          [category]: []
+        };
       } else {
-        newArr = [...prevArr, value];
+        // 전체가 아닌 항목을 누르면 전체는 해제
+        const prevArr = prev[category] || [];
+        let newArr;
+        if (prevArr.includes(value)) {
+          newArr = prevArr.filter(item => item !== value);
+        } else {
+          newArr = [...prevArr.filter(item => item !== "전체"), value];
+        }
+        return {
+          ...prev,
+          [category]: newArr
+        };
       }
-      return {
-        ...prev,
-        [category]: newArr
-      };
     });
   };
 
@@ -353,11 +359,6 @@ export default function PortfolioPage() {
     }
     console.log('Category clicked:', category);
     setActiveTab(category);
-  };
-
-  const handleFilterChange = (category, value, event) => {
-    console.log('Filter changed:', category, value);
-    toggleFilter(category, value);
   };
 
   const handleCTAClick = (event) => {
@@ -726,76 +727,67 @@ export default function PortfolioPage() {
             <section className="pt-16 pb-4 md:pb-8 bg-gradient-to-br from-gray-50 to-white">
               <div className="w-full px-4">
                 <motion.div
-                  className="text-center"
+                  className="text-center max-w-4xl mx-auto"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h1 className="text-5xl font-bold text-gray-900 mb-6 md:mb-8 font-['Noto_Sans_KR']">Portfolio</h1>
+                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 md:mb-4 tracking-tight font-['Noto_Sans_KR']">Portfolio</h1>
                 </motion.div>
-                <section className="py-2 md:py-4"></section>
               </div>
             </section>
 
             {/* 카테고리 선택 버튼 (히어로 아래, 여백 없이 센터정렬) */}
-            <div className="w-full flex justify-center items-center bg-white">
+            <div className="flex justify-center py-8 md:py-4">
               <div className="flex gap-0 md:gap-4 py-0 w-full md:w-auto px-4 md:px-0">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={(event) => handleCategoryClick(tab.id, event)}
-                    className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
+                    className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
                       activeTab === tab.id
                         ? 'bg-gray-900 text-white'
                         : 'bg-white text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    {tab.label}
+                    <span className="font-bold">{tab.label}</span>
                   </button>
                 ))}
               </div>
             </div>
-            <section className="py-1"></section>
-
-
-            {/* 필터 체크박스 (버튼 없이 바로 노출) */}
+            
+            {/* 필터 토글 버튼 (이미지형) */}
             <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
               <div className="flex flex-wrap gap-2 md:gap-4 justify-center max-w-full px-4">
                 {activeTab === 'residential' ? (
-                  ['20평▼', '30평형', '40평형', '50평형', '60평▲'].map((area) => (
-                    <label
+                  ["전체", "10PY", "20PY", "30PY", "40PY", "50PY~"].map((area) => (
+                    <button
                       key={area}
-                      htmlFor={`area-checkbox-${area}`}
-                      className="flex items-center text-sm md:text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                      type="button"
+                      onClick={() => handleFilterChange('area', area)}
+                      className={`px-4 py-2 rounded-full text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200
+                        ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "전체")
+                          ? 'text-black font-bold'
+                          : 'text-gray-400'}
+                      `}
                     >
-                      <input
-                        id={`area-checkbox-${area}`}
-                        key={area}
-                        type="checkbox"
-                        checked={selectedFilters.area.includes(area)}
-                        onChange={(event) => handleFilterChange('area', area, event)}
-                        className="accent-black rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                      />
-                      <span className="text-gray-700">{area}</span>
-                    </label>
+                      {area}
+                    </button>
                   ))
                 ) : (
-                  ['카페', '레스토랑', '사무실', '상가', '뷰티샵'].map((type) => (
-                    <label
+                  ["전체", "카페", "레스토랑", "사무실", "상가", "뷰티샵"].map((type) => (
+                    <button
                       key={type}
-                      htmlFor={`type-checkbox-${type}`}
-                      className="flex items-center text-sm md:text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer"
+                      type="button"
+                      onClick={() => handleFilterChange('type', type)}
+                      className={`px-4 py-2 rounded-full text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200
+                        ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "전체")
+                          ? 'text-black font-bold'
+                          : 'text-gray-400'}
+                      `}
                     >
-                      <input
-                        id={`type-checkbox-${type}`}
-                        key={type}
-                        type="checkbox"
-                        checked={selectedFilters.type.includes(type)}
-                        onChange={(event) => handleFilterChange('type', type, event)}
-                        className="accent-black rounded border-gray-300 text-gray-900 focus:ring-gray-500"
-                      />
-                      <span className="text-gray-700">{type}</span>
-                    </label>
+                      {type}
+                    </button>
                   ))
                 )}
               </div>

@@ -88,14 +88,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="h-screen bg-white font-['Noto_Sans_KR'] flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-white font-['Noto_Sans_KR'] flex flex-col">
       {/* Navbar */}
       <Navbar />
 
       {/* Main Content */}
-      <main className="pt-16 flex-1 flex flex-col min-h-0">
+      <main className="pt-16 flex-1 flex flex-col">
         {/* Hero Section - Simplified */}
-        <section className="py-2 md:py-4 bg-white from-gray-50 to-white">
+        <section className="py-0 md:py-0 bg-white from-gray-50 to-white">
           <div className="w-full px-4">
             <motion.div
               className="text-center max-w-4xl mx-auto"
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-sm md:text-base text-gray-600 mb-6 font-['Noto_Sans_KR']"
+                      className="text-sm md:text-base text-gray-600 mb-10 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -170,7 +170,7 @@ export default function ContactPage() {
 
                     {/* Service Type Buttons */}
                     <motion.div
-                      className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12 max-w-7xl mx-auto"
+                      className="flex flex-col md:flex-row justify-center items-center gap-16 max-w-[1200px] mx-auto px-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.8 }}
@@ -178,8 +178,7 @@ export default function ContactPage() {
                       <div className="flex justify-center w-full md:w-auto">
                         <button
                           onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] w-full max-w-md border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
-                          style={{ aspectRatio: '4/3' }}
+                          className="group relative overflow-hidden bg-transparent w-[480px] h-[320px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
                         >
                           {/* Background Image */}
                           <div className="absolute inset-0">
@@ -192,10 +191,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-3xl font-bold mb-3 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
                                 주거 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
                                 Residential
                               </p>
                             </div>
@@ -205,8 +204,7 @@ export default function ContactPage() {
                       <div className="flex justify-center w-full md:w-auto">
                         <button
                           onClick={() => openModal('https://tally.so/r/waDP7q')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] w-full max-w-md border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
-                          style={{ aspectRatio: '4/3' }}
+                          className="group relative overflow-hidden bg-transparent w-[480px] h-[320px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
                         >
                           {/* Background Image */}
                           <div className="absolute inset-0">
@@ -219,10 +217,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-3xl font-bold mb-3 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
                                 상업 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR'] transform scale-130">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
                                 Commercial
                               </p>
                             </div>
