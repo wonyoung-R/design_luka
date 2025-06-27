@@ -170,15 +170,15 @@ export default function ContactPage() {
 
                     {/* Service Type Buttons */}
                     <motion.div
-                      className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto"
+                      className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12 max-w-7xl mx-auto"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.8 }}
                     >
-                      <div className="flex justify-center">
+                      <div className="flex justify-center w-full md:w-auto">
                         <button
                           onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] w-full max-w-md border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
                           style={{ aspectRatio: '4/3' }}
                         >
                           {/* Background Image */}
@@ -202,10 +202,10 @@ export default function ContactPage() {
                           </div>
                         </button>
                       </div>
-                      <div className="flex justify-center">
+                      <div className="flex justify-center w-full md:w-auto">
                         <button
                           onClick={() => openModal('https://tally.so/r/waDP7q')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] w-full max-w-md border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
                           style={{ aspectRatio: '4/3' }}
                         >
                           {/* Background Image */}
