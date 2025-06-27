@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.cdd3b173.css",
-    "main.js": "/static/js/main.be0a5ede.js",
+    "main.css": "/static/css/main.4e9c0027.css",
+    "main.js": "/static/js/main.e5f7366c.js",
     "static/media/luka_design.png": "/static/media/luka_design.8ffd09b34bc8ed19d693.png",
     "static/media/luka_cusotmize.png": "/static/media/luka_cusotmize.529c3c7125e127c20203.png",
     "static/media/luka_stability.png": "/static/media/luka_stability.05e801b0c7268e3a7dd5.png",
@@ -18,11 +18,11 @@
     "static/media/LUKA(W).png": "/static/media/LUKA(W).1cba20a6817cd11b426f.png",
     "static/media/LUKA slogan.png": "/static/media/LUKA slogan.0c9dd707cf413b3ee1a3.png",
     "index.html": "/index.html",
-    "main.cdd3b173.css.map": "/static/css/main.cdd3b173.css.map",
-    "main.be0a5ede.js.map": "/static/js/main.be0a5ede.js.map"
+    "main.4e9c0027.css.map": "/static/css/main.4e9c0027.css.map",
+    "main.e5f7366c.js.map": "/static/js/main.e5f7366c.js.map"
   },
   "entrypoints": [
-    "static/css/main.cdd3b173.css",
-    "static/js/main.be0a5ede.js"
+    "static/css/main.4e9c0027.css",
+    "static/js/main.e5f7366c.js"
   ]
 }
