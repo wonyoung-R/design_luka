@@ -18,7 +18,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/design_luka/",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#1F2937",
   "background_color": "#ffffff"

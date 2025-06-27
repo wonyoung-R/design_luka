@@ -2,7 +2,7 @@
   "name": "designluka",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/design_luka",
+  "homepage": "https://designluka.co.kr",
   "dependencies": {
     "@firebase/auth": "^1.10.7",
     "@headlessui/react": "^2.2.4",
