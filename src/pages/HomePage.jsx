@@ -102,7 +102,7 @@ const HomePage = () => {
         setProgressKey(prevKey => prevKey + 1);
         return nextSlide;
       });
-    }, SLIDE_DURATION);
+    }, SLIDE_DURATION + 500); // 전환 시간을 고려하여 간격 조정
   }, []);
 
   // 자동 슬라이드 기능
@@ -262,12 +262,12 @@ const HomePage = () => {
             transition={{
               x: { 
                 type: "tween", 
-                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.2), 
-                ease: isDragging ? "linear" : [0.25, 0.46, 0.45, 0.94]
+                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.0), 
+                ease: isDragging ? "linear" : "easeInOut"
               },
               opacity: { 
-                duration: isFirstLoad ? 0 : 0.3,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                duration: isFirstLoad ? 0 : 0.1,
+                ease: "easeInOut"
               }
             }}
           >
@@ -276,26 +276,6 @@ const HomePage = () => {
               className="absolute inset-0 w-full h-full"
               style={{
                 backgroundImage: `url(${slides[currentSlide].image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat'
-              }}
-            />
-            
-            {/* Preload next and previous images for smooth transitions */}
-            <div 
-              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
-              style={{
-                backgroundImage: `url(${slides[(currentSlide + 1) % slides.length].image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat'
-              }}
-            />
-            <div 
-              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
-              style={{
-                backgroundImage: `url(${slides[(currentSlide - 1 + slides.length) % slides.length].image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat'
@@ -365,7 +345,7 @@ const HomePage = () => {
             animate={{ width: "100%" }}
             transition={{ 
               duration: SLIDE_DURATION / 1000, 
-              ease: [0.25, 0.46, 0.45, 0.94]
+              ease: [0.4, 0, 0.2, 1]
             }}
           />
         </div>
