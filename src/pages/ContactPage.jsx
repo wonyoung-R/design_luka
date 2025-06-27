@@ -88,14 +88,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR'] flex flex-col">
+    <div className="h-screen bg-white font-['Noto_Sans_KR'] flex flex-col overflow-hidden">
       {/* Navbar */}
       <Navbar />
 
       {/* Main Content */}
-      <main className="pt-16 flex-1 flex flex-col">
+      <main className="pt-16 flex-1 flex flex-col min-h-0">
         {/* Hero Section - Simplified */}
-        <section className="py-0 bg-white from-gray-50 to-white">
+        <section className="py-2 md:py-4 bg-white from-gray-50 to-white">
           <div className="w-full px-4">
             <motion.div
               className="text-center max-w-4xl mx-auto"
@@ -104,7 +104,7 @@ export default function ContactPage() {
               transition={{ duration: 0.8 }}
             >
               <motion.h1 
-                className="text-4xl md:text-5xl font-black text-gray-600 mb-4 tracking-tight font-['Noto_Sans_KR']"
+                className="text-4xl md:text-5xl font-black text-gray-600 mb-2 md:mb-4 tracking-tight font-['Noto_Sans_KR']"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -117,12 +117,12 @@ export default function ContactPage() {
         </section>
 
         {/* Content Section */}
-        <section className="flex-1 py-12">
+        <section className="flex-1 py-4 md:py-8 flex flex-col justify-center">
           <div className="w-full px-4">
             <div className="max-w-4xl mx-auto">
               
               {/* Tab Navigation */}
-              <div className="flex justify-center mb-8 md:mb-12">
+              <div className="flex justify-center mb-4 md:mb-6">
                 <div className="flex gap-0 md:gap-4 py-0 w-full md:w-auto px-4 md:px-0">
                   {tabs.map((tab) => (
                     <button
@@ -149,10 +149,10 @@ export default function ContactPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="text-center"
+                    className="text-center flex-1 flex flex-col justify-center"
                   >
                     <motion.h2 
-                      className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
+                      className="hidden md:block text-2xl md:text-3xl font-bold mb-2 md:mb-4 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-sm md:text-base text-gray-600 mb-6 font-['Noto_Sans_KR']"
+                      className="text-sm md:text-base text-gray-600 mb-4 md:mb-6 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -170,61 +170,65 @@ export default function ContactPage() {
 
                     {/* Service Type Buttons */}
                     <motion.div
-                      className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto"
+                      className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.8 }}
                     >
-                      <button
-                        onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                        className="group relative overflow-hidden bg-transparent min-h-[220px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
-                        style={{ aspectRatio: '4/3' }}
-                      >
-                        {/* Background Image */}
-                        <div className="absolute inset-0">
-                          <img 
-                            src={residentialBtn} 
-                            alt="주거 공간" 
-                            className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
-                          />
-                        </div>
-                        {/* Overlay Text */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
-                              주거 공간
-                            </h3>
-                            <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
-                              Residential
-                            </p>
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => openModal('https://tally.so/r/mRJ6yj')}
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-130"
+                          style={{ aspectRatio: '4/3' }}
+                        >
+                          {/* Background Image */}
+                          <div className="absolute inset-0">
+                            <img 
+                              src={residentialBtn} 
+                              alt="주거 공간" 
+                              className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
+                            />
                           </div>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => openModal('https://tally.so/r/waDP7q')}
-                        className="group relative overflow-hidden bg-transparent min-h-[220px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl"
-                        style={{ aspectRatio: '4/3' }}
-                      >
-                        {/* Background Image */}
-                        <div className="absolute inset-0">
-                          <img 
-                            src={commercialBtn} 
-                            alt="상업 공간" 
-                            className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
-                          />
-                        </div>
-                        {/* Overlay Text */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
-                              상업 공간
-                            </h3>
-                            <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
-                              Commercial
-                            </p>
+                          {/* Overlay Text */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                                주거 공간
+                              </h3>
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                                Residential
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </button>
+                        </button>
+                      </div>
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => openModal('https://tally.so/r/waDP7q')}
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-130"
+                          style={{ aspectRatio: '4/3' }}
+                        >
+                          {/* Background Image */}
+                          <div className="absolute inset-0">
+                            <img 
+                              src={commercialBtn} 
+                              alt="상업 공간" 
+                              className="w-full h-full object-cover group-hover:grayscale group-hover:brightness-50 transition-all duration-500"
+                            />
+                          </div>
+                          {/* Overlay Text */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                                상업 공간
+                              </h3>
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                                Commercial
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
                     </motion.div>
                   </motion.div>
                 ) : (

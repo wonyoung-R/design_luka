@@ -13,9 +13,9 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-black text-white pt-5 pb-2 font-noto-sans-kr">
+    <footer className="bg-black text-white pt-8 pb-6 font-noto-sans-kr">
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
 
           {/* Logo and Company Info */}
           <div className="md:col-span-6">
@@ -27,8 +27,7 @@ export default function Footer() {
             
             {/* Company Description */}
             <p className="text-neutral-light mb-3 text-xs">
-              고객님의 삶을 Fine하게 해드리기 위해<br />
-              고객님께서 머무르는 공간을 Shine하게 만들어 드립니다. 
+            공간을 빛나게 함으로써, 삶에 품격을 더합니다.
             </p>
             
             {/* Copyright and Company Info */}
