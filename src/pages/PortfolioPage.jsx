@@ -723,7 +723,7 @@ export default function PortfolioPage() {
             className="font-['Noto_Sans_KR']"
           >
             {/* Hero Section - Simplified */}
-            <section className="pt-16 pb-0 bg-gradient-to-br from-gray-50 to-white">
+            <section className="pt-16 pb-4 md:pb-8 bg-gradient-to-br from-gray-50 to-white">
               <div className="w-full px-4">
                 <motion.div
                   className="text-center"
@@ -731,9 +731,9 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Portfolio</h1>
+                  <h1 className="text-5xl font-bold text-gray-900 mb-6 md:mb-8 font-['Noto_Sans_KR']">Portfolio</h1>
                 </motion.div>
-                <section className="py-1"></section>
+                <section className="py-2 md:py-4"></section>
               </div>
             </section>
 

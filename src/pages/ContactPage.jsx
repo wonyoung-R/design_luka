@@ -152,7 +152,7 @@ export default function ContactPage() {
                     className="text-center"
                   >
                     <motion.h2 
-                      className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
+                      className="hidden md:block text-2xl md:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -178,7 +178,7 @@ export default function ContactPage() {
                       <div className="flex justify-center">
                         <button
                           onClick={() => openModal('https://tally.so/r/mRJ6yj')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-130"
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
                           style={{ aspectRatio: '4/3' }}
                         >
                           {/* Background Image */}
@@ -205,7 +205,7 @@ export default function ContactPage() {
                       <div className="flex justify-center">
                         <button
                           onClick={() => openModal('https://tally.so/r/waDP7q')}
-                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-130"
+                          className="group relative overflow-hidden bg-transparent min-h-[286px] border-2 border-gray-200 hover:border-gray-900 transition-all duration-500 rounded-2xl transform scale-150"
                           style={{ aspectRatio: '4/3' }}
                         >
                           {/* Background Image */}
