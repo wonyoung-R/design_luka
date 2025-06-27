@@ -16,7 +16,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const createAdminAccount = async () => {
       try {
-        await createUserWithEmailAndPassword(auth, 'admin@designluka.com', 'admin123');
+        // Firebase가 초기화되었는지 확인
+        if (auth) {
+          await createUserWithEmailAndPassword(auth, 'admin@designluka.com', 'admin123');
+        }
       } catch (error) {
         // If user already exists, ignore the error
         if (error.code !== 'auth/email-already-in-use') {
@@ -25,13 +28,21 @@ export function AuthProvider({ children }) {
       }
     };
 
-    createAdminAccount();
+    // 약간의 지연 후 실행하여 Firebase 초기화 완료 보장
+    const timer = setTimeout(() => {
+      createAdminAccount();
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      setLoading(false);
+    }, (error) => {
+      console.error('Auth state change error:', error);
       setLoading(false);
     });
 

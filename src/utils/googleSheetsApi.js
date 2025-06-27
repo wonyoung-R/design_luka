@@ -64,7 +64,8 @@ export const initializeGapi = async () => {
     }
     
     if (!window.gapi) {
-      throw new Error('Google API script not loaded after waiting');
+      logDebug('Google API script not loaded after waiting, continuing without it');
+      return; // 에러를 던지지 않고 조용히 실패
     }
   }
 
@@ -94,18 +95,20 @@ export const initializeGapi = async () => {
             resolve();
           } catch (error) {
             logDebug('Error during client initialization', error);
-            reject(error);
+            // 에러를 던지지 않고 조용히 실패
+            resolve();
           }
         },
         onerror: (error) => {
           logDebug('Error loading client:auth2', error);
-          reject(new Error(`Failed to load Google API: ${error.message || 'Unknown error'}`));
+          // 에러를 던지지 않고 조용히 실패
+          resolve();
         }
       });
     });
   } catch (error) {
     logDebug('Error in Google API initialization', error);
-    throw error;
+    // 에러를 던지지 않고 조용히 실패
   }
 };
 
