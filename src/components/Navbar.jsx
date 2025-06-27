@@ -252,7 +252,7 @@ export default function Navbar() {
                 <Disclosure.Panel className="sm:hidden">
                   <div className={classNames(
                     "px-2 pt-2 pb-3 space-y-1 shadow-lg",
-                    isHomePage ? "bg-black/90" : "bg-white"
+                    isHomePage ? "bg-black/90" : "bg-white/95"
                   )}>
                     {navigation.map((item) => (
                       <div key={item.name}>
