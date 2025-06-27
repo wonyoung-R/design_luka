@@ -5,7 +5,7 @@ const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 const SPREADSHEET_ID = '1gkwg3WZW_0F9NIfo8Bit7PkXwAdrbBTqp-4KgpdVdZw';
 
-// Google Apps Script Web App URL
+// Google Apps Script Web App URL for Q&A form
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxtKmmDhEbotU2JjwoGrGWEJ9t1su3EEVdADRLpDJ9emmA389VPgKURqxqi-roCOmBI/exec';
 
 // Global variables

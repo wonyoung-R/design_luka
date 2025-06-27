@@ -6,7 +6,6 @@ import { ref, onValue } from 'firebase/database';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { submitQnAForm } from '../utils/googleSheetsApi';
 
 // Fallback image URLs (컴포넌트 외부로 이동)
 const FALLBACK_IMAGES = [

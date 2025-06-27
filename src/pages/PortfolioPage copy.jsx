@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { submitQnAForm } from '../utils/googleSheetsApi';
 
 
 const tabs = [
