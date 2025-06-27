@@ -634,7 +634,7 @@ export default function PortfolioPage() {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR']"
-                onClick={() => window.location.href = '/design_luka/contact'}
+                onClick={() => window.location.href = '/contact'}
               >
                 이런 공간 우리도 가능할까요?
               </motion.button>
