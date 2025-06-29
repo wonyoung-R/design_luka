@@ -13,7 +13,7 @@ import main06 from '../images/main/main06.jpg';
 import main07 from '../images/main/main07.jpg';
 import main08 from '../images/main/main08.jpg';
 
-const SLIDE_DURATION = 3000; // 3초로 변경
+const SLIDE_DURATION = 4500; // 4.5초로 변경
 
 const slides = [
   {
@@ -69,20 +69,16 @@ const HomePage = () => {
   const [dragOffset, setDragOffset] = useState(0);
   
   const timerRef = useRef(null);
+  const lastManualChangeRef = useRef(0);
 
-  // 통합된 슬라이드 변경 함수
-  const handleSlideChange = useCallback((newSlide, newDirection = 1) => {
+  // 자동 슬라이드 시작 함수
+  const startAutoSlide = useCallback(() => {
     // 기존 타이머 클리어
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
 
-    setDirection(newDirection);
-    setCurrentSlide(newSlide);
-    setProgressKey(prev => prev + 1); // Progress bar 리셋
-
-    // 자동 슬라이드 타이머 재시작
     timerRef.current = setInterval(() => {
       setCurrentSlide((prev) => {
         const nextSlide = (prev + 1) % slides.length;
@@ -90,19 +86,7 @@ const HomePage = () => {
         setProgressKey(prevKey => prevKey + 1);
         return nextSlide;
       });
-    }, SLIDE_DURATION - 1000); // 슬라이드 전환을 1초 일찍 시작
-  }, []);
-
-  // 자동 슬라이드 시작 함수
-  const startAutoSlide = useCallback(() => {
-    timerRef.current = setInterval(() => {
-      setCurrentSlide((prev) => {
-        const nextSlide = (prev + 1) % slides.length;
-        setDirection(1);
-        setProgressKey(prevKey => prevKey + 1);
-        return nextSlide;
-      });
-    }, SLIDE_DURATION + 500); // 전환 시간을 고려하여 간격 조정
+    }, SLIDE_DURATION);
   }, []);
 
   // 자동 슬라이드 기능
@@ -125,6 +109,30 @@ const HomePage = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // 통합된 슬라이드 변경 함수
+  const handleSlideChange = useCallback((newSlide, newDirection = 1) => {
+    const now = Date.now();
+    
+    // 수동 변경 시 타이머 재시작을 지연시켜 빠른 전환 방지
+    if (now - lastManualChangeRef.current < SLIDE_DURATION) {
+      // 기존 타이머 클리어
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
+      // SLIDE_DURATION 후에 타이머 재시작
+      setTimeout(() => {
+        startAutoSlide();
+      }, SLIDE_DURATION - (now - lastManualChangeRef.current));
+    }
+
+    setDirection(newDirection);
+    setCurrentSlide(newSlide);
+    setProgressKey(prev => prev + 1); // Progress bar 리셋
+    lastManualChangeRef.current = now;
+  }, [startAutoSlide]);
 
   const goToSlide = useCallback((index) => {
     const newDirection = index > currentSlide ? 1 : -1;
@@ -194,10 +202,9 @@ const HomePage = () => {
     } else {
       // 스와이프가 충분하지 않으면 원래 위치로 돌아감
       setDragOffset(0);
+      // 자동 슬라이드 재시작
+      startAutoSlide();
     }
-    
-    // 자동 슬라이드 재시작
-    startAutoSlide();
   };
 
   // 키보드 내비게이션

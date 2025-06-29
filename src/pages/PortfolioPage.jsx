@@ -503,7 +503,7 @@ export default function PortfolioPage() {
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
-            className="group relative overflow-hidden rounded-2xl cursor-pointer"
+            className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -680,7 +680,7 @@ export default function PortfolioPage() {
     }, [projectId, imageIndex, handleImageError]);
 
     return (
-      <div className="relative">
+      <>
         <img
           ref={imageRef}
           src={src}
@@ -699,7 +699,7 @@ export default function PortfolioPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
         )}
-      </div>
+      </>
     );
   };
 
@@ -851,7 +851,7 @@ export default function PortfolioPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="relative max-w-[95vw] max-h-[95vh] bg-white rounded-lg overflow-hidden shadow-2xl"
+              className="relative max-w-[95vw] max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl py-4"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -900,7 +900,7 @@ export default function PortfolioPage() {
 
               {/* Image Container */}
               <div 
-                className="relative flex items-center justify-center cursor-pointer max-w-full max-h-[95vh] bg-black"
+                className="relative flex items-center justify-center cursor-pointer max-w-full max-h-[85vh] bg-black rounded-lg"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -913,7 +913,7 @@ export default function PortfolioPage() {
                   alt="Expanded view"
                   projectId={selectedProject.id}
                   imageIndex={selectedImageIndex}
-                  className="max-w-full max-h-[95vh] object-contain select-none"
+                  className="max-w-full max-h-[85vh] object-cover select-none rounded-lg"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
