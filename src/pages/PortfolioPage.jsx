@@ -499,11 +499,11 @@ export default function PortfolioPage() {
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {
     return (
-      <div className="columns-1 md:columns-2 gap-4 md:gap-6">
+      <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
-            className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
+            className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
