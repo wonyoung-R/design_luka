@@ -249,11 +249,33 @@ const HomePage = () => {
     };
   }, []);
 
+  // 모바일 뷰포트 높이 설정
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+
+    return () => {
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
+    };
+  }, []);
+
   return (
     <>
       <Navbar />
       <main 
-        className="relative w-full h-screen overflow-hidden"
+        className="relative w-full overflow-hidden mobile-full-height"
+        style={{ 
+          height: '100vh',
+          height: '100dvh', // Dynamic viewport height for mobile
+          minHeight: '100vh'
+        }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
