@@ -266,6 +266,18 @@ const HomePage = () => {
     };
   }, []);
 
+  // 이미지 프리로딩
+  useEffect(() => {
+    const preloadImages = () => {
+      slides.forEach((slide) => {
+        const img = new Image();
+        img.src = slide.image;
+      });
+    };
+
+    preloadImages();
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -310,7 +322,10 @@ const HomePage = () => {
             style={{
               x: isDragging && Math.abs(dragOffset) > 5 ? dragOffset : 0,
               transformOrigin: "center center",
-              willChange: "transform"
+              willChange: "transform",
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+              perspective: "1000px"
             }}
             transition={{
               x: { 
@@ -335,7 +350,10 @@ const HomePage = () => {
                 backgroundImage: `url(${slides[currentSlide].image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat'
+                backgroundRepeat: 'no-repeat',
+                backgroundAttachment: 'fixed',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden'
               }}
               initial={{ filter: 'blur(0px)' }}
               animate={{ filter: 'blur(0px)' }}
