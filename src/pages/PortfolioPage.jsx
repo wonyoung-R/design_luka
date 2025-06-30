@@ -843,121 +843,156 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
             onClick={closeModal}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="relative max-w-[95vw] max-h-[95vh] bg-black rounded-lg overflow-hidden shadow-2xl py-4"
+              className="relative w-full h-full max-w-[98vw] max-h-[98vh] bg-black rounded-2xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
-              <button
-                onClick={closeModal}
-                className="absolute top-3 right-3 z-20 w-8 h-8 bg-black/70 hover:bg-black/90 text-white rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg"
-                title="닫기 (ESC)"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
-              {/* Previous Button */}
-              {allImages.length > 1 && (
-                <button
-                  onClick={goToPreviousImage}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
-                  title="이전 이미지 (←)"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-              )}
-
-              {/* Next Button */}
-              {allImages.length > 1 && (
-                <button
-                  onClick={goToNextImage}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200"
-                  title="다음 이미지 (→)"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              )}
-
-              {/* Image Counter */}
-              {allImages.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR']">
-                  {selectedImageIndex + 1} / {allImages.length}
+              {/* Header with close button and counter */}
+              <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={closeModal}
+                    className="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-105"
+                    title="닫기 (ESC)"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  
+                  {allImages.length > 1 && (
+                    <div className="px-4 py-2 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR'] backdrop-blur-sm">
+                      {selectedImageIndex + 1} / {allImages.length}
+                    </div>
+                  )}
                 </div>
-              )}
+                
+                <div className="flex items-center space-x-2">
+                  {allImages.length > 1 && (
+                    <>
+                      <button
+                        onClick={goToPreviousImage}
+                        className="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-105"
+                        title="이전 이미지 (←)"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      
+                      <button
+                        onClick={goToNextImage}
+                        className="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-105"
+                        title="다음 이미지 (→)"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
 
-              {/* Image Container */}
-              <div 
-                className="relative flex items-center justify-center cursor-pointer max-w-full max-h-[85vh] bg-black rounded-lg"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  goToNextImage();
-                }}
-                title="클릭하여 다음 이미지 보기"
-              >
-                <ProjectImage
-                  src={selectedImage}
-                  alt="Expanded view"
-                  projectId={selectedProject.id}
-                  imageIndex={selectedImageIndex}
-                  className="max-w-full max-h-[85vh] object-cover select-none rounded-lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                />
-                
-                {/* Left Arrow Overlay */}
-                {allImages.length > 1 && (
-                  <div 
-                    className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+              {/* Main Image Container */}
+              <div className="relative w-full h-full flex items-center justify-center p-4">
+                <motion.div
+                  key={selectedImageIndex}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  className="relative w-full h-full flex items-center justify-center"
+                >
+                  <ProjectImage
+                    src={selectedImage}
+                    alt="Gallery view"
+                    projectId={selectedProject?.id || 'modal'}
+                    imageIndex={selectedImageIndex}
+                    className="max-w-full max-h-full object-contain select-none rounded-lg shadow-2xl"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      goToPreviousImage();
                     }}
-                    title="이전 이미지"
-                  >
-                    <div className="w-12 h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center transition-colors duration-200">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
+                  />
+                </motion.div>
                 
-                {/* Right Arrow Overlay */}
+                {/* Navigation Overlays */}
                 {allImages.length > 1 && (
-                  <div 
-                    className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      goToNextImage();
-                    }}
-                    title="다음 이미지"
-                  >
-                    <div className="w-12 h-12 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center transition-colors duration-200">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                  <>
+                    {/* Left Navigation Area */}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1/4 flex items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        goToPreviousImage();
+                      }}
+                      title="이전 이미지"
+                    >
+                      <div className="w-12 h-12 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 backdrop-blur-sm">
+                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
+                    
+                    {/* Right Navigation Area */}
+                    <div 
+                      className="absolute right-0 top-0 bottom-0 w-1/4 flex items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        goToNextImage();
+                      }}
+                      title="다음 이미지"
+                    >
+                      <div className="w-12 h-12 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 backdrop-blur-sm">
+                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
+
+              {/* Bottom Thumbnail Gallery */}
+              {allImages.length > 1 && (
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide">
+                    {allImages.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedImageIndex(index);
+                          setSelectedImage(image);
+                        }}
+                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
+                          index === selectedImageIndex 
+                            ? 'border-white scale-110' 
+                            : 'border-white/30 hover:border-white/60'
+                        }`}
+                      >
+                        <img
+                          src={image}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

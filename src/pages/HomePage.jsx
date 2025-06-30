@@ -246,40 +246,49 @@ const HomePage = () => {
             custom={direction}
             variants={{
               enter: (direction) => ({
-                x: isFirstLoad ? 0 : (direction > 0 ? '100%' : '-100%'),
-                opacity: 1
+                x: isFirstLoad ? 0 : (direction > 0 ? '90%' : '-90%'),
+                opacity: 1,
+                scale: isFirstLoad ? 1 : 1.02
               }),
               center: {
                 zIndex: 1,
                 x: 0,
-                opacity: 1
+                opacity: 1,
+                scale: 1
               },
               exit: (direction) => ({
                 zIndex: 0,
-                x: direction < 0 ? '100%' : '-100%',
-                opacity: 1
+                x: direction < 0 ? '90%' : '-90%',
+                opacity: 1,
+                scale: 0.98
               })
             }}
             initial="enter"
             animate="center"
             exit="exit"
             style={{
-              x: isDragging && Math.abs(dragOffset) > 5 ? dragOffset : 0
+              x: isDragging && Math.abs(dragOffset) > 5 ? dragOffset : 0,
+              transformOrigin: "center center",
+              willChange: "transform"
             }}
             transition={{
               x: { 
                 type: "tween", 
-                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.0), 
-                ease: isDragging ? "linear" : "easeInOut"
+                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.2), 
+                ease: isDragging ? "linear" : [0.25, 0.46, 0.45, 0.94]
               },
               opacity: { 
-                duration: isFirstLoad ? 0 : 0.1,
-                ease: "easeInOut"
+                duration: isFirstLoad ? 0 : 0.3,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              },
+              scale: {
+                duration: isFirstLoad ? 0 : 1.2,
+                ease: [0.25, 0.46, 0.45, 0.94]
               }
             }}
           >
             {/* Background Image - 전체 화면 최적화 */}
-            <div 
+            <motion.div 
               className="absolute inset-0 w-full h-full"
               style={{
                 backgroundImage: `url(${slides[currentSlide].image})`,
@@ -287,6 +296,9 @@ const HomePage = () => {
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat'
               }}
+              initial={{ filter: 'blur(0px)' }}
+              animate={{ filter: 'blur(0px)' }}
+              transition={{ duration: 0.3 }}
             />
             
             {/* Gradient Overlay for better text readability */}
