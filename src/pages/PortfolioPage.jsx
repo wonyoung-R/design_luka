@@ -499,7 +499,7 @@ export default function PortfolioPage() {
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+      <div className="columns-1 md:columns-2 gap-4 md:gap-6">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
@@ -610,7 +610,7 @@ export default function PortfolioPage() {
                 className="break-inside-avoid mb-4 md:mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
               >
                 <div className="relative overflow-hidden rounded-xl">
                   <ProjectImage
@@ -635,7 +635,7 @@ export default function PortfolioPage() {
                   className="break-inside-avoid mb-4 md:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
+                  transition={{ duration: 0.2, delay: 0.1 + index * 0.02 }}
                 >
                   <div className="relative overflow-hidden rounded-xl">
                     <ProjectImage
@@ -689,8 +689,8 @@ export default function PortfolioPage() {
           onClick={onClick}
           onError={handleError}
           onLoad={handleLoad}
-          // 첫 번째와 두 번째 이미지는 즉시 로딩, 나머지는 lazy loading
-          loading={imageIndex <= 1 ? "eager" : "lazy"}
+          // 모든 이미지를 즉시 로딩
+          loading="eager"
         />
         
         {/* 로딩 오버레이 - 조건 개선 */}
