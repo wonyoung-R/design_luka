@@ -604,21 +604,21 @@ export default function PortfolioPage() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {/* Main image first - spans full width on mobile, left column on desktop */}
+            <div className="columns-1 md:columns-2 gap-4 md:gap-6">
+              {/* Main image first */}
               <motion.div
-                className="md:col-span-1"
+                className="break-inside-avoid mb-4 md:mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
-                <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
+                <div className="relative overflow-hidden rounded-xl">
                   <ProjectImage
                     src={project.images[0]}
                     alt={project.title}
                     projectId={project.id}
                     imageIndex={0}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -628,22 +628,22 @@ export default function PortfolioPage() {
                 </div>
               </motion.div>
 
-              {/* Sub images - distributed evenly between left and right columns */}
+              {/* Sub images - masonry layout */}
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
-                  className="md:col-span-1"
+                  className="break-inside-avoid mb-4 md:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
                 >
-                  <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
+                  <div className="relative overflow-hidden rounded-xl">
                     <ProjectImage
                       src={image}
                       alt={`${project.title} detail ${index + 1}`}
                       projectId={project.id}
                       imageIndex={index + 1}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
