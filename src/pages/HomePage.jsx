@@ -126,6 +126,15 @@ const HomePage = () => {
       setTimeout(() => {
         startAutoSlide();
       }, SLIDE_DURATION - (now - lastManualChangeRef.current));
+    } else {
+      // 충분한 시간이 지났으면 바로 재시작
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      setTimeout(() => {
+        startAutoSlide();
+      }, 100);
     }
 
     setDirection(newDirection);
@@ -171,18 +180,25 @@ const HomePage = () => {
     
     const currentTouch = e.targetTouches[0].clientX;
     const offset = currentTouch - touchStart;
-    setDragOffset(offset);
+    
+    // 드래그 거리를 제한하여 과도한 이동 방지
+    const maxDragDistance = window.innerWidth * 0.3;
+    const clampedOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, offset));
+    
+    setDragOffset(clampedOffset);
     setTouchEnd(currentTouch);
   };
 
   const onTouchEnd = (e) => {
     console.log('Touch end:', touchStart, touchEnd);
-    setIsDragging(false);
     
     if (!touchStart || !touchEnd) {
+      setIsDragging(false);
       setDragOffset(0);
       // 자동 슬라이드 재시작
-      startAutoSlide();
+      setTimeout(() => {
+        startAutoSlide();
+      }, 100);
       return;
     }
     
@@ -191,19 +207,22 @@ const HomePage = () => {
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
+    // 즉시 드래그 상태 해제
+    setIsDragging(false);
+    setDragOffset(0);
+
     if (isLeftSwipe) {
       console.log('Left swipe detected');
-      setDragOffset(0);
       goToNextSlide();
     } else if (isRightSwipe) {
       console.log('Right swipe detected');
-      setDragOffset(0);
       goToPrevSlide();
     } else {
       // 스와이프가 충분하지 않으면 원래 위치로 돌아감
-      setDragOffset(0);
       // 자동 슬라이드 재시작
-      startAutoSlide();
+      setTimeout(() => {
+        startAutoSlide();
+      }, 100);
     }
   };
 
@@ -246,7 +265,7 @@ const HomePage = () => {
             custom={direction}
             variants={{
               enter: (direction) => ({
-                x: isFirstLoad ? 0 : (direction > 0 ? '90%' : '-90%'),
+                x: isFirstLoad ? 0 : (direction > 0 ? '85%' : '-85%'),
                 opacity: 1,
                 scale: isFirstLoad ? 1 : 1.02
               }),
@@ -258,7 +277,7 @@ const HomePage = () => {
               },
               exit: (direction) => ({
                 zIndex: 0,
-                x: direction < 0 ? '90%' : '-90%',
+                x: direction < 0 ? '85%' : '-85%',
                 opacity: 1,
                 scale: 0.98
               })
@@ -274,15 +293,15 @@ const HomePage = () => {
             transition={{
               x: { 
                 type: "tween", 
-                duration: isFirstLoad ? 0 : (isDragging ? 0 : 1.2), 
+                duration: isFirstLoad ? 0 : (isDragging ? 0 : 0.8), 
                 ease: isDragging ? "linear" : [0.25, 0.46, 0.45, 0.94]
               },
               opacity: { 
-                duration: isFirstLoad ? 0 : 0.3,
+                duration: isFirstLoad ? 0 : 0.2,
                 ease: [0.25, 0.46, 0.45, 0.94]
               },
               scale: {
-                duration: isFirstLoad ? 0 : 1.2,
+                duration: isFirstLoad ? 0 : 0.8,
                 ease: [0.25, 0.46, 0.45, 0.94]
               }
             }}
@@ -321,20 +340,20 @@ const HomePage = () => {
         {/* Navigation Arrows - 데스크톱용 */}
         <button
           onClick={goToPrevSlide}
-          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm transition-all duration-200 active:scale-95 items-center justify-center group"
           aria-label="이전 슬라이드"
         >
-          <svg className="w-6 h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         
         <button
           onClick={goToNextSlide}
-          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full hover:bg-white/20 active:bg-white/35 backdrop-blur-sm transition-all duration-150 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm transition-all duration-200 active:scale-95 items-center justify-center group"
           aria-label="다음 슬라이드"
         >
-          <svg className="w-6 h-6 text-white group-hover:scale-110 group-active:scale-90 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
           </svg>
         </button>
