@@ -507,7 +507,7 @@ export default function PortfolioPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ duration: 0.2, delay: index * 0.1 }}
             onClick={(event) => handleProjectClick(project, event)}
           >
             <div className="relative aspect-[4/5] overflow-hidden">
@@ -564,7 +564,7 @@ export default function PortfolioPage() {
             className="w-full md:w-1/3 p-4 md:p-16 flex flex-col justify-start bg-white"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="space-y-4 md:space-y-6 text-left">
               {/* Project type & info */}
@@ -602,15 +602,15 @@ export default function PortfolioPage() {
             className="w-full md:w-2/3 p-4 md:p-16 overflow-y-auto"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="columns-1 md:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6">
-              {/* Main image first */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Main image first - spans full width on mobile, left column on desktop */}
               <motion.div
-                className="break-inside-avoid mb-4 md:mb-6"
+                className="md:col-span-1"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
                   <ProjectImage
@@ -628,14 +628,14 @@ export default function PortfolioPage() {
                 </div>
               </motion.div>
 
-              {/* Sub images */}
+              {/* Sub images - distributed evenly between left and right columns */}
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
-                  className="break-inside-avoid mb-4 md:mb-6"
+                  className="md:col-span-1"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+                  transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
                 >
                   <div className="relative overflow-hidden rounded-xl aspect-[4/5]">
                     <ProjectImage
@@ -689,8 +689,8 @@ export default function PortfolioPage() {
           onClick={onClick}
           onError={handleError}
           onLoad={handleLoad}
-          // 중요: loading="lazy"를 제거하거나 조건부로 사용
-          loading={imageIndex === 0 ? "eager" : "lazy"}
+          // 첫 번째와 두 번째 이미지는 즉시 로딩, 나머지는 lazy loading
+          loading={imageIndex <= 1 ? "eager" : "lazy"}
         />
         
         {/* 로딩 오버레이 - 조건 개선 */}
