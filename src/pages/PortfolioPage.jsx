@@ -79,8 +79,8 @@ export default function PortfolioPage() {
     return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   };
 
-  // 무한루프 방지된 이미지 로드 핸들러
-  const handleImageLoad = useCallback((projectId, imageIndex = 0) => {
+  // 무한루프 방지된 이미지 로드 핸들러 - useCallback 제거로 재생성 방지
+  const handleImageLoad = (projectId, imageIndex = 0) => {
     const imageKey = `${projectId}-${imageIndex}`;
     
     // 이미 처리된 이미지라면 무시
@@ -88,12 +88,10 @@ export default function PortfolioPage() {
       return;
     }
     
-    console.log(`Image loaded successfully (ONCE): ${imageKey}`);
-    
-    // 로드된 이미지로 마킹
+    // 로드된 이미지로 마킹 (콘솔 로그 제거로 성능 향상)
     loadedImagesRef.current.add(imageKey);
     
-    // state 업데이트 (한 번만)
+    // state 업데이트 (한 번만) - 배치 업데이트로 성능 최적화
     setImageLoadStates(prev => {
       if (prev[imageKey]) return prev; // 이미 true면 업데이트 안함
       return {
@@ -111,10 +109,10 @@ export default function PortfolioPage() {
         return newState;
       });
     }
-  }, []);
+  };
 
-  // 무한루프 방지된 이미지 에러 핸들러
-  const handleImageError = useCallback((e, projectId, imageIndex = 0) => {
+  // 무한루프 방지된 이미지 에러 핸들러 - useCallback 제거로 재생성 방지
+  const handleImageError = (e, projectId, imageIndex = 0) => {
     const imageKey = `${projectId}-${imageIndex}`;
     const currentAttempts = errorAttemptsRef.current[imageKey] || 0;
     
@@ -125,12 +123,9 @@ export default function PortfolioPage() {
 
     const newAttempts = currentAttempts + 1;
     errorAttemptsRef.current[imageKey] = newAttempts;
-    
-    console.log(`Image error for ${imageKey}, attempt: ${newAttempts}`);
 
     // 최대 3번 재시도 후 최종 placeholder 사용
     if (newAttempts >= 3) {
-      console.log(`Max attempts reached for ${imageKey}, using final placeholder`);
       e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzE3OS4wOSAxNTAgMTYyIDE2Ny4wOSAxNjIgMTg4QzE2MiAyMDguOTEgMTc5LjA5IDIyNiAyMDAgMjI2QzIyMC45MSAyMjYgMjM4IDIwOC45MSAyMzggMTg4QzIzOCAxNjcuMDkgMjIwLjkxIDE1MCAyMDAgMTUwWk0yMDAgMjQ2QzE3OS4wOSAyNDYgMTYyIDI2My4wOSAxNjIgMjg0QzE2MiAzMDQuOTEgMTc5LjA5IDMyMiAyMDAgMzIyQzIyMC45MSAzMjIgMjM4IDMwNC45MSAyMzggMjg0QzIzOCAyNjMuMDkgMjIwLjkxIDI0NiAyMDAgMjQ2WiIgZmlsbD0iIzlDQTBBNiIvPgo8L3N2Zz4K';
       
       setImageErrorStates(prev => ({
@@ -148,7 +143,7 @@ export default function PortfolioPage() {
       ...prev,
       [imageKey]: { attempts: newAttempts, isFinal: false }
     }));
-  }, []);
+  };
 
   // Filter options
   const filterOptions = {
@@ -628,14 +623,14 @@ export default function PortfolioPage() {
                 </div>
               </motion.div>
 
-              {/* Sub images - masonry layout */}
+              {/* Sub images - masonry layout with lazy loading */}
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
                   className="break-inside-avoid mb-4 md:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: 0.1 + index * 0.02 }}
+                  transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
                 >
                   <div className="relative overflow-hidden rounded-xl">
                     <ProjectImage
@@ -667,17 +662,17 @@ export default function PortfolioPage() {
     const errorState = imageErrorStates[imageKey];
     const imageRef = useRef(null);
 
-    // 이미지 로드 핸들러 - 한 번만 실행되도록 처리
-    const handleLoad = useCallback((e) => {
+    // 이미지 로드 핸들러 - useCallback 제거로 재생성 방지
+    const handleLoad = (e) => {
       // 이미지가 실제로 완전히 로드되었는지 확인
       if (e.target.complete && e.target.naturalWidth > 0) {
         handleImageLoad(projectId, imageIndex);
       }
-    }, [projectId, imageIndex, handleImageLoad]);
+    };
 
-    const handleError = useCallback((e) => {
+    const handleError = (e) => {
       handleImageError(e, projectId, imageIndex);
-    }, [projectId, imageIndex, handleImageError]);
+    };
 
     return (
       <>
@@ -689,14 +684,14 @@ export default function PortfolioPage() {
           onClick={onClick}
           onError={handleError}
           onLoad={handleLoad}
-          // 모든 이미지를 즉시 로딩
-          loading="eager"
+          // 상세페이지에서는 lazy loading, 메인에서는 eager loading
+          loading={selectedProject ? "lazy" : "eager"}
         />
         
-        {/* 로딩 오버레이 - 조건 개선 */}
+        {/* 로딩 오버레이 - 조건 개선 및 성능 최적화 */}
         {!isLoaded && !errorState?.isFinal && (
-          <div className="absolute inset-0 bg-gray-200 flex items-center justify-center rounded-xl">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-xl">
+            <div className="animate-pulse w-8 h-8 bg-gray-300 rounded-full"></div>
           </div>
         )}
       </>
