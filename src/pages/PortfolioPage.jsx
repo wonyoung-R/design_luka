@@ -751,16 +751,16 @@ export default function PortfolioPage() {
               </div>
             </div>
             
-            {/* 필터 토글 버튼 (이미지형) */}
+            {/* 필터 토글 버튼 - 디바이스별 유연한 레이아웃 */}
             <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
-              <div className="flex flex-wrap gap-2 md:gap-4 justify-center max-w-full px-4">
+              <div className="flex gap-1 sm:gap-2 md:gap-4 justify-center max-w-full px-2 sm:px-4 overflow-x-auto scrollbar-hide">
                 {activeTab === 'residential' ? (
                   ["전체", "10PY", "20PY", "30PY", "40PY", "50PY~"].map((area) => (
                     <button
                       key={area}
                       type="button"
                       onClick={() => handleFilterChange('area', area)}
-                      className={`px-4 py-2 rounded-full text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-sm md:text-base font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "전체")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
@@ -775,7 +775,7 @@ export default function PortfolioPage() {
                       key={type}
                       type="button"
                       onClick={() => handleFilterChange('type', type)}
-                      className={`px-4 py-2 rounded-full text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-sm md:text-base font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "전체")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
