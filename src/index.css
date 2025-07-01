@@ -54,7 +54,7 @@
       @apply px-4 py-3 text-sm min-h-[48px];
     }
   }
-}
+} 
 
 /* Add viewport height improvements for mobile */
 :root {

@@ -197,7 +197,7 @@ const HomePage = () => {
       setDragOffset(0);
       // 자동 슬라이드 재시작
       setTimeout(() => {
-        startAutoSlide();
+      startAutoSlide();
       }, 100);
       return;
     }
@@ -221,7 +221,7 @@ const HomePage = () => {
       // 스와이프가 충분하지 않으면 원래 위치로 돌아감
       // 자동 슬라이드 재시작
       setTimeout(() => {
-        startAutoSlide();
+      startAutoSlide();
       }, 100);
     }
   };
@@ -282,100 +282,67 @@ const HomePage = () => {
     <>
       <Navbar />
       <main 
-        className="relative w-full overflow-hidden mobile-full-height"
+        className="relative w-screen h-screen overflow-hidden mobile-full-height"
         style={{ 
           height: '100vh',
-          height: '100dvh', // Dynamic viewport height for mobile
-          minHeight: '100vh'
+          height: '100dvh',
+          minHeight: '100vh',
+          width: '100vw',
+          overflow: 'hidden',
+          position: 'relative',
+          background: 'black'
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <AnimatePresence mode="sync" custom={direction}>
-          <motion.div
-            key={currentSlide}
-            className="absolute inset-0"
-            custom={direction}
-            variants={{
-              enter: (direction) => ({
-                x: isFirstLoad ? 0 : (direction > 0 ? '85%' : '-85%'),
-                opacity: 1,
-                scale: isFirstLoad ? 1 : 1.02
-              }),
-              center: {
-                zIndex: 1,
-                x: 0,
-                opacity: 1,
-                scale: 1
-              },
-              exit: (direction) => ({
-                zIndex: 0,
-                x: direction < 0 ? '85%' : '-85%',
-                opacity: 1,
-                scale: 0.98
-              })
-            }}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            style={{
-              x: isDragging && Math.abs(dragOffset) > 5 ? dragOffset : 0,
-              transformOrigin: "center center",
-              willChange: "transform",
-              transform: "translateZ(0)",
-              backfaceVisibility: "hidden",
-              perspective: "1000px"
-            }}
-            transition={{
-              x: { 
-                type: "tween", 
-                duration: isFirstLoad ? 0 : (isDragging ? 0 : 0.8), 
-                ease: isDragging ? "linear" : [0.25, 0.46, 0.45, 0.94]
-              },
-              opacity: { 
-                duration: isFirstLoad ? 0 : 0.2,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              },
-              scale: {
-                duration: isFirstLoad ? 0 : 0.8,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }
-            }}
-          >
-            {/* Background Image - 전체 화면 최적화 */}
-            <motion.div 
-              className="absolute inset-0 w-full h-full"
-              style={{
-                backgroundImage: `url(${slides[currentSlide].image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed',
-                transform: 'translateZ(0)',
-                backfaceVisibility: 'hidden'
-              }}
-              initial={{ filter: 'blur(0px)' }}
-              animate={{ filter: 'blur(0px)' }}
-              transition={{ duration: 0.3 }}
-            />
-            
-            {/* Gradient Overlay for better text readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
-            
-            {/* Brand Logo Watermark */}
-            <motion.div
-              className="absolute bottom-8 right-8 z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-            >
-              <div className="text-white/30 text-xs sm:text-sm font-light tracking-widest">
-                DESIGN LUKA
-              </div>
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+        {/* 슬라이드 카루셀 구조 */}
+        <div className="absolute inset-0 w-full h-full">
+          {slides.map((slide, idx) => {
+            // 현재 슬라이드와의 거리 계산
+            const offset = idx - currentSlide;
+            // 드래그 중이면 오프셋 적용
+            const dragX = isDragging ? dragOffset : 0;
+            // x값 계산 (px)
+            const xValue = `calc(${offset * 100}vw + ${offset === 0 ? dragX : 0}px)`;
+            return (
+              <motion.div
+                key={slide.id}
+                className="absolute top-0 left-0 w-full h-full"
+                animate={{ x: xValue }}
+                transition={{ type: 'tween', duration: isDragging ? 0 : 0.6 }}
+                style={{ willChange: 'transform', width: '100vw', height: '100vh' }}
+              >
+                {/* Background Image */}
+                <div 
+                  className="absolute inset-0 w-full h-full"
+                  style={{
+                    backgroundImage: `url(${slide.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundAttachment: 'fixed',
+                    transform: 'translateZ(0)',
+                    backfaceVisibility: 'hidden'
+                  }}
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
+                {/* Brand Logo Watermark */}
+                <motion.div
+                  className="absolute bottom-8 right-8 z-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                >
+                  <div className="text-white/30 text-xs sm:text-sm font-light tracking-widest">
+                    DESIGN LUKA
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
 
         {/* Navigation Arrows - 데스크톱용 */}
         <button

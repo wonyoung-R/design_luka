@@ -62,7 +62,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center min-h-[70vh]">
               
               {/* About LUKA 제목 */}
-              <div className="text-center md:text-left p-8 md:p-16 lg:p-20 min-h-[50vh] md:min-h-0 flex flex-col justify-center">
+              <div className="text-center md:text-left p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] md:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="flex justify-center md:justify-start"
                   initial={{ opacity: 0, y: 30 }}
@@ -73,13 +73,13 @@ const AboutPage = () => {
                   <img 
                     src={lukaSlogan} 
                     alt="LUKA Slogan" 
-                    className="max-w-full h-auto min-h-[50vh] object-contain scale-65"
+                    className="max-w-full h-auto min-h-[30vh] md:min-h-[50vh] object-contain scale-65"
                   />
                 </motion.div>
               </div>
 
               {/* 소개글 */}
-              <div className="p-8 md:p-16 lg:p-20 min-h-[50vh] md:min-h-0 flex flex-col justify-center">
+              <div className="p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] md:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="text-sm md:text-base leading-relaxed space-y-4 md:space-y-6 scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, y: 30 }}
@@ -111,7 +111,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
-              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: -30 }}
@@ -171,7 +171,7 @@ const AboutPage = () => {
               </div>
 
               {/* 텍스트 */}
-              <div className="order-1 lg:order-2 p-8 md:p-16 lg:p-20 min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 lg:order-2 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: 30 }}
@@ -197,7 +197,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
-              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: -30 }}
@@ -242,7 +242,7 @@ const AboutPage = () => {
           <img 
             src={lukaSlogan} 
             alt="LUKA Slogan" 
-            className="w-[13%] h-auto object-contain filter invert brightness-0"
+            className="w-[25%] h-auto object-contain filter invert brightness-0"
           />
         </div>
       </footer>

@@ -495,7 +495,7 @@ export default function InsightPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Insight and Contents</h1>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Insight and Contents</h1>
             </motion.div>
           </div>
           <section className="py-8"></section>
@@ -590,7 +590,7 @@ export default function InsightPage() {
           <img 
             src={lukaSlogan} 
             alt="LUKA Slogan" 
-            className="w-[13%] h-auto object-contain filter invert brightness-0"
+            className="w-[25%] h-auto object-contain filter invert brightness-0"
           />
         </div>
       </footer>
