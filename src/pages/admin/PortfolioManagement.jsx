@@ -29,6 +29,10 @@ const PortfolioManagement = () => {
     style: '',
     images: []
   });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editProject, setEditProject] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
+  const [editSelectedFiles, setEditSelectedFiles] = useState([]);
 
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
@@ -222,6 +226,76 @@ const PortfolioManagement = () => {
     { value: 'beauty', label: '뷰티샵' }
   ];
 
+  const handleEdit = (project) => {
+    setEditProject(project);
+    setEditFormData({ ...project });
+    setIsEditModalOpen(true);
+    setEditSelectedFiles([]);
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    setEditSelectedFiles(imageFiles);
+  };
+
+  const handleRemoveEditImage = (idx) => {
+    setEditFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== idx)
+    }));
+  };
+
+  const handleEditSave = async () => {
+    let newImages = editFormData.images || [];
+    if (editSelectedFiles.length > 0) {
+      try {
+        // 1. Cloudinary에 이미지 업로드
+        const uploadedImages = [];
+        for (let i = 0; i < editSelectedFiles.length; i++) {
+          const file = editSelectedFiles[i];
+          const uploadedFile = await uploadToCloudinary(file);
+          uploadedImages.push({
+            id: uploadedFile.id,
+            url: uploadedFile.url,
+            name: uploadedFile.name,
+            width: uploadedFile.width,
+            height: uploadedFile.height,
+            format: uploadedFile.format
+          });
+        }
+        // 기존 이미지 + 새 이미지 합치기
+        newImages = [...newImages, ...uploadedImages];
+      } catch (error) {
+        console.error('업데이트 실패:', error);
+        alert('업데이트 중 오류가 발생했습니다: ' + error.message);
+        return;
+      }
+    }
+    try {
+      // 2. Firebase에 프로젝트 메타데이터 저장
+      const updatedProject = {
+        ...editFormData,
+        images: newImages,
+        updatedAt: new Date().toISOString()
+      };
+      // Firebase에 저장
+      const projectRef = ref(database, `portfolio/${editProject.id}`);
+      await set(projectRef, updatedProject);
+      setIsEditModalOpen(false);
+      setEditSelectedFiles([]);
+      alert('프로젝트가 성공적으로 업데이트되었습니다!');
+    } catch (error) {
+      console.error('업데이트 실패:', error);
+      alert('업데이트 중 오류가 발생했습니다: ' + error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
@@ -286,6 +360,12 @@ const PortfolioManagement = () => {
                         className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                       >
                         삭제
+                      </button>
+                      <button
+                        onClick={() => handleEdit(project)}
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        편집
                       </button>
                     </div>
                   </div>
@@ -432,6 +512,130 @@ const PortfolioManagement = () => {
                   className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUploading ? '업로드 중...' : '저장'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">프로젝트 편집</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">형태</label>
+                  <select
+                    name="type"
+                    value={editFormData.type}
+                    onChange={handleEditInputChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  >
+                    <option value="residential">주거</option>
+                    <option value="commercial">상업</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">제목</label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={editFormData.title}
+                    onChange={handleEditInputChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">주소</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={editFormData.address}
+                    onChange={handleEditInputChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{editFormData.type === 'residential' ? '평형' : '업종'}</label>
+                  {editFormData.type === 'residential' ? (
+                    <input
+                      type="text"
+                      name="area"
+                      value={editFormData.area}
+                      onChange={handleEditInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                    />
+                  ) : (
+                    <select
+                      name="businessType"
+                      value={editFormData.businessType}
+                      onChange={handleEditInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                    >
+                      {businessTypes.map(type => (
+                        <option key={type.value} value={type.value}>{type.label}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">스타일 설명</label>
+                <textarea
+                  name="style"
+                  value={editFormData.style}
+                  onChange={handleEditInputChange}
+                  rows="3"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">기존 이미지</label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {editFormData.images && editFormData.images.map((img, idx) => (
+                    <div key={idx} className="relative w-24 h-24">
+                      <img src={img.url || img} alt="project" className="w-full h-full object-cover rounded" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveEditImage(idx)}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        title="이미지 삭제"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">이미지 추가</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleEditFileSelect}
+                  className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-800"
+                />
+                {editSelectedFiles.length > 0 && (
+                  <p className="mt-2 text-sm text-gray-600">{editSelectedFiles.length}장의 이미지가 추가 선택됨</p>
+                )}
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEditSave}
+                  className="px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800"
+                >
+                  저장
                 </button>
               </div>
             </div>
