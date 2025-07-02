@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.d7120c54.css",
-    "main.js": "/static/js/main.8fc7d846.js",
+    "main.js": "/static/js/main.dfd98b1b.js",
     "static/media/4.jpg": "/static/media/4.28f9aa5a51cd58ecaa96.jpg",
     "static/media/luka_design.png": "/static/media/luka_design.8ffd09b34bc8ed19d693.png",
     "static/media/3.jpg": "/static/media/3.be041e0e86175a1e5549.jpg",
@@ -29,10 +29,10 @@
     "static/media/LUKA slogan.png": "/static/media/LUKA slogan.0c9dd707cf413b3ee1a3.png",
     "index.html": "/index.html",
     "main.d7120c54.css.map": "/static/css/main.d7120c54.css.map",
-    "main.8fc7d846.js.map": "/static/js/main.8fc7d846.js.map"
+    "main.dfd98b1b.js.map": "/static/js/main.dfd98b1b.js.map"
   },
   "entrypoints": [
     "static/css/main.d7120c54.css",
-    "static/js/main.8fc7d846.js"
+    "static/js/main.dfd98b1b.js"
   ]
 }
