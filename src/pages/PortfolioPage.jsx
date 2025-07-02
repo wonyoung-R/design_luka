@@ -442,6 +442,34 @@ export default function PortfolioPage() {
     }
   };
 
+  // 모바일 스와이프 기능 추가
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNextImage();
+    } else if (isRightSwipe) {
+      goToPreviousImage();
+    }
+  };
+
   // ESC key to close detail view and modal, arrow keys for modal navigation
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -840,6 +868,9 @@ export default function PortfolioPage() {
             transition={{ duration: 0.6 }}
             className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
             onClick={closeModal}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -869,7 +900,7 @@ export default function PortfolioPage() {
                   )}
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                <div className="hidden md:flex items-center space-x-2">
                   {allImages.length > 1 && (
                     <>
                       <button
@@ -924,7 +955,7 @@ export default function PortfolioPage() {
                   <>
                     {/* Left Navigation Area */}
                     <div 
-                      className="absolute left-0 top-0 bottom-0 w-1/4 flex items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
+                      className="hidden md:flex absolute left-0 top-0 bottom-0 w-1/4 items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -941,7 +972,7 @@ export default function PortfolioPage() {
                     
                     {/* Right Navigation Area */}
                     <div 
-                      className="absolute right-0 top-0 bottom-0 w-1/4 flex items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
+                      className="hidden md:flex absolute right-0 top-0 bottom-0 w-1/4 items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
