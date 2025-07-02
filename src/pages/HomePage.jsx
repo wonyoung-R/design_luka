@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
-// Import main images
+// Import main images (desktop)
 import main01 from '../images/main/main01.jpg';
 import main02 from '../images/main/main02.jpg';
 import main03 from '../images/main/main03.jpg';
@@ -13,50 +13,19 @@ import main06 from '../images/main/main06.jpg';
 import main07 from '../images/main/main07.jpg';
 import main08 from '../images/main/main08.jpg';
 
-const SLIDE_DURATION = 4500; // 4.5초로 변경
+// Import mobile images
+import mobile01 from '../images/main/mobile/1.jpg';
+import mobile02 from '../images/main/mobile/2.jpg';
+import mobile03 from '../images/main/mobile/3.jpg';
+import mobile04 from '../images/main/mobile/4.jpg';
+import mobile05 from '../images/main/mobile/5.jpg';
+import mobile06 from '../images/main/mobile/6.jpg';
+import mobile07 from '../images/main/mobile/7.jpg';
+import mobile08 from '../images/main/mobile/8.jpg';
+import mobile09 from '../images/main/mobile/9.jpg';
+import mobile10 from '../images/main/mobile/10.jpg';
 
-const slides = [
-  {
-    id: 1,
-    image: main01,
-    title: '신반포 APT 25py'
-  },
-  {
-    id: 2,
-    image: main02,
-    title: '관악 드림타운 33py'
-  },
-  {
-    id: 3,
-    image: main03,
-    title: '럭셔리 아파트'
-  },
-  {
-    id: 4,
-    image: main04,
-    title: '상업 공간 디자인'
-  },
-  {
-    id: 5,
-    image: main05,
-    title: 'Design LUKA'
-  },
-  {
-    id: 6,
-    image: main06,
-    title: '모던 인테리어'
-  },
-  {
-    id: 7,
-    image: main07,
-    title: '프리미엄 공간'
-  },
-  {
-    id: 8,
-    image: main08,
-    title: '엘레간트 디자인'
-  }
-];
+const SLIDE_DURATION = 4500; // 4.5초로 변경
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -67,9 +36,75 @@ const HomePage = () => {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   
   const timerRef = useRef(null);
   const lastManualChangeRef = useRef(0);
+
+  // 모바일/데스크탑 감지
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // 슬라이드 배열을 동적으로 생성 (모바일/데스크탑에 따라 다른 이미지 사용)
+  const slides = [
+    {
+      id: 1,
+      image: isMobile ? mobile01 : main01,
+      title: '신반포 APT 25py'
+    },
+    {
+      id: 2,
+      image: isMobile ? mobile02 : main02,
+      title: '관악 드림타운 33py'
+    },
+    {
+      id: 3,
+      image: isMobile ? mobile03 : main03,
+      title: '럭셔리 아파트'
+    },
+    {
+      id: 4,
+      image: isMobile ? mobile04 : main04,
+      title: '상업 공간 디자인'
+    },
+    {
+      id: 5,
+      image: isMobile ? mobile05 : main05,
+      title: 'Design LUKA'
+    },
+    {
+      id: 6,
+      image: isMobile ? mobile06 : main06,
+      title: '모던 인테리어'
+    },
+    {
+      id: 7,
+      image: isMobile ? mobile07 : main07,
+      title: '프리미엄 공간'
+    },
+    {
+      id: 8,
+      image: isMobile ? mobile08 : main08,
+      title: '엘레간트 디자인'
+    },
+    {
+      id: 9,
+      image: isMobile ? mobile09 : main01, // 모바일 전용 이미지
+      title: '프리미엄 디자인'
+    },
+    {
+      id: 10,
+      image: isMobile ? mobile10 : main02, // 모바일 전용 이미지
+      title: '럭셔리 인테리어'
+    }
+  ];
 
   // 자동 슬라이드 시작 함수
   const startAutoSlide = useCallback(() => {
