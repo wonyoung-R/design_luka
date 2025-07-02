@@ -216,8 +216,8 @@ const HomePage = () => {
     const currentTouch = e.targetTouches[0].clientX;
     const offset = currentTouch - touchStart;
     
-    // 드래그 거리를 제한하여 과도한 이동 방지
-    const maxDragDistance = window.innerWidth * 0.3;
+    // 드래그 거리를 제한하여 과도한 이동 방지 (더 부드럽게)
+    const maxDragDistance = window.innerWidth * 0.25; // 30%에서 25%로 줄임
     const clampedOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, offset));
     
     setDragOffset(clampedOffset);
@@ -232,7 +232,7 @@ const HomePage = () => {
       setDragOffset(0);
       // 자동 슬라이드 재시작
       setTimeout(() => {
-      startAutoSlide();
+        startAutoSlide();
       }, 100);
       return;
     }
@@ -256,7 +256,7 @@ const HomePage = () => {
       // 스와이프가 충분하지 않으면 원래 위치로 돌아감
       // 자동 슬라이드 재시작
       setTimeout(() => {
-      startAutoSlide();
+        startAutoSlide();
       }, 100);
     }
   };
@@ -325,14 +325,26 @@ const HomePage = () => {
           width: '100vw',
           overflow: 'hidden',
           position: 'relative',
-          background: 'black'
+          background: 'black',
+          touchAction: 'pan-x pinch-zoom', // Y축 스크롤 방지, X축과 줌만 허용
+          userSelect: 'none', // 텍스트 선택 방지
+          WebkitUserSelect: 'none', // Safari 지원
+          msUserSelect: 'none' // IE 지원
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         {/* 슬라이드 카루셀 구조 */}
-        <div className="absolute inset-0 w-full h-full">
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            touchAction: 'pan-x pinch-zoom',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            msUserSelect: 'none'
+          }}
+        >
           {slides.map((slide, idx) => {
             // 현재 슬라이드와의 거리 계산
             const offset = idx - currentSlide;
@@ -345,8 +357,18 @@ const HomePage = () => {
                 key={slide.id}
                 className="absolute top-0 left-0 w-full h-full"
                 animate={{ x: xValue }}
-                transition={{ type: 'tween', duration: isDragging ? 0 : 0.6 }}
-                style={{ willChange: 'transform', width: '100vw', height: '100vh' }}
+                transition={{ 
+                  type: 'tween', 
+                  duration: isDragging ? 0 : 0.5, // 0.6에서 0.5로 단축
+                  ease: [0.25, 0.1, 0.25, 1] // 더 부드러운 easing
+                }}
+                style={{ 
+                  willChange: 'transform', 
+                  width: '100vw', 
+                  height: '100vh',
+                  transform: 'translateZ(0)', // 하드웨어 가속
+                  backfaceVisibility: 'hidden' // 깜빡임 방지
+                }}
               >
                 {/* Background Image */}
                 <div 
@@ -358,7 +380,8 @@ const HomePage = () => {
                     backgroundRepeat: 'no-repeat',
                     backgroundAttachment: 'fixed',
                     transform: 'translateZ(0)',
-                    backfaceVisibility: 'hidden'
+                    backfaceVisibility: 'hidden',
+                    willChange: 'transform' // 성능 최적화
                   }}
                 />
                 {/* Gradient Overlay */}
