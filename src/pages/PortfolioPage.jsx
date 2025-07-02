@@ -445,7 +445,7 @@ export default function PortfolioPage() {
   // 모바일 스와이프 기능 추가
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 50;
+  const minSwipeDistance = 30; // 50에서 30으로 줄여서 더 민감하게
 
   const onTouchStart = (e) => {
     setTouchEnd(null);
@@ -866,18 +866,15 @@ export default function PortfolioPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-sm p-2"
             onClick={closeModal}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="relative w-full h-full max-w-[98vw] max-h-[98vh] bg-black rounded-2xl overflow-hidden shadow-2xl"
+              className="relative w-full h-full max-w-[99vw] max-h-[99vh] bg-black rounded-2xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header with close button and counter */}
@@ -928,7 +925,7 @@ export default function PortfolioPage() {
               </div>
 
               {/* Main Image Container */}
-              <div className="relative w-full h-full flex items-center justify-center p-4">
+              <div className="relative w-full h-full flex items-center justify-center p-2">
                 <motion.div
                   key={selectedImageIndex}
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -936,13 +933,16 @@ export default function PortfolioPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                   className="relative w-full h-full flex items-center justify-center"
+                  onTouchStart={onTouchStart}
+                  onTouchMove={onTouchMove}
+                  onTouchEnd={onTouchEnd}
                 >
                   <ProjectImage
                     src={selectedImage}
                     alt="Gallery view"
                     projectId={selectedProject?.id || 'modal'}
                     imageIndex={selectedImageIndex}
-                    className="max-w-full max-h-full object-contain select-none rounded-lg shadow-2xl"
+                    className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -1008,11 +1008,13 @@ export default function PortfolioPage() {
                             ? 'border-white scale-110' 
                             : 'border-white/30 hover:border-white/60'
                         }`}
+                        style={{ pointerEvents: 'auto' }}
                       >
                         <img
                           src={image}
                           alt={`Thumbnail ${index + 1}`}
                           className="w-full h-full object-cover"
+                          draggable={false}
                         />
                       </button>
                     ))}
