@@ -12,6 +12,7 @@ const InsightManagement = () => {
   const navigate = useNavigate();
   const [insights, setInsights] = useState([]);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingInsight, setEditingInsight] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,11 +70,11 @@ const InsightManagement = () => {
   const getCategoryColor = (category) => {
     switch (category) {
       case 'trend':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-black text-white';
       case 'tip':
-        return 'bg-green-100 text-green-800';
+        return 'bg-black text-white';
       case 'news':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-black text-white';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -118,11 +119,18 @@ const InsightManagement = () => {
 
   const handleEditorClose = () => {
     setIsEditorOpen(false);
+    setEditingInsight(null);
   };
 
   const handleEditorSave = () => {
     setIsEditorOpen(false);
+    setEditingInsight(null);
     // 데이터는 자동으로 실시간 업데이트됨
+  };
+
+  const handleEdit = (insight) => {
+    setEditingInsight(insight);
+    setIsEditorOpen(true);
   };
 
   if (loading) {
@@ -139,7 +147,18 @@ const InsightManagement = () => {
         {/* Header */}
         <header className="bg-white shadow">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">인사이트 관리</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/admin')}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-md flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>대시보드</span>
+              </button>
+              <h1 className="text-2xl font-bold text-gray-900">인사이트 관리</h1>
+            </div>
             <button
               onClick={() => setIsEditorOpen(true)}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md"
@@ -228,11 +247,8 @@ const InsightManagement = () => {
                         </div>
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => {
-                              // 여기에 편집 기능 추가 가능
-                              alert('편집 기능은 추후 구현 예정입니다.');
-                            }}
-                            className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                            onClick={() => handleEdit(insight)}
+                            className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
                           >
                             편집
                           </button>
@@ -259,6 +275,7 @@ const InsightManagement = () => {
           <InsightEditor
             onClose={handleEditorClose}
             onSave={handleEditorSave}
+            editingInsight={editingInsight}
           />
         )}
       </AnimatePresence>

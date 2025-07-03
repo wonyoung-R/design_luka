@@ -12,6 +12,8 @@ const CLOUDINARY_API_KEY = '324293491948238';
 const CLOUDINARY_API_SECRET = 'Mb8GBN8qaPzHmKpmapoBCXIwD_A';
 
 const PortfolioManagement = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCloudinaryReady, setIsCloudinaryReady] = useState(true);
@@ -19,7 +21,6 @@ const PortfolioManagement = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [apiStatus, setApiStatus] = useState('Cloudinary 준비됨');
-  const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     type: 'residential',
     title: '',
@@ -27,12 +28,16 @@ const PortfolioManagement = () => {
     area: '',
     businessType: 'cafe',
     style: '',
+    constructionDate: '',
     images: []
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProject, setEditProject] = useState(null);
-  const [editFormData, setEditFormData] = useState({});
+  const [editFormData, setEditFormData] = useState({
+    constructionDate: ''
+  });
   const [editSelectedFiles, setEditSelectedFiles] = useState([]);
+  const [filterType, setFilterType] = useState('all'); // 'all', 'residential', 'commercial'
 
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
@@ -168,6 +173,7 @@ const PortfolioManagement = () => {
         area: formData.type === 'residential' ? formData.area : null,
         businessType: formData.type === 'commercial' ? formData.businessType : null,
         style: formData.style,
+        constructionDate: formData.constructionDate,
         folderName: generateFolderName(),
         images: uploadedImages,
         createdAt: new Date().toISOString(),
@@ -188,6 +194,7 @@ const PortfolioManagement = () => {
         area: '',
         businessType: 'cafe',
         style: '',
+        constructionDate: '',
         images: []
       });
       setSelectedFiles([]);
@@ -225,6 +232,19 @@ const PortfolioManagement = () => {
     { value: 'retail', label: '상가' },
     { value: 'beauty', label: '뷰티샵' }
   ];
+
+  // 필터링된 프로젝트 목록
+  const filteredProjects = projects.filter(project => {
+    if (filterType === 'all') return true;
+    return project.type === filterType;
+  });
+
+  // 공사일자 기준으로 정렬 (최신순)
+  const sortedProjects = filteredProjects.sort((a, b) => {
+    const dateA = a.constructionDate ? new Date(a.constructionDate) : new Date(0);
+    const dateB = b.constructionDate ? new Date(b.constructionDate) : new Date(0);
+    return dateB - dateA; // 최신순
+  });
 
   const handleEdit = (project) => {
     setEditProject(project);
@@ -300,7 +320,18 @@ const PortfolioManagement = () => {
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">포트폴리오 관리</h1>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate('/admin')}
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-md flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>대시보드</span>
+            </button>
+            <h1 className="text-2xl font-bold text-gray-900">포트폴리오 관리</h1>
+          </div>
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-600">
               상태: <span className="font-medium">{apiStatus}</span>
@@ -330,48 +361,111 @@ const PortfolioManagement = () => {
             </p>
           </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
-              {projects.map((project) => (
-                <li key={project.id} className="px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">{project.title}</h3>
-                      <p className="text-sm text-gray-500">
-                        {project.type === 'residential' ? '주거' : '상업'} | 
-                        {project.address} |
-                        {project.type === 'residential' 
-                          ? ` ${project.area}` 
-                          : ` ${businessTypes.find(t => t.value === project.businessType)?.label}`
-                        }
-                      </p>
-                      {project.images && (
-                        <p className="text-xs text-gray-400">이미지 {project.images.length}장</p>
-                      )}
-                    </div>
-                    <div className="flex space-x-2">
-                      {project.images && project.images.length > 0 && (
-                        <span className="px-3 py-1 bg-green-600 text-white rounded-md text-sm">
-                          Cloudinary 이미지 {project.images.length}장
+          {/* 필터 */}
+          <div className="bg-white shadow rounded-lg p-4 mb-6">
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium text-gray-700">필터:</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">전체</option>
+                <option value="residential">주거</option>
+                <option value="commercial">상업</option>
+              </select>
+              <span className="text-sm text-gray-600">
+                총 {sortedProjects.length}개 프로젝트
+              </span>
+            </div>
+          </div>
+
+          {/* 테이블 */}
+          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      프로젝트명
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      유형
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      주소
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      상세정보
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      공사일자
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      이미지
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      액션
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sortedProjects.map((project) => (
+                    <tr key={project.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{project.title}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          project.type === 'residential' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {project.type === 'residential' ? '주거' : '상업'}
                         </span>
-                      )}
-                      <button
-                        onClick={() => handleDelete(project.id)}
-                        className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-                      >
-                        삭제
-                      </button>
-                      <button
-                        onClick={() => handleEdit(project)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        편집
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {project.address}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {project.type === 'residential' 
+                          ? project.area 
+                          : businessTypes.find(t => t.value === project.businessType)?.label
+                        }
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {project.constructionDate || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {project.images ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {project.images.length}장
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(project)}
+                            className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50"
+                          >
+                            편집
+                          </button>
+                          <button
+                            onClick={() => handleDelete(project.id)}
+                            className="text-red-600 hover:text-red-900 px-2 py-1 rounded hover:bg-red-50"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
@@ -462,6 +556,17 @@ const PortfolioManagement = () => {
                   onChange={handleInputChange}
                   rows="3"
                   placeholder="프로젝트의 스타일이나 특징을 설명해주세요"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">공사일자</label>
+                <input
+                  type="month"
+                  name="constructionDate"
+                  value={formData.constructionDate}
+                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>
@@ -588,6 +693,17 @@ const PortfolioManagement = () => {
                   value={editFormData.style}
                   onChange={handleEditInputChange}
                   rows="3"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">공사일자</label>
+                <input
+                  type="month"
+                  name="constructionDate"
+                  value={editFormData.constructionDate}
+                  onChange={handleEditInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>

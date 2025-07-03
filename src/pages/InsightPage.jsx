@@ -21,6 +21,8 @@ export default function InsightPage() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInsightIndex, setSelectedInsightIndex] = useState(null);
+  // Toast notification state
+  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
 
   // 안전한 날짜 처리 함수
   const formatDate = (dateValue) => {
@@ -264,11 +266,11 @@ export default function InsightPage() {
   const getCategoryColor = (category) => {
     switch (category) {
       case 'trend':
-        return 'bg-blue-500';
+        return 'bg-black';
       case 'tip':
-        return 'bg-green-500';
+        return 'bg-black';
       case 'news':
-        return 'bg-purple-500';
+        return 'bg-black';
       default:
         return 'bg-gray-500';
     }
@@ -314,15 +316,25 @@ export default function InsightPage() {
     setIsModalOpen(false);
     setSelectedInsightIndex(null);
   };
+  // Toast notification function
+  const showToast = (message, type = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 2000);
+  };
+
   // Prev/Next navigation
   const handlePrev = () => {
     if (selectedInsightIndex > 0) {
       setSelectedInsightIndex(selectedInsightIndex - 1);
+    } else {
+      showToast('첫 번째 글입니다.', 'info');
     }
   };
   const handleNext = () => {
     if (selectedInsightIndex < filteredInsights.length - 1) {
       setSelectedInsightIndex(selectedInsightIndex + 1);
+    } else {
+      showToast('마지막 글입니다.', 'info');
     }
   };
 
@@ -573,7 +585,7 @@ export default function InsightPage() {
                   ) : (
                     <div className="text-center py-12">
                       <p className="text-gray-600 font-['Noto_Sans_KR']">
-                        {activeTab === 'all' ? '등록된 인사이트가 없습니다.' : `${getCategoryLabel(activeTab)} 카테고리에 등록된 인사이트가 없습니다.`}
+                        {activeTab === 'all' ? '등록된 글이 없습니다.' : `${getCategoryLabel(activeTab)} 카테고리에 등록된 글이 없습니다.`}
                       </p>
                     </div>
                   )}
@@ -603,6 +615,24 @@ export default function InsightPage() {
           onPrev={handlePrev}
           onNext={handleNext}
         />
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <motion.div
+          initial={{ opacity: 0, y: 50, scale: 0.3 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 50, scale: 0.3 }}
+          className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg font-medium text-sm font-['Noto_Sans_KR'] ${
+            toast.type === 'info' 
+              ? 'bg-gray-900 text-white' 
+              : toast.type === 'success' 
+              ? 'bg-green-500 text-white' 
+              : 'bg-red-500 text-white'
+          }`}
+        >
+          {toast.message}
+        </motion.div>
       )}
     </div>
   );

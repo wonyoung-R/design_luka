@@ -77,11 +77,11 @@ const InsightDetailPage = () => {
   const getCategoryColor = (category) => {
     switch (category) {
       case 'trend':
-        return 'bg-blue-500';
+        return 'bg-black';
       case 'tip':
-        return 'bg-green-500';
+        return 'bg-black';
       case 'news':
-        return 'bg-purple-500';
+        return 'bg-black';
       default:
         return 'bg-gray-500';
     }

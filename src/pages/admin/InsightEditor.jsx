@@ -4,16 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { database } from '../../firebase/config';
 import { ref as dbRef, push, set } from 'firebase/database';
 
-const InsightEditor = ({ onClose, onSave }) => {
+const InsightEditor = ({ onClose, onSave, editingInsight }) => {
   const textareaRef = useRef(null);
   
   const [formData, setFormData] = useState({
-    title: '',
-    category: 'trend',
-    date: formatCurrentDateTime(),
-    url: '',
-    thumbnail: '',
-    content: ''
+    title: editingInsight?.title || '',
+    category: editingInsight?.category || 'trend',
+    date: editingInsight?.date || formatCurrentDateTime(),
+    url: editingInsight?.url || '',
+    thumbnail: editingInsight?.thumbnail || '',
+    content: editingInsight?.content || ''
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ const InsightEditor = ({ onClose, onSave }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imageMethod, setImageMethod] = useState('googledrive'); // 'googledrive' or 'imgur' or 'direct'
 
-  // 현재 날짜시간을 YYYYMMDD HHMMSS 형식으로 반환
+  // 현재 날짜시간을 "yyyy년 mm월 dd일 / hh시 mi분 ss초" 형식으로 반환
   function formatCurrentDateTime() {
     const now = new Date();
     const year = now.getFullYear();
@@ -31,7 +31,7 @@ const InsightEditor = ({ onClose, onSave }) => {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
     
-    return `${year}${month}${day} ${hours}${minutes}${seconds}`;
+    return `${year}년 ${month}월 ${day}일 / ${hours}시 ${minutes}분 ${seconds}초`;
   }
 
   // 구글 드라이브 URL 변환 (여러 형식 지원)
@@ -267,15 +267,26 @@ const InsightEditor = ({ onClose, onSave }) => {
         url: formData.url.trim(),
         thumbnail: formData.thumbnail.trim(),
         content: formData.content.trim(),
-        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
 
-      const insightsRef = dbRef(database, 'insights');
-      const newInsightRef = push(insightsRef);
-      await set(newInsightRef, insightData);
-
-      alert('인사이트가 성공적으로 저장되었습니다.');
+      // 편집 모드인지 새 작성 모드인지 확인
+      if (editingInsight) {
+        // 편집 모드: 기존 데이터 업데이트
+        const insightRef = dbRef(database, `insights/${editingInsight.id}`);
+        await set(insightRef, {
+          ...editingInsight,
+          ...insightData
+        });
+        alert('인사이트가 성공적으로 수정되었습니다.');
+      } else {
+        // 새 작성 모드: 새 데이터 생성
+        insightData.createdAt = new Date().toISOString();
+        const insightsRef = dbRef(database, 'insights');
+        const newInsightRef = push(insightsRef);
+        await set(newInsightRef, insightData);
+        alert('인사이트가 성공적으로 저장되었습니다.');
+      }
       
       if (onSave) onSave();
       if (onClose) onClose();
@@ -305,7 +316,9 @@ const InsightEditor = ({ onClose, onSave }) => {
           {/* 헤더 */}
           <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">새 인사이트 작성</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {editingInsight ? '인사이트 수정' : '새 인사이트 작성'}
+              </h2>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -357,9 +370,15 @@ const InsightEditor = ({ onClose, onSave }) => {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="YYYYMMDD HHMMSS"
+                    disabled={editingInsight !== null}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      editingInsight ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
+                    placeholder="yyyy년 mm월 dd일 / hh시 mi분 ss초"
                   />
+                  {editingInsight && (
+                    <p className="text-xs text-gray-500 mt-1">편집 시에는 날짜를 변경할 수 없습니다.</p>
+                  )}
                 </div>
 
                 <div>

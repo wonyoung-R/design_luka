@@ -47,7 +47,7 @@ export default function InsightDetailModal({ insight, onClose, onPrev, onNext })
       >
         {/* Title */}
         <div className="w-full px-8 pt-8 pb-4 text-center border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 font-['Noto_Sans_KR'] line-clamp-2">{insight.title}</h2>
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 font-['Noto_Sans_KR'] line-clamp-2">{insight.title}</h2>
         </div>
         {/* Content */}
         <div className="flex-1 w-full overflow-y-auto px-8 py-4 font-['Noto_Sans_KR']">
@@ -76,25 +76,25 @@ export default function InsightDetailModal({ insight, onClose, onPrev, onNext })
                 </a>
               ),
               h1: ({ node, ...props }) => (
-                <h1 {...props} className="text-2xl font-bold text-gray-900 mb-4 mt-6 font-['Noto_Sans_KR']" />
+                <h1 {...props} className="text-xl md:text-2xl font-bold text-gray-900 mb-4 mt-6 font-['Noto_Sans_KR']" />
               ),
               h2: ({ node, ...props }) => (
-                <h2 {...props} className="text-xl font-bold text-gray-900 mb-3 mt-4 font-['Noto_Sans_KR']" />
+                <h2 {...props} className="text-lg md:text-xl font-bold text-gray-900 mb-3 mt-4 font-['Noto_Sans_KR']" />
               ),
               h3: ({ node, ...props }) => (
-                <h3 {...props} className="text-lg font-bold text-gray-900 mb-2 mt-3 font-['Noto_Sans_KR']" />
+                <h3 {...props} className="text-base md:text-lg font-bold text-gray-900 mb-2 mt-3 font-['Noto_Sans_KR']" />
               ),
               p: ({ node, ...props }) => (
-                <p {...props} className="text-gray-700 leading-relaxed mb-4 text-base font-['Noto_Sans_KR']" />
+                <p {...props} className="text-gray-700 leading-relaxed mb-4 text-sm md:text-base font-['Noto_Sans_KR']" />
               ),
               ul: ({ node, ...props }) => (
-                <ul {...props} className="list-disc pl-6 mb-4 space-y-2 font-['Noto_Sans_KR']" />
+                <ul {...props} className="list-disc pl-6 mb-4 space-y-2 text-sm md:text-base font-['Noto_Sans_KR']" />
               ),
               ol: ({ node, ...props }) => (
-                <ol {...props} className="list-decimal pl-6 mb-4 space-y-2 font-['Noto_Sans_KR']" />
+                <ol {...props} className="list-decimal pl-6 mb-4 space-y-2 text-sm md:text-base font-['Noto_Sans_KR']" />
               ),
               blockquote: ({ node, ...props }) => (
-                <blockquote {...props} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4 bg-gray-50 p-3 rounded-r-lg font-['Noto_Sans_KR']" />
+                <blockquote {...props} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4 bg-gray-50 p-3 rounded-r-lg text-sm md:text-base font-['Noto_Sans_KR']" />
               ),
               code: ({ node, inline, ...props }) => {
                 if (inline) {

@@ -116,7 +116,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
-              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 p-6 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: -30 }}
@@ -126,8 +126,9 @@ const AboutPage = () => {
                 >
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">CUSTOMIZE</h2>
                   <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
-                    단순한 리모델링을 넘어, 주거와 상업공간 모두 고객의 라이프스타일과 
-                    <br /> 비즈니스 니즈에 맞춘 맞춤형 디자인으로 세련되고 감각적인 공간을 창조합니다.  
+                    단순한 리모델링을 넘어, 주거와 상업공간 모두<br />
+                    고객의 <b>라이프스타일</b>과 <b>비즈니스 니즈</b>에 맞춘<br />
+                    <b>맞춤형 디자인</b>으로 세련되고 감각적인 공간을 창조합니다.  
                   </p>
                 </motion.div>
               </div>
@@ -176,7 +177,7 @@ const AboutPage = () => {
               </div>
 
               {/* 텍스트 */}
-              <div className="order-1 lg:order-2 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 lg:order-2 p-6 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: 30 }}
@@ -186,8 +187,8 @@ const AboutPage = () => {
                 >
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">DESIGN</h2>
                   <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
-                    DESIGN LUKA의 주거 및 상업공간 전문 디자이너들이 <br />
-                    최신 트렌드를 반영한 감각적인 공간을 기획하고 제안합니다.
+                    design LUKA의 <b>주거 및 상업공간 전문 디자이너</b>들이<br />
+                    최신 트렌드를 반영한 <b>감각적인 공간</b>을 기획하고 제안합니다.
                   </p>
                 </motion.div>
               </div>
@@ -202,7 +203,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-center min-h-[60vh]">
               
               {/* 텍스트 */}
-              <div className="order-1 p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
+              <div className="order-1 p-6 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] lg:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, x: -30 }}
@@ -213,7 +214,8 @@ const AboutPage = () => {
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']">STABILITY</h2>
                   <p className="text-sm md:text-base lg:text-lg leading-relaxed text-gray-600 font-normal font-['Noto_Sans_KR']">
                     시공 이후에도 지속적인 관리와 유지보수 서비스를 통해 <br />
-                    주거·상업 공간 모두에서 고객이 오랜 시간 만족할 수 있도록 최선을 다하고 있습니다.
+                    주거·상업 공간 모두에서 고객이 오랜 시간 만족할 수 있도록 <br />
+                    최선을 다하고 있습니다.
                   </p>
                 </motion.div>
               </div>
