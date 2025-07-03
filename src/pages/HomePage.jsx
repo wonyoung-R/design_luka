@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -53,7 +53,7 @@ const HomePage = () => {
   }, []);
 
   // 슬라이드 배열을 동적으로 생성 (모바일/데스크탑에 따라 다른 이미지 사용)
-  const slides = useMemo(() => [
+  const slides = [
     {
       id: 1,
       image: isMobile ? mobile01 : main01,
@@ -104,7 +104,7 @@ const HomePage = () => {
       image: isMobile ? mobile10 : main02, // 모바일 전용 이미지
       title: '럭셔리 인테리어'
     }
-  ], [isMobile]);
+  ];
 
   // 자동 슬라이드 시작 함수
   const startAutoSlide = useCallback(() => {
@@ -184,21 +184,17 @@ const HomePage = () => {
   }, [currentSlide, handleSlideChange]);
 
   const goToPrevSlide = useCallback(() => {
-    // 자연스러운 루프: 마지막에서 이전으로 가면 첫 번째로
-    const prevSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
-    const newDirection = currentSlide === 0 ? 1 : -1; // 첫 번째에서 마지막으로 갈 때는 오른쪽 방향
-    handleSlideChange(prevSlide, newDirection);
-  }, [currentSlide, handleSlideChange, slides.length]);
+    const prevSlide = (currentSlide - 1 + slides.length) % slides.length;
+    handleSlideChange(prevSlide, -1);
+  }, [currentSlide, handleSlideChange]);
 
   const goToNextSlide = useCallback(() => {
-    // 자연스러운 루프: 마지막에서 다음으로 가면 첫 번째로
     const nextSlide = (currentSlide + 1) % slides.length;
-    const newDirection = currentSlide === slides.length - 1 ? -1 : 1; // 마지막에서 첫 번째로 갈 때는 왼쪽 방향
-    handleSlideChange(nextSlide, newDirection);
-  }, [currentSlide, handleSlideChange, slides.length]);
+    handleSlideChange(nextSlide, 1);
+  }, [currentSlide, handleSlideChange]);
 
   // 터치 이벤트 핸들러 (모바일 스와이프)
-  const minSwipeDistance = 10; // 15에서 10으로 줄여서 더 민감하게
+  const minSwipeDistance = 15;
 
   const onTouchStart = (e) => {
     console.log('Touch start:', e.targetTouches[0].clientX);
@@ -221,7 +217,7 @@ const HomePage = () => {
     const offset = currentTouch - touchStart;
     
     // 드래그 거리를 제한하여 과도한 이동 방지 (더 부드럽게)
-    const maxDragDistance = window.innerWidth * 0.3; // 25%에서 30%로 늘려서 더 자유롭게
+    const maxDragDistance = window.innerWidth * 0.25; // 30%에서 25%로 줄임
     const clampedOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, offset));
     
     setDragOffset(clampedOffset);
@@ -356,11 +352,6 @@ const HomePage = () => {
             const dragX = isDragging ? dragOffset : 0;
             // x값 계산 (px)
             const xValue = `calc(${offset * 100}vw + ${offset === 0 ? dragX : 0}px)`;
-            
-            // 마지막에서 첫 번째로 넘어가는 경우 더 빠른 전환
-            const isLoopingFromLastToFirst = currentSlide === slides.length - 1 && idx === 0;
-            const transitionDuration = isDragging ? 0 : (isLoopingFromLastToFirst ? 0.6 : 1.2);
-            
             return (
               <motion.div
                 key={slide.id}
@@ -368,8 +359,8 @@ const HomePage = () => {
                 animate={{ x: xValue }}
                 transition={{ 
                   type: 'tween', 
-                  duration: transitionDuration, // 루프 시에만 빠르게
-                  ease: [0.2, 0.8, 0.2, 1] // 더 부드러운 easing
+                  duration: isDragging ? 0 : 0.5, // 0.6에서 0.5로 단축
+                  ease: [0.25, 0.1, 0.25, 1] // 더 부드러운 easing
                 }}
                 style={{ 
                   willChange: 'transform', 
@@ -433,12 +424,12 @@ const HomePage = () => {
         </button>
 
         {/* Slide Indicators */}
-        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-1 lg:space-x-4">
+        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3 lg:space-x-4">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-1 h-1 lg:w-2 lg:h-2 rounded-full transition-all duration-300 hover:scale-125 ${
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 hover:scale-125 ${
                 index === currentSlide 
                   ? 'bg-white scale-125' 
                   : 'bg-white/40 hover:bg-white/60'
@@ -449,7 +440,7 @@ const HomePage = () => {
         </div>
 
         {/* Progress Bar with Gradient */}
-        <div className="absolute bottom-0 left-0 w-full h-1.5 lg:h-1 bg-white/20 z-30">
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-20">
           <motion.div
             key={progressKey}
             className="h-full bg-gradient-to-r from-white/60 to-white/80"

@@ -395,20 +395,15 @@ export default function PortfolioPage() {
   // 모달 관련 함수들
   const openModal = (imageUrl, project = selectedProject) => {
     if (project) {
-      // 모든 이미지를 하나의 배열로 사용
       const projectAllImages = project.images;
       setAllImages(projectAllImages);
-      
-      // 현재 클릭한 이미지의 인덱스 찾기
+      // 클릭한 이미지의 인덱스 찾기
       const imageIndex = projectAllImages.findIndex(img => img === imageUrl);
       setSelectedImageIndex(imageIndex !== -1 ? imageIndex : 0);
       setSelectedImage(imageUrl);
     }
-    
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
-    
-    // Add history entry when modal opens
     window.history.pushState({ modalOpen: true }, '', window.location.href);
   };
 
@@ -599,10 +594,10 @@ export default function PortfolioPage() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="columns-1 md:columns-2 gap-4 md:gap-6">
+            <div className="columns-1 md:columns-2 gap-2 md:gap-3">
               {/* Main image first */}
               <motion.div
-                className="break-inside-avoid mb-4 md:mb-6"
+                className="break-inside-avoid mb-2 md:mb-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: 0.1 }}
@@ -627,7 +622,7 @@ export default function PortfolioPage() {
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
-                  className="break-inside-avoid mb-4 md:mb-6"
+                  className="break-inside-avoid mb-2 md:mb-3"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
@@ -752,38 +747,21 @@ export default function PortfolioPage() {
   useLayoutEffect(() => {
     if (isModalOpen && thumbnailNavRef.current && allImages.length > 0) {
       const container = thumbnailNavRef.current;
-      const center = container.children[selectedImageIndex];
-      if (center) {
-        const containerWidth = container.clientWidth;
-        const centerLeft = center.offsetLeft;
-        const centerWidth = center.offsetWidth;
-        const totalWidth = container.scrollWidth;
-        // 썸네일 개수가 적어서 컨테이너보다 전체 너비가 작으면 스크롤X
-        if (totalWidth <= containerWidth) {
-          container.scrollTo({ left: 0, behavior: 'smooth' });
-          return;
-        }
-        // 맨 왼쪽
-        if (selectedImageIndex === 0) {
-          container.scrollTo({ left: 0, behavior: 'smooth' });
-          return;
-        }
-        // 맨 오른쪽
-        if (selectedImageIndex === allImages.length - 1) {
-          const maxScroll = totalWidth - containerWidth;
-          container.scrollTo({ left: maxScroll, behavior: 'smooth' });
-          return;
-        }
-        // 중앙 정렬
-        let scrollTo = centerLeft + centerWidth / 2 - containerWidth / 2;
-        // 왼쪽/오른쪽 끝 보정
-        if (scrollTo < 0) scrollTo = 0;
-        const maxScroll = totalWidth - containerWidth;
-        if (scrollTo > maxScroll) scrollTo = maxScroll;
-        container.scrollTo({ left: scrollTo, behavior: 'smooth' });
-      }
+      const buttons = Array.from(container.children).filter(el => el.tagName === 'BUTTON');
+      const center = buttons[selectedImageIndex];
+      if (!center) return;
+      const containerWidth = container.clientWidth;
+      const centerLeft = center.offsetLeft;
+      const centerWidth = center.offsetWidth;
+      const totalWidth = container.scrollWidth;
+
+      let scrollTo = centerLeft + centerWidth / 2 - containerWidth / 2;
+      if (scrollTo < 0) scrollTo = 0;
+      const maxScroll = totalWidth - containerWidth;
+      if (scrollTo > maxScroll) scrollTo = maxScroll;
+      container.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
-  }, [isModalOpen, selectedImageIndex, allImages.length]);
+  }, [isModalOpen, selectedImageIndex, allImages.length, selectedProject?.id]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -933,7 +911,7 @@ export default function PortfolioPage() {
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={closeModal}
-                    className="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-105"
+                    className="absolute top-0 right-0 m-4 z-30 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:scale-105"
                     title="닫기 (ESC)"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -986,8 +964,8 @@ export default function PortfolioPage() {
                   className="relative w-full h-full flex items-center justify-center"
                 >
                   {/* 모바일 좌/우 터치(탭) 영역 */}
-                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-10" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
-                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-10" onClick={goToNextImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-5" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-5" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   <ProjectImage
                     src={selectedImage}
                     alt="Gallery view"
@@ -1005,9 +983,9 @@ export default function PortfolioPage() {
 
               {/* Bottom Thumbnail Gallery */}
               {allImages.length > 1 && (
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 py-6 px-4 bg-gradient-to-t from-black/80 to-transparent z-20 min-h-[96px] max-w-[90vw] mx-auto flex items-center box-border">
                   <div
-                    className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory select-none"
+                    className="flex h-full items-center justify-start space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory select-none w-full max-w-full box-border"
                     style={{scrollBehavior:'smooth', touchAction:'pan-x', cursor: isDragging ? 'grabbing' : 'grab', WebkitOverflowScrolling:'touch'}}
                     ref={thumbnailNavRef}
                     tabIndex={0}
@@ -1022,7 +1000,7 @@ export default function PortfolioPage() {
                           setSelectedImageIndex(index);
                           setSelectedImage(image);
                         }}
-                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center user-select-none ${
+                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center user-select-none self-center box-border ${
                           index === selectedImageIndex 
                             ? 'border-white scale-[1.10]' 
                             : 'border-white/30 hover:border-white/60'
