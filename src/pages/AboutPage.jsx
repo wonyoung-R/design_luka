@@ -79,7 +79,7 @@ const AboutPage = () => {
               </div>
 
               {/* 소개글 */}
-              <div className="p-8 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] md:min-h-0 flex flex-col justify-center">
+              <div className="p-6 md:p-16 lg:p-20 min-h-[30vh] md:min-h-[50vh] md:min-h-0 flex flex-col justify-center">
                 <motion.div
                   className="text-sm md:text-base leading-relaxed space-y-4 md:space-y-6 scroll-text-effect transition-colors duration-300 font-['Noto_Sans_KR']"
                   initial={{ opacity: 0, y: 30 }}
