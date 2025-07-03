@@ -405,7 +405,7 @@ const HomePage = () => {
         {/* Navigation Arrows - 데스크톱용 */}
         <button
           onClick={goToPrevSlide}
-          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm transition-all duration-200 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 transition-all duration-200 active:scale-95 items-center justify-center group"
           aria-label="이전 슬라이드"
         >
           <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -415,7 +415,7 @@ const HomePage = () => {
         
         <button
           onClick={goToNextSlide}
-          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 rounded-full bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm transition-all duration-200 active:scale-95 items-center justify-center group"
+          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 transition-all duration-200 active:scale-95 items-center justify-center group"
           aria-label="다음 슬라이드"
         >
           <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
