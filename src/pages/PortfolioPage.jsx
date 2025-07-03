@@ -651,14 +651,14 @@ export default function PortfolioPage() {
                 </div>
               </motion.div>
 
-              {/* Sub images - masonry layout with lazy loading */}
+              {/* Sub images - masonry layout with eager loading and no delay */}
               {project.images.slice(1).map((image, index) => (
                 <motion.div
                   key={index}
                   className="break-inside-avoid mb-4 md:mb-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <div className="relative overflow-hidden rounded-xl">
                     <ProjectImage
@@ -667,6 +667,7 @@ export default function PortfolioPage() {
                       projectId={project.id}
                       imageIndex={index + 1}
                       className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                      loading="eager"
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -733,6 +734,22 @@ export default function PortfolioPage() {
       errorAttemptsRef.current = {};
     };
   }, []);
+
+  // 썸네일 네비게이션 ref 추가
+  const thumbnailNavRef = useRef(null);
+
+  // 썸네일 중앙 정렬 useEffect (모달 오픈/이미지 변경 시 확실하게 동작)
+  useEffect(() => {
+    if (isModalOpen && thumbnailNavRef.current && allImages.length > 0) {
+      const center = thumbnailNavRef.current.children[selectedImageIndex];
+      if (center && center.scrollIntoView) {
+        center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+        setTimeout(() => {
+          center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+        }, 0);
+      }
+    }
+  }, [isModalOpen, selectedImageIndex, allImages.length]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -938,14 +955,15 @@ export default function PortfolioPage() {
                   onTouchEnd={onTouchEnd}
                 >
                   {/* 모바일 좌/우 터치 영역 */}
-                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-20" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
-                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-20" onClick={goToNextImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-0" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-0" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   <ProjectImage
                     src={selectedImage}
                     alt="Gallery view"
                     projectId={selectedProject?.id || 'modal'}
                     imageIndex={selectedImageIndex}
                     className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                    style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -996,12 +1014,7 @@ export default function PortfolioPage() {
               {/* Bottom Thumbnail Gallery */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory" style={{scrollBehavior:'smooth'}} ref={el => {
-                    if (el && allImages.length > 0) {
-                      const center = el.children[selectedImageIndex];
-                      if (center && center.scrollIntoView) center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
-                    }
-                  }}>
+                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory" style={{scrollBehavior:'smooth'}} ref={thumbnailNavRef}>
                     {allImages.map((image, index) => (
                       <button
                         key={index}
@@ -1013,7 +1026,7 @@ export default function PortfolioPage() {
                         }}
                         className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center ${
                           index === selectedImageIndex 
-                            ? 'border-white scale-110' 
+                            ? 'border-white scale-[1.10]' 
                             : 'border-white/30 hover:border-white/60'
                         }`}
                         style={{ pointerEvents: 'auto' }}
