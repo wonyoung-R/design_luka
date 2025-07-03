@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { database } from '../firebase/config';
@@ -737,16 +737,78 @@ export default function PortfolioPage() {
 
   // 썸네일 네비게이션 ref 추가
   const thumbnailNavRef = useRef(null);
+  // 데스크탑 마우스 드래그 상태 관리
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [scrollStartX, setScrollStartX] = useState(0);
 
-  // 썸네일 중앙 정렬 useEffect (모달 오픈/이미지 변경 시 확실하게 동작)
+  // 마우스 드래그 핸들러
+  const handleThumbMouseDown = (e) => {
+    // 오직 데스크탑(마우스)에서만 동작
+    if (e.type === 'mousedown' && e.button === 0 && thumbnailNavRef.current) {
+      setIsDragging(true);
+      setDragStartX(e.clientX);
+      setScrollStartX(thumbnailNavRef.current.scrollLeft);
+      document.body.style.cursor = 'grabbing';
+    }
+  };
+  const handleThumbMouseMove = (e) => {
+    if (isDragging && thumbnailNavRef.current) {
+      const dx = e.clientX - dragStartX;
+      thumbnailNavRef.current.scrollLeft = scrollStartX - dx;
+    }
+  };
+  const handleThumbMouseUp = () => {
+    setIsDragging(false);
+    document.body.style.cursor = '';
+  };
   useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleThumbMouseMove);
+      window.addEventListener('mouseup', handleThumbMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleThumbMouseMove);
+      window.removeEventListener('mouseup', handleThumbMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleThumbMouseMove);
+      window.removeEventListener('mouseup', handleThumbMouseUp);
+    };
+  }, [isDragging]);
+
+  // 썸네일 중앙 정렬 useLayoutEffect (scrollLeft 직접 계산, 양끝 보정, 썸네일 적을 때 예외)
+  useLayoutEffect(() => {
     if (isModalOpen && thumbnailNavRef.current && allImages.length > 0) {
-      const center = thumbnailNavRef.current.children[selectedImageIndex];
-      if (center && center.scrollIntoView) {
-        center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
-        setTimeout(() => {
-          center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
-        }, 0);
+      const container = thumbnailNavRef.current;
+      const center = container.children[selectedImageIndex];
+      if (center) {
+        const containerWidth = container.clientWidth;
+        const centerLeft = center.offsetLeft;
+        const centerWidth = center.offsetWidth;
+        const totalWidth = container.scrollWidth;
+        // 썸네일 개수가 적어서 컨테이너보다 전체 너비가 작으면 스크롤X
+        if (totalWidth <= containerWidth) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+          return;
+        }
+        // 맨 왼쪽
+        if (selectedImageIndex === 0) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+          return;
+        }
+        // 맨 오른쪽
+        if (selectedImageIndex === allImages.length - 1) {
+          const maxScroll = totalWidth - containerWidth;
+          container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+          return;
+        }
+        // 중앙 정렬
+        let scrollTo = centerLeft + centerWidth / 2 - containerWidth / 2;
+        // 왼쪽/오른쪽 끝 보정
+        if (scrollTo < 0) scrollTo = 0;
+        const maxScroll = totalWidth - containerWidth;
+        if (scrollTo > maxScroll) scrollTo = maxScroll;
+        container.scrollTo({ left: scrollTo, behavior: 'smooth' });
       }
     }
   }, [isModalOpen, selectedImageIndex, allImages.length]);
@@ -1014,7 +1076,13 @@ export default function PortfolioPage() {
               {/* Bottom Thumbnail Gallery */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory" style={{scrollBehavior:'smooth'}} ref={thumbnailNavRef}>
+                  <div
+                    className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory select-none"
+                    style={{scrollBehavior:'smooth', touchAction:'pan-x', cursor: isDragging ? 'grabbing' : 'grab', WebkitOverflowScrolling:'touch'}}
+                    ref={thumbnailNavRef}
+                    tabIndex={0}
+                    onMouseDown={handleThumbMouseDown}
+                  >
                     {allImages.map((image, index) => (
                       <button
                         key={index}
@@ -1024,18 +1092,19 @@ export default function PortfolioPage() {
                           setSelectedImageIndex(index);
                           setSelectedImage(image);
                         }}
-                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center ${
+                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center user-select-none ${
                           index === selectedImageIndex 
                             ? 'border-white scale-[1.10]' 
                             : 'border-white/30 hover:border-white/60'
                         }`}
-                        style={{ pointerEvents: 'auto' }}
+                        style={{ pointerEvents: 'auto', userSelect: 'none' }}
                       >
                         <img
                           src={image}
                           alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover user-select-none"
                           draggable={false}
+                          style={{ userSelect: 'none' }}
                         />
                       </button>
                     ))}
