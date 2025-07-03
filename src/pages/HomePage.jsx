@@ -433,12 +433,12 @@ const HomePage = () => {
         </button>
 
         {/* Slide Indicators */}
-        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2 lg:space-x-4">
+        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-1 lg:space-x-4">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2 h-2 lg:w-1.5 lg:h-1.5 rounded-full transition-all duration-300 hover:scale-125 ${
+              className={`w-1 h-1 lg:w-2 lg:h-2 rounded-full transition-all duration-300 hover:scale-125 ${
                 index === currentSlide 
                   ? 'bg-white scale-125' 
                   : 'bg-white/40 hover:bg-white/60'

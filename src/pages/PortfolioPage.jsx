@@ -937,6 +937,9 @@ export default function PortfolioPage() {
                   onTouchMove={onTouchMove}
                   onTouchEnd={onTouchEnd}
                 >
+                  {/* 모바일 좌/우 터치 영역 */}
+                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-20" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-20" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   <ProjectImage
                     src={selectedImage}
                     alt="Gallery view"
@@ -993,7 +996,12 @@ export default function PortfolioPage() {
               {/* Bottom Thumbnail Gallery */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide">
+                  <div className="flex items-center justify-center space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory" style={{scrollBehavior:'smooth'}} ref={el => {
+                    if (el && allImages.length > 0) {
+                      const center = el.children[selectedImageIndex];
+                      if (center && center.scrollIntoView) center.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+                    }
+                  }}>
                     {allImages.map((image, index) => (
                       <button
                         key={index}
@@ -1003,7 +1011,7 @@ export default function PortfolioPage() {
                           setSelectedImageIndex(index);
                           setSelectedImage(image);
                         }}
-                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
+                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:scale-105 snap-center ${
                           index === selectedImageIndex 
                             ? 'border-white scale-110' 
                             : 'border-white/30 hover:border-white/60'
