@@ -442,34 +442,6 @@ export default function PortfolioPage() {
     }
   };
 
-  // 모바일 스와이프 기능 추가
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 30; // 50에서 30으로 줄여서 더 민감하게
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      goToNextImage();
-    } else if (isRightSwipe) {
-      goToPreviousImage();
-    }
-  };
-
   // ESC key to close detail view and modal, arrow keys for modal navigation
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -1012,13 +984,10 @@ export default function PortfolioPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                   className="relative w-full h-full flex items-center justify-center"
-                  onTouchStart={onTouchStart}
-                  onTouchMove={onTouchMove}
-                  onTouchEnd={onTouchEnd}
                 >
-                  {/* 모바일 좌/우 터치 영역 */}
-                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-0" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
-                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-0" onClick={goToNextImage} style={{cursor:'pointer'}} />
+                  {/* 모바일 좌/우 터치(탭) 영역 */}
+                  <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-10" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
+                  <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-10" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   <ProjectImage
                     src={selectedImage}
                     alt="Gallery view"
@@ -1032,45 +1001,6 @@ export default function PortfolioPage() {
                     }}
                   />
                 </motion.div>
-                
-                {/* Navigation Overlays */}
-                {allImages.length > 1 && (
-                  <>
-                    {/* Left Navigation Area */}
-                    <div 
-                      className="hidden md:flex absolute left-0 top-0 bottom-0 w-1/4 items-center justify-start pl-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        goToPreviousImage();
-                      }}
-                      title="이전 이미지"
-                    >
-                      <div className="w-12 h-12 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 backdrop-blur-sm">
-                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                    
-                    {/* Right Navigation Area */}
-                    <div 
-                      className="hidden md:flex absolute right-0 top-0 bottom-0 w-1/4 items-center justify-end pr-4 opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer group"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        goToNextImage();
-                      }}
-                      title="다음 이미지"
-                    >
-                      <div className="w-12 h-12 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 backdrop-blur-sm">
-                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Bottom Thumbnail Gallery */}
