@@ -58,53 +58,53 @@ const HomePage = () => {
   const slides = [
     {
       id: 1,
-      image: isMobile ? mobile01 : main01,
-      title: '신반포 APT 25py'
+      image: isMobile ? mobile01 : main09,
+      title: 'designLuka의 빛'
     },
     {
       id: 2,
-      image: isMobile ? mobile02 : main02,
-      title: '관악 드림타운 33py'
+      image: isMobile ? mobile02 : main10,
+      title: 'designLuka의 빛'
     },
     {
       id: 3,
       image: isMobile ? mobile03 : main03,
-      title: '럭셔리 아파트'
+      title: 'designLuka의 빛'
     },
     {
       id: 4,
       image: isMobile ? mobile04 : main04,
-      title: '상업 공간 디자인'
+      title: 'designLuka의 빛'
     },
     {
       id: 5,
       image: isMobile ? mobile05 : main05,
-      title: 'Design LUKA'
+      title: 'designLuka의 빛'
     },
     {
       id: 6,
       image: isMobile ? mobile06 : main06,
-      title: '모던 인테리어'
+      title: 'designLuka의 빛'
     },
     {
       id: 7,
       image: isMobile ? mobile07 : main07,
-      title: '프리미엄 공간'
+      title: 'designLuka의 빛'
     },
     {
       id: 8,
       image: isMobile ? mobile08 : main08,
-      title: '엘레간트 디자인'
+      title: 'designLuka의 빛'
     },
     {
       id: 9,
-      image: isMobile ? mobile09 : main09,
-      title: '프리미엄 디자인'
+      image: isMobile ? mobile09 : main01,
+      title: 'designLuka의 빛'
     },
     {
       id: 10,
-      image: isMobile ? mobile10 : main10,
-      title: '럭셔리 인테리어'
+      image: isMobile ? mobile10 : main02,
+      title: 'designLuka의 빛'
     }
   ];
 
