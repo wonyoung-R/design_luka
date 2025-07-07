@@ -12,6 +12,8 @@ import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
 import main07 from '../images/main/main07.jpg';
 import main08 from '../images/main/main08.jpg';
+import main09 from '../images/main/main09.JPG';
+import main10 from '../images/main/main10.JPG';
 
 // Import mobile images
 import mobile01 from '../images/main/mobile/1.jpg';
@@ -96,12 +98,12 @@ const HomePage = () => {
     },
     {
       id: 9,
-      image: isMobile ? mobile09 : main01, // 모바일 전용 이미지
+      image: isMobile ? mobile09 : main09,
       title: '프리미엄 디자인'
     },
     {
       id: 10,
-      image: isMobile ? mobile10 : main02, // 모바일 전용 이미지
+      image: isMobile ? mobile10 : main10,
       title: '럭셔리 인테리어'
     }
   ];
