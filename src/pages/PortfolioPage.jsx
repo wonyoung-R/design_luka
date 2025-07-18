@@ -612,9 +612,6 @@ export default function PortfolioPage() {
               {/* Location */}
               <p className="text-base md:text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
 
-              {/* Style */}
-              <p className="text-sm md:text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
-
               {/* Description */}
               <div className="prose prose-sm max-w-none">
                 <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left text-sm md:text-base">
