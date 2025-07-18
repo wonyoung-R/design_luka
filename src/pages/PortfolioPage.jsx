@@ -542,9 +542,14 @@ export default function PortfolioPage() {
           >
             <div className="relative aspect-[4/5] overflow-hidden">
               <ProjectImage
-                src={project.images && project.images.length > 0 ? 
-                  (project.thumbnailIndex !== undefined ? project.images[project.thumbnailIndex]?.url : project.images[0]?.url) : 
-                  project.image}
+                src={(() => {
+                  if (project.images && project.images.length > 0) {
+                    const thumbnailIndex = project.originalProject?.thumbnailIndex || 0;
+                    const selectedImage = project.images[thumbnailIndex];
+                    return selectedImage || project.images[0];
+                  }
+                  return project.image;
+                })()}
                 alt={project.title}
                 projectId={project.id}
                 imageIndex={0}
