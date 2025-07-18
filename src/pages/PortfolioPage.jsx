@@ -241,6 +241,7 @@ export default function PortfolioPage() {
               area: project.type === 'residential' ? project.area : project.businessType,
               type: project.type === 'residential' ? '아파트' : convertBusinessTypeToKorean(project.businessType || '상업공간'),
               style: project.style || '모던 스타일',
+              styleDescription: project.styleDescription || '',
               image: allImages[0],
               aspectRatio: 'aspect-[4/5]',
               images: allImages,
