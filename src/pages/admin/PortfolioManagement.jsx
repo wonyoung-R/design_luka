@@ -28,8 +28,10 @@ const PortfolioManagement = () => {
     area: '',
     businessType: 'cafe',
     style: '',
+    styleDescription: '',
     constructionDate: '',
-    images: []
+    images: [],
+    thumbnailIndex: 0
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editProject, setEditProject] = useState(null);
@@ -186,9 +188,11 @@ const PortfolioManagement = () => {
         area: formData.type === 'residential' ? formData.area : null,
         businessType: formData.type === 'commercial' ? formData.businessType : null,
         style: formData.style,
+        styleDescription: formData.styleDescription,
         constructionDate: formData.constructionDate,
         folderName: generateFolderName(),
         images: uploadedImages,
+        thumbnailIndex: formData.thumbnailIndex,
         createdAt: new Date().toISOString(),
         createdBy: currentUser.uid,
         updatedAt: new Date().toISOString()
@@ -207,8 +211,10 @@ const PortfolioManagement = () => {
         area: '',
         businessType: 'cafe',
         style: '',
+        styleDescription: '',
         constructionDate: '',
-        images: []
+        images: [],
+        thumbnailIndex: 0
       });
       setSelectedFiles([]);
       setUploadProgress(0);
@@ -568,16 +574,29 @@ const PortfolioManagement = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">스타일 설명 (선택사항)</label>
-                <textarea
-                  name="style"
-                  value={formData.style}
-                  onChange={handleInputChange}
-                  rows="3"
-                  placeholder="프로젝트의 스타일이나 특징을 설명해주세요"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">짧은 스타일 설명</label>
+                  <input
+                    type="text"
+                    name="style"
+                    value={formData.style}
+                    onChange={handleInputChange}
+                    placeholder="예: 모던, 미니멀, 클래식"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">긴 상세 설명</label>
+                  <textarea
+                    name="styleDescription"
+                    value={formData.styleDescription}
+                    onChange={handleInputChange}
+                    rows="3"
+                    placeholder="프로젝트의 상세한 스타일 설명을 입력해주세요"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -601,9 +620,31 @@ const PortfolioManagement = () => {
                   className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-800"
                 />
                 {selectedFiles.length > 0 && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    {selectedFiles.length}장의 이미지가 선택되었습니다.
-                  </p>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600 mb-2">
+                      {selectedFiles.length}장의 이미지가 선택되었습니다.
+                    </p>
+                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                      {selectedFiles.map((file, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className={`w-full h-20 object-cover rounded cursor-pointer border-2 ${
+                              formData.thumbnailIndex === index ? 'border-blue-500' : 'border-gray-300'
+                            }`}
+                            onClick={() => setFormData(prev => ({ ...prev, thumbnailIndex: index }))}
+                          />
+                          {formData.thumbnailIndex === index && (
+                            <div className="absolute top-1 right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              ✓
+                            </div>
+                          )}
+                          <p className="text-xs text-center mt-1">썸네일</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -706,15 +747,27 @@ const PortfolioManagement = () => {
                   )}
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">스타일 설명</label>
-                <textarea
-                  name="style"
-                  value={editFormData.style}
-                  onChange={handleEditInputChange}
-                  rows="3"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">짧은 스타일 설명</label>
+                  <input
+                    type="text"
+                    name="style"
+                    value={editFormData.style}
+                    onChange={handleEditInputChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">긴 상세 설명</label>
+                  <textarea
+                    name="styleDescription"
+                    value={editFormData.styleDescription}
+                    onChange={handleEditInputChange}
+                    rows="3"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
               </div>
 
               <div>
@@ -728,11 +781,18 @@ const PortfolioManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">기존 이미지</label>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700">기존 이미지 (썸네일 선택)</label>
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-2">
                   {editFormData.images && editFormData.images.map((img, idx) => (
-                    <div key={idx} className="relative w-24 h-24">
-                      <img src={img.url || img} alt="project" className="w-full h-full object-cover rounded" />
+                    <div key={idx} className="relative">
+                      <img 
+                        src={img.url || img} 
+                        alt="project" 
+                        className={`w-full h-20 object-cover rounded cursor-pointer border-2 ${
+                          (editFormData.thumbnailIndex || 0) === idx ? 'border-blue-500' : 'border-gray-300'
+                        }`}
+                        onClick={() => setEditFormData(prev => ({ ...prev, thumbnailIndex: idx }))}
+                      />
                       <button
                         type="button"
                         onClick={() => handleRemoveEditImage(idx)}
@@ -741,6 +801,12 @@ const PortfolioManagement = () => {
                       >
                         ×
                       </button>
+                      {(editFormData.thumbnailIndex || 0) === idx && (
+                        <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          ✓
+                        </div>
+                      )}
+                      <p className="text-xs text-center mt-1">썸네일</p>
                     </div>
                   ))}
                 </div>

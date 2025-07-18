@@ -542,7 +542,9 @@ export default function PortfolioPage() {
           >
             <div className="relative aspect-[4/5] overflow-hidden">
               <ProjectImage
-                src={project.image}
+                src={project.images && project.images.length > 0 ? 
+                  (project.thumbnailIndex !== undefined ? project.images[project.thumbnailIndex]?.url : project.images[0]?.url) : 
+                  project.image}
                 alt={project.title}
                 projectId={project.id}
                 imageIndex={0}
@@ -612,13 +614,16 @@ export default function PortfolioPage() {
               {/* Location */}
               <p className="text-base md:text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
 
+              {/* Short Style Description */}
+              <p className="text-sm md:text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
+
               {/* Description */}
               <div className="prose prose-sm max-w-none">
                 <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left text-sm md:text-base">
-                  {activeTab === 'residential' ? 
+                  {project.styleDescription || (activeTab === 'residential' ? 
                     `${project.style} 스타일의 아파트 인테리어 프로젝트입니다. 주거 공간의 기능성과 심미성을 모두 고려한 설계로, 일상 속 편안함과 세련된 분위기를 동시에 구현했습니다.` :
                     `${project.style} 스타일의 ${project.type} 인테리어 프로젝트입니다. 공간의 특성을 살린 디자인으로, 실용성과 아름다움을 조화롭게 구현했습니다.`
-                  }
+                  )}
                 </p>
               </div>
             </div>
