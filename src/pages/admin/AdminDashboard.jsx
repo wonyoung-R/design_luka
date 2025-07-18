@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { runDataMigration } from '../../utils/updateExistingInsights';
+import { checkDuplicatePortfolioData, cleanDuplicatePortfolioData } from '../../utils/cleanDuplicateData';
 
 const CLOUDINARY_API_KEY = '324293491948238';
 const CLOUDINARY_API_SECRET = 'Mb8GBN8qaPzHmKpmapoBCXIwD_A';
@@ -85,6 +86,28 @@ const AdminDashboard = () => {
   const handleDataMigration = () => {
     if (window.confirm('기존 인사이트 데이터에 thumbnail과 url 필드를 추가하시겠습니까?\n\n이 작업은 기존 데이터를 수정합니다.')) {
       runDataMigration();
+    }
+  };
+
+  const handleCheckDuplicates = async () => {
+    try {
+      const result = await checkDuplicatePortfolioData();
+      alert(`중복 체크 완료!\n\n총 프로젝트: ${result.total}개\n중복 프로젝트: ${result.duplicates.length}개\n\n중복된 프로젝트:\n${result.duplicates.map(d => `- ${d.title} (ID: ${d.id})`).join('\n')}`);
+    } catch (error) {
+      console.error('Error checking duplicates:', error);
+      alert('중복 체크 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleCleanDuplicates = async () => {
+    if (window.confirm('중복된 포트폴리오 데이터를 정리하시겠습니까?\n\n이 작업은 중복된 프로젝트를 삭제합니다.')) {
+      try {
+        await cleanDuplicatePortfolioData();
+        alert('중복 데이터 정리가 완료되었습니다!');
+      } catch (error) {
+        console.error('Error cleaning duplicates:', error);
+        alert('중복 데이터 정리 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -188,6 +211,39 @@ const AdminDashboard = () => {
                 >
                   구글 시트 바로가기
                 </a>
+              </div>
+            </motion.div>
+
+            {/* Data Management Card */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-white overflow-hidden shadow rounded-lg"
+            >
+              <div className="p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">데이터 관리</h2>
+                <p className="text-gray-500 mb-4">
+                  중복 데이터 체크 및 정리, 기존 데이터 마이그레이션을 수행할 수 있습니다.
+                </p>
+                <div className="space-y-2">
+                  <button
+                    onClick={handleCheckDuplicates}
+                    className="w-full px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm"
+                  >
+                    중복 데이터 체크
+                  </button>
+                  <button
+                    onClick={handleCleanDuplicates}
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                  >
+                    중복 데이터 정리
+                  </button>
+                  <button
+                    onClick={handleDataMigration}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    인사이트 데이터 마이그레이션
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

@@ -148,8 +148,14 @@ const PortfolioManagement = () => {
     // 인증 상태 재확인
     if (!auth.currentUser) {
       alert('인증 세션이 만료되었습니다. 다시 로그인해주세요.');
+      console.error('Auth currentUser is null');
       return;
     }
+
+    // 디버깅 정보 출력
+    console.log('Current user:', auth.currentUser);
+    console.log('User UID:', auth.currentUser.uid);
+    console.log('User email:', auth.currentUser.email);
 
     setIsUploading(true);
     setUploadProgress(0);

@@ -184,10 +184,17 @@ export default function PortfolioPage() {
         
         if (data) {
           const formattedData = { residential: [], commercial: [] };
+          const processedIds = new Set(); // 중복 제거를 위한 Set
           
           console.log('Raw Firebase data:', data);
           
           Object.entries(data).forEach(([id, project]) => {
+            // 중복 ID 체크
+            if (processedIds.has(id)) {
+              console.log(`Duplicate project ID found: ${id}, skipping...`);
+              return;
+            }
+            
             console.log(`Processing project ${id}:`, project);
             console.log(`Project images:`, project.images);
             
@@ -245,9 +252,42 @@ export default function PortfolioPage() {
             } else {
               formattedData.commercial.push(formattedProject);
             }
+            
+            // 처리된 ID를 Set에 추가
+            processedIds.add(id);
           });
           
-          setPortfolioData(formattedData);
+          // 중복 제거 및 정렬
+          const uniqueResidential = formattedData.residential.filter((project, index, self) => 
+            index === self.findIndex(p => p.id === project.id)
+          );
+          
+          const uniqueCommercial = formattedData.commercial.filter((project, index, self) => 
+            index === self.findIndex(p => p.id === project.id)
+          );
+          
+          // 생성일 기준으로 정렬 (최신순)
+          const sortedResidential = uniqueResidential.sort((a, b) => {
+            const dateA = a.originalProject?.createdAt ? new Date(a.originalProject.createdAt) : new Date(0);
+            const dateB = b.originalProject?.createdAt ? new Date(b.originalProject.createdAt) : new Date(0);
+            return dateB - dateA;
+          });
+          
+          const sortedCommercial = uniqueCommercial.sort((a, b) => {
+            const dateA = a.originalProject?.createdAt ? new Date(a.originalProject.createdAt) : new Date(0);
+            const dateB = b.originalProject?.createdAt ? new Date(b.originalProject.createdAt) : new Date(0);
+            return dateB - dateA;
+          });
+          
+          console.log('Final processed data:', {
+            residential: sortedResidential.length,
+            commercial: sortedCommercial.length
+          });
+          
+          setPortfolioData({
+            residential: sortedResidential,
+            commercial: sortedCommercial
+          });
         } else {
           // 샘플 데이터 (프로젝트가 없을 때)
           setPortfolioData({
