@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { database } from '../../firebase/config';
+import { database, auth } from '../../firebase/config';
 import { ref, push, set, onValue, remove } from 'firebase/database';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -140,7 +140,14 @@ const PortfolioManagement = () => {
     }
 
     if (!currentUser) {
-      alert('Firebase 로그인이 필요합니다.');
+      alert('Firebase 로그인이 필요합니다. 관리자로 로그인해주세요.');
+      console.error('User not authenticated:', currentUser);
+      return;
+    }
+
+    // 인증 상태 재확인
+    if (!auth.currentUser) {
+      alert('인증 세션이 만료되었습니다. 다시 로그인해주세요.');
       return;
     }
 
@@ -204,7 +211,14 @@ const PortfolioManagement = () => {
       
     } catch (error) {
       console.error('업로드 실패:', error);
-      alert('업로드 중 오류가 발생했습니다: ' + error.message);
+      
+      // Firebase 권한 오류인지 확인
+      if (error.message.includes('PERMISSION_DENIED') || error.message.includes('permission_denied')) {
+        alert('Firebase 권한 오류가 발생했습니다. 관리자로 로그인되어 있는지 확인해주세요.');
+        console.error('Firebase permission error:', error);
+      } else {
+        alert('업로드 중 오류가 발생했습니다: ' + error.message);
+      }
     } finally {
       setIsUploading(false);
     }

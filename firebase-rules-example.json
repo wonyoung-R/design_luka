@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "portfolio": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "insights": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "projects": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+} 
