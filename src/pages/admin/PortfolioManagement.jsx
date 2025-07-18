@@ -640,7 +640,6 @@ const PortfolioManagement = () => {
                               ✓
                             </div>
                           )}
-                          <p className="text-xs text-center mt-1">썸네일</p>
                         </div>
                       ))}
                     </div>
@@ -806,7 +805,6 @@ const PortfolioManagement = () => {
                           ✓
                         </div>
                       )}
-                      <p className="text-xs text-center mt-1">썸네일</p>
                     </div>
                   ))}
                 </div>
