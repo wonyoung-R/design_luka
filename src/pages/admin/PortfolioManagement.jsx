@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 // Cloudinary 설정
 const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
 // API Secret은 클라이언트에서 제거 (보안상 위험)
-const UPLOAD_PRESET = 'ml_default'; // 기본 preset 사용
+const UPLOAD_PRESET = 'portfolio_upload'; // 실제 존재하는 preset 사용
 
 // Cloudinary 기본 URL
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -97,29 +97,43 @@ const PortfolioManagement = () => {
 
   // Cloudinary 기본 업로드 함수 (가장 간단한 방법)
   const uploadToCloudinary = async (file) => {
+    console.log('=== UPLOAD START ===');
+    console.log('File:', file);
+    console.log('File name:', file.name);
+    console.log('File size:', file.size);
+    console.log('File type:', file.type);
+    
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
     
+    console.log('FormData created');
+    console.log('Upload preset:', UPLOAD_PRESET);
+    console.log('Upload URL:', CLOUDINARY_UPLOAD_URL);
+    
     // 추가 파라미터 없이 가장 기본적인 설정만 사용
 
     try {
-      console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Using upload preset:', UPLOAD_PRESET);
-      console.log('Upload URL:', CLOUDINARY_UPLOAD_URL);
+      console.log('Starting fetch request...');
+      
+      console.log('Fetch request sent, waiting for response...');
       
       const response = await fetch(CLOUDINARY_UPLOAD_URL, {
         method: 'POST',
         body: formData
       });
 
+      console.log('Response received!');
       console.log('Upload response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
+        console.log('Response is not OK, reading error text...');
         const errorText = await response.text();
         console.error('Cloudinary error response:', errorText);
         console.error('Full response:', response);
+        console.error('Response status:', response.status);
+        console.error('Response statusText:', response.statusText);
         
         // 더 자세한 에러 정보 제공
         let errorMessage = `Cloudinary 업로드 실패: ${response.status}`;
@@ -132,11 +146,14 @@ const PortfolioManagement = () => {
           errorMessage += ' - 서버 오류. 파일 크기나 형식을 확인하세요.';
         }
         
+        console.error('Throwing error:', errorMessage);
         throw new Error(errorMessage);
       }
 
+      console.log('Response is OK, parsing JSON...');
       const result = await response.json();
       console.log('Upload success:', result);
+      console.log('=== UPLOAD END ===');
       
       return {
         id: result.public_id,
@@ -147,7 +164,11 @@ const PortfolioManagement = () => {
         format: result.format
       };
     } catch (error) {
+      console.error('=== UPLOAD ERROR ===');
       console.error('Cloudinary 업로드 오류:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('=== UPLOAD ERROR END ===');
       throw error;
     }
   };
@@ -418,7 +439,7 @@ const PortfolioManagement = () => {
             <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">5MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
             <p className="text-gray-500 text-xs mt-2">
-              ⚠️ 기본 ml_default preset 사용 중. 500 에러가 계속 발생하면 Cloudinary Dashboard에서 preset 설정을 확인하세요
+              ✅ portfolio_upload preset 사용 중. 상세한 디버깅 로그가 Console에 출력됩니다
             </p>
           </div>
 
