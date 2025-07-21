@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // Fallback image URLs (컴포넌트 외부로 이동)
 const FALLBACK_IMAGES = [
@@ -71,22 +69,16 @@ const tabs = [
 export default function PortfolioPage() {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('residential');
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [allImages, setAllImages] = useState([]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [portfolioData, setPortfolioData] = useState({ residential: [], commercial: [] });
   const [selectedFilters, setSelectedFilters] = useState({
     area: [],
     type: []
   });
-  const [imageLoadingStates, setImageLoadingStates] = useState({});
-  const [imageLoadStates, setImageLoadStates] = useState({});
-  const [imageErrorStates, setImageErrorStates] = useState({});
-  
   // 모바일 최적화를 위한 간단한 상태 관리
 
   const navigate = useNavigate();
@@ -96,24 +88,7 @@ export default function PortfolioPage() {
     return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   };
 
-  // 간단한 이미지 로드 핸들러 - 모바일 성능 최적화
-  const handleImageLoad = (projectId, imageIndex = 0) => {
-    const imageKey = `${projectId}-${imageIndex}`;
-    setImageLoadStates(prev => ({
-      ...prev,
-      [imageKey]: true
-    }));
-  };
-
-  // 간단한 이미지 에러 핸들러 - 모바일 성능 최적화
-  const handleImageError = (e, projectId, imageIndex = 0) => {
-    const imageKey = `${projectId}-${imageIndex}`;
-    e.target.src = FALLBACK_IMAGES[0];
-    setImageErrorStates(prev => ({
-      ...prev,
-      [imageKey]: { attempts: 1, isFinal: true }
-    }));
-  };
+  // 모바일 최적화를 위한 간단한 컴포넌트
 
   // Filter options
   const filterOptions = {
@@ -507,7 +482,7 @@ export default function PortfolioPage() {
             className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
             onClick={(event) => handleProjectClick(project, event)}
           >
-            <div className="relative aspect-[4/5] overflow-hidden">
+            <div className="relative aspect-[4/5] overflow-hidden" style={{ pointerEvents: 'auto' }}>
               <ProjectImage
                 src={(() => {
                   if (project.images && project.images.length > 0) {
@@ -521,6 +496,10 @@ export default function PortfolioPage() {
                 projectId={project.id}
                 imageIndex={0}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleProjectClick(project, e);
+                }}
               />
               
               {/* Full overlay on hover */}
@@ -664,41 +643,18 @@ export default function PortfolioPage() {
 
   // 반응형 이미지 컴포넌트 - 중복 이벤트 방지
   const ProjectImage = ({ src, alt, projectId, imageIndex = 0, className, onClick }) => {
-    const imageKey = `${projectId}-${imageIndex}`;
-    const isLoaded = imageLoadStates[imageKey];
-    const errorState = imageErrorStates[imageKey];
-
-    // 간단한 이미지 로드 핸들러
-    const handleLoad = (e) => {
-      handleImageLoad(projectId, imageIndex);
-    };
-
-    const handleError = (e) => {
-      handleImageError(e, projectId, imageIndex);
-    };
-
-    // 모바일 최적화: 단순한 이미지 태그 사용
-    const optimizedSrc = src || FALLBACK_IMAGES[0];
+    // 모바일 최적화: 가장 단순한 이미지 태그 사용
+    const imageSrc = src || FALLBACK_IMAGES[0];
 
     return (
-      <>
-        <img
-          src={optimizedSrc}
-          alt={alt}
-          className={className}
-          onClick={onClick}
-          onError={handleError}
-          onLoad={handleLoad}
-          loading="lazy"
-        />
-        
-        {/* 로딩 오버레이 */}
-        {!isLoaded && !errorState?.isFinal && (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-xl">
-            <div className="animate-pulse w-8 h-8 bg-gray-300 rounded-full"></div>
-          </div>
-        )}
-      </>
+      <img
+        src={imageSrc}
+        alt={alt}
+        className={className}
+        onClick={onClick}
+        loading="lazy"
+        style={{ pointerEvents: 'auto' }}
+      />
     );
   };
 
