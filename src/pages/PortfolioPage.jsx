@@ -14,30 +14,49 @@ const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
 ];
 
-// URL 변환 함수들 (컴포넌트 외부로 이동)
-const getOptimizedCloudinaryUrl = (url) => {
+// 반응형 이미지 URL 생성 함수들 (컴포넌트 외부로 이동)
+const getResponsiveCloudinaryUrl = (url, width = null) => {
   if (!url) return null;
   
-  // 이미 Cloudinary URL인 경우 최적화
+  // Cloudinary URL인 경우 반응형 최적화
   if (url.includes('cloudinary.com')) {
-    // 이미 최적화된 URL인 경우 그대로 반환
-    if (url.includes('/upload/')) {
-      return url;
+    const baseUrl = url.split('/upload/')[0] + '/upload/';
+    const imagePath = url.split('/upload/')[1];
+    
+    // 반응형 파라미터 추가
+    let params = 'f_auto,q_auto'; // 자동 형식, 자동 품질
+    
+    if (width) {
+      params += `,w_${width}`; // 특정 너비 지정
     }
     
-    // 기본 Cloudinary URL을 최적화된 형태로 변환
-    return url.replace('/upload/', '/upload/f_auto,q_auto/');
+    return `${baseUrl}${params}/${imagePath}`;
   }
   
   return url;
 };
 
+const generateResponsiveSrcSet = (url) => {
+  if (!url || !url.includes('cloudinary.com')) {
+    return url;
+  }
+  
+  // 다양한 화면 크기에 맞는 이미지 URL 생성
+  const widths = [320, 640, 960, 1280, 1920];
+  const srcSet = widths.map(width => {
+    const responsiveUrl = getResponsiveCloudinaryUrl(url, width);
+    return `${responsiveUrl} ${width}w`;
+  }).join(', ');
+  
+  return srcSet;
+};
+
 const convertToOptimizedUrl = (url) => {
   if (!url) return null;
   
-  // Cloudinary URL인 경우
+  // Cloudinary URL인 경우 반응형 최적화
   if (url.includes('cloudinary.com')) {
-    return getOptimizedCloudinaryUrl(url);
+    return getResponsiveCloudinaryUrl(url);
   }
   
   // 기타 URL은 그대로 반환
@@ -696,7 +715,7 @@ export default function PortfolioPage() {
     );
   };
 
-  // 개선된 이미지 컴포넌트 - 중복 이벤트 방지
+  // 반응형 이미지 컴포넌트 - 중복 이벤트 방지
   const ProjectImage = ({ src, alt, projectId, imageIndex = 0, className, onClick }) => {
     const imageKey = `${projectId}-${imageIndex}`;
     const isLoaded = imageLoadStates[imageKey];
@@ -715,19 +734,57 @@ export default function PortfolioPage() {
       handleImageError(e, projectId, imageIndex);
     };
 
+    // 반응형 이미지 설정
+    const responsiveSrcSet = generateResponsiveSrcSet(src);
+    const isCloudinaryImage = src && src.includes('cloudinary.com');
+
     return (
       <>
-        <img
-          ref={imageRef}
-          src={src}
-          alt={alt}
-          className={className}
-          onClick={onClick}
-          onError={handleError}
-          onLoad={handleLoad}
-          // 상세페이지에서는 lazy loading, 메인에서는 eager loading
-          loading={selectedProject ? "lazy" : "eager"}
-        />
+        {isCloudinaryImage ? (
+          <picture>
+            {/* 모바일용 작은 이미지 */}
+            <source
+              media="(max-width: 640px)"
+              srcSet={getResponsiveCloudinaryUrl(src, 320)}
+              sizes="(max-width: 640px) 100vw"
+            />
+            {/* 태블릿용 중간 이미지 */}
+            <source
+              media="(max-width: 1024px)"
+              srcSet={getResponsiveCloudinaryUrl(src, 640)}
+              sizes="(max-width: 1024px) 50vw"
+            />
+            {/* 데스크탑용 큰 이미지 */}
+            <source
+              media="(min-width: 1025px)"
+              srcSet={getResponsiveCloudinaryUrl(src, 960)}
+              sizes="(min-width: 1025px) 33vw"
+            />
+            {/* 기본 이미지 */}
+            <img
+              ref={imageRef}
+              src={getResponsiveCloudinaryUrl(src)}
+              alt={alt}
+              className={className}
+              onClick={onClick}
+              onError={handleError}
+              onLoad={handleLoad}
+              loading={selectedProject ? "lazy" : "eager"}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </picture>
+        ) : (
+          <img
+            ref={imageRef}
+            src={src}
+            alt={alt}
+            className={className}
+            onClick={onClick}
+            onError={handleError}
+            onLoad={handleLoad}
+            loading={selectedProject ? "lazy" : "eager"}
+          />
+        )}
         
         {/* 로딩 오버레이 - 조건 개선 및 성능 최적화 */}
         {!isLoaded && !errorState?.isFinal && (
@@ -1011,18 +1068,52 @@ export default function PortfolioPage() {
                   {/* 모바일 좌/우 터치(탭) 영역 */}
                   <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-5" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
                   <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-5" onClick={goToNextImage} style={{cursor:'pointer'}} />
-                  <ProjectImage
-                    src={selectedImage}
-                    alt="Gallery view"
-                    projectId={selectedProject?.id || 'modal'}
-                    imageIndex={selectedImageIndex}
-                    className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
-                    style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  />
+                  {selectedImage && selectedImage.includes('cloudinary.com') ? (
+                    <picture>
+                      {/* 모바일용 작은 이미지 */}
+                      <source
+                        media="(max-width: 640px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 320)}
+                        sizes="100vw"
+                      />
+                      {/* 태블릿용 중간 이미지 */}
+                      <source
+                        media="(max-width: 1024px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 640)}
+                        sizes="100vw"
+                      />
+                      {/* 데스크탑용 큰 이미지 */}
+                      <source
+                        media="(min-width: 1025px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1280)}
+                        sizes="100vw"
+                      />
+                      {/* 기본 이미지 */}
+                      <img
+                        src={getResponsiveCloudinaryUrl(selectedImage)}
+                        alt="Gallery view"
+                        className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                        style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      />
+                    </picture>
+                  ) : (
+                    <ProjectImage
+                      src={selectedImage}
+                      alt="Gallery view"
+                      projectId={selectedProject?.id || 'modal'}
+                      imageIndex={selectedImageIndex}
+                      className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                      style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    />
+                  )}
                 </motion.div>
               </div>
 
@@ -1052,13 +1143,33 @@ export default function PortfolioPage() {
                         }`}
                         style={{ pointerEvents: 'auto', userSelect: 'none' }}
                       >
-                        <img
-                          src={image}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover user-select-none"
-                          draggable={false}
-                          style={{ userSelect: 'none' }}
-                        />
+                        {image && image.includes('cloudinary.com') ? (
+                          <picture>
+                            <source
+                              media="(max-width: 640px)"
+                              srcSet={getResponsiveCloudinaryUrl(image, 64)}
+                            />
+                            <source
+                              media="(min-width: 641px)"
+                              srcSet={getResponsiveCloudinaryUrl(image, 128)}
+                            />
+                            <img
+                              src={getResponsiveCloudinaryUrl(image, 64)}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="w-full h-full object-cover user-select-none"
+                              draggable={false}
+                              style={{ userSelect: 'none' }}
+                            />
+                          </picture>
+                        ) : (
+                          <img
+                            src={image}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover user-select-none"
+                            draggable={false}
+                            style={{ userSelect: 'none' }}
+                          />
+                        )}
                       </button>
                     ))}
                   </div>
