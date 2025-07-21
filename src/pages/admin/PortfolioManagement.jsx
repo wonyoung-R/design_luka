@@ -88,25 +88,22 @@ const PortfolioManagement = () => {
     formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    // 반응형 이미지 설정 (안전한 설정)
-    formData.append('responsive_breakpoints', JSON.stringify({
-      create_derived: true,
-      bytes_step: 50000, // 더 큰 단위로 설정
-      min_width: 300,    // 최소 너비 증가
-      max_width: 1200,   // 최대 너비 감소
-      transformation: { 
-        crop: 'limit',    // 원본 비율 유지
-        format: 'auto',   // 자동 형식 선택
-        quality: 'auto'   // 자동 품질 최적화
-      }
-    }));
+    // eager 변환으로 여러 크기 자동 생성
+    formData.append('eager', JSON.stringify([
+      { width: 300, height: 400, crop: 'limit', format: 'auto', quality: 'auto' },
+      { width: 600, height: 800, crop: 'limit', format: 'auto', quality: 'auto' },
+      { width: 1200, height: 1600, crop: 'limit', format: 'auto', quality: 'auto' }
+    ]));
+    
+    // 기본 변환 설정
+    formData.append('transformation', 'f_auto,q_auto');
 
     try {
-      console.log('Uploading responsive image:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Cloudinary responsive settings:', {
+      console.log('Uploading image with eager transformations:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Cloudinary eager settings:', {
         cloud_name: CLOUDINARY_CLOUD_NAME,
         upload_preset: 'ml_default',
-        responsive_breakpoints: 'enabled'
+        eager: 'enabled'
       });
       
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -125,16 +122,15 @@ const PortfolioManagement = () => {
       const result = await response.json();
       console.log('Upload success:', result);
       
-      // 반응형 이미지 정보 추출
+      // eager 변환 결과 추출
       const responsiveImages = [];
-      if (result.responsive_breakpoints && result.responsive_breakpoints[0]) {
-        const breakpoints = result.responsive_breakpoints[0].breakpoints;
-        breakpoints.forEach((breakpoint, index) => {
+      if (result.eager && result.eager.length > 0) {
+        result.eager.forEach((variant, index) => {
           responsiveImages.push({
-            width: breakpoint.width,
-            height: breakpoint.height,
-            url: breakpoint.secure_url,
-            size: breakpoint.bytes
+            width: variant.width,
+            height: variant.height,
+            url: variant.secure_url,
+            size: variant.bytes
           });
         });
       }
