@@ -87,9 +87,7 @@ export default function PortfolioPage() {
   const [imageLoadStates, setImageLoadStates] = useState({});
   const [imageErrorStates, setImageErrorStates] = useState({});
   
-  // 무한루프 방지를 위한 ref 추가
-  const loadedImagesRef = useRef(new Set()); // 이미 로드된 이미지들 추적
-  const errorAttemptsRef = useRef({}); // 에러 시도 횟수 추적
+  // 모바일 최적화를 위한 간단한 상태 관리
 
   const navigate = useNavigate();
 
@@ -98,69 +96,22 @@ export default function PortfolioPage() {
     return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   };
 
-  // 무한루프 방지된 이미지 로드 핸들러 - useCallback 제거로 재생성 방지
+  // 간단한 이미지 로드 핸들러 - 모바일 성능 최적화
   const handleImageLoad = (projectId, imageIndex = 0) => {
     const imageKey = `${projectId}-${imageIndex}`;
-    
-    // 이미 처리된 이미지라면 무시
-    if (loadedImagesRef.current.has(imageKey)) {
-      return;
-    }
-    
-    // 로드된 이미지로 마킹 (콘솔 로그 제거로 성능 향상)
-    loadedImagesRef.current.add(imageKey);
-    
-    // state 업데이트 (한 번만) - 배치 업데이트로 성능 최적화
-    setImageLoadStates(prev => {
-      if (prev[imageKey]) return prev; // 이미 true면 업데이트 안함
-      return {
-        ...prev,
-        [imageKey]: true
-      };
-    });
-
-    // 에러 상태 리셋
-    if (errorAttemptsRef.current[imageKey]) {
-      delete errorAttemptsRef.current[imageKey];
-      setImageErrorStates(prev => {
-        const newState = { ...prev };
-        delete newState[imageKey];
-        return newState;
-      });
-    }
+    setImageLoadStates(prev => ({
+      ...prev,
+      [imageKey]: true
+    }));
   };
 
-  // 무한루프 방지된 이미지 에러 핸들러 - useCallback 제거로 재생성 방지
+  // 간단한 이미지 에러 핸들러 - 모바일 성능 최적화
   const handleImageError = (e, projectId, imageIndex = 0) => {
     const imageKey = `${projectId}-${imageIndex}`;
-    const currentAttempts = errorAttemptsRef.current[imageKey] || 0;
-    
-    // 이미 최대 시도 횟수에 도달했으면 무시
-    if (currentAttempts >= 3) {
-      return;
-    }
-
-    const newAttempts = currentAttempts + 1;
-    errorAttemptsRef.current[imageKey] = newAttempts;
-
-    // 최대 3번 재시도 후 최종 placeholder 사용
-    if (newAttempts >= 3) {
-      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTUwQzE3OS4wOSAxNTAgMTYyIDE2Ny4wOSAxNjIgMTg4QzE2MiAyMDguOTEgMTc5LjA5IDIyNiAyMDAgMjI2QzIyMC45MSAyMjYgMjM4IDIwOC45MSAyMzggMTg4QzIzOCAxNjcuMDkgMjIwLjkxIDE1MCAyMDAgMTUwWk0yMDAgMjQ2QzE3OS4wOSAyNDYgMTYyIDI2My4wOSAxNjIgMjg0QzE2MiAzMDQuOTEgMTc5LjA5IDMyMiAyMDAgMzIyQzIyMC45MSAzMjIgMjM4IDMwNC45MSAyMzggMjg0QzIzOCAyNjMuMDkgMjIwLjkxIDI0NiAyMDAgMjQ2WiIgZmlsbD0iIzlDQTBBNiIvPgo8L3N2Zz4K';
-      
-      setImageErrorStates(prev => ({
-        ...prev,
-        [imageKey]: { attempts: newAttempts, isFinal: true }
-      }));
-      return;
-    }
-
-    // Fallback 이미지 시도
-    const fallbackIndex = Math.min(newAttempts - 1, FALLBACK_IMAGES.length - 1);
-    e.target.src = FALLBACK_IMAGES[fallbackIndex];
-    
+    e.target.src = FALLBACK_IMAGES[0];
     setImageErrorStates(prev => ({
       ...prev,
-      [imageKey]: { attempts: newAttempts, isFinal: false }
+      [imageKey]: { attempts: 1, isFinal: true }
     }));
   };
 
@@ -551,13 +502,9 @@ export default function PortfolioPage() {
     return (
       <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6">
         {projects.map((project, index) => (
-          <motion.div
+          <div
             key={project.id}
             className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: index * 0.1 }}
             onClick={(event) => handleProjectClick(project, event)}
           >
             <div className="relative aspect-[4/5] overflow-hidden">
@@ -588,7 +535,7 @@ export default function PortfolioPage() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     );
@@ -720,73 +667,32 @@ export default function PortfolioPage() {
     const imageKey = `${projectId}-${imageIndex}`;
     const isLoaded = imageLoadStates[imageKey];
     const errorState = imageErrorStates[imageKey];
-    const imageRef = useRef(null);
 
-    // 이미지 로드 핸들러 - useCallback 제거로 재생성 방지
+    // 간단한 이미지 로드 핸들러
     const handleLoad = (e) => {
-      // 이미지가 실제로 완전히 로드되었는지 확인
-      if (e.target.complete && e.target.naturalWidth > 0) {
-        handleImageLoad(projectId, imageIndex);
-      }
+      handleImageLoad(projectId, imageIndex);
     };
 
     const handleError = (e) => {
       handleImageError(e, projectId, imageIndex);
     };
 
-    // 반응형 이미지 설정
-    const responsiveSrcSet = generateResponsiveSrcSet(src);
-    const isCloudinaryImage = src && src.includes('cloudinary.com');
+    // 모바일 최적화: 단순한 이미지 태그 사용
+    const optimizedSrc = src || FALLBACK_IMAGES[0];
 
     return (
       <>
-        {isCloudinaryImage ? (
-          <picture>
-            {/* 모바일용 작은 이미지 */}
-            <source
-              media="(max-width: 640px)"
-              srcSet={getResponsiveCloudinaryUrl(src, 320)}
-              sizes="(max-width: 640px) 100vw"
-            />
-            {/* 태블릿용 중간 이미지 */}
-            <source
-              media="(max-width: 1024px)"
-              srcSet={getResponsiveCloudinaryUrl(src, 640)}
-              sizes="(max-width: 1024px) 50vw"
-            />
-            {/* 데스크탑용 큰 이미지 */}
-            <source
-              media="(min-width: 1025px)"
-              srcSet={getResponsiveCloudinaryUrl(src, 960)}
-              sizes="(min-width: 1025px) 33vw"
-            />
-            {/* 기본 이미지 */}
-            <img
-              ref={imageRef}
-              src={getResponsiveCloudinaryUrl(src)}
-              alt={alt}
-              className={className}
-              onClick={onClick}
-              onError={handleError}
-              onLoad={handleLoad}
-              loading={selectedProject ? "lazy" : "eager"}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-          </picture>
-        ) : (
-          <img
-            ref={imageRef}
-            src={src}
-            alt={alt}
-            className={className}
-            onClick={onClick}
-            onError={handleError}
-            onLoad={handleLoad}
-            loading={selectedProject ? "lazy" : "eager"}
-          />
-        )}
+        <img
+          src={optimizedSrc}
+          alt={alt}
+          className={className}
+          onClick={onClick}
+          onError={handleError}
+          onLoad={handleLoad}
+          loading="lazy"
+        />
         
-        {/* 로딩 오버레이 - 조건 개선 및 성능 최적화 */}
+        {/* 로딩 오버레이 */}
         {!isLoaded && !errorState?.isFinal && (
           <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-xl">
             <div className="animate-pulse w-8 h-8 bg-gray-300 rounded-full"></div>
@@ -796,13 +702,7 @@ export default function PortfolioPage() {
     );
   };
 
-  // 컴포넌트 언마운트 시 정리
-  useEffect(() => {
-    return () => {
-      loadedImagesRef.current.clear();
-      errorAttemptsRef.current = {};
-    };
-  }, []);
+  // 모바일 최적화를 위한 간단한 컴포넌트
 
   // 썸네일 네비게이션 ref 추가
   const thumbnailNavRef = useRef(null);
