@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.484d06fb.css",
-    "main.js": "/static/js/main.798390b9.js",
+    "main.css": "/static/css/main.e831036d.css",
+    "main.js": "/static/js/main.762056e4.js",
     "static/media/main09.JPG": "/static/media/main09.a1d01464a8b223af1271.JPG",
     "static/media/main10.JPG": "/static/media/main10.694e32176c3e9db3d132.JPG",
     "static/media/4.jpg": "/static/media/4.28f9aa5a51cd58ecaa96.jpg",
@@ -30,11 +30,11 @@
     "static/media/LUKA(W).png": "/static/media/LUKA(W).1cba20a6817cd11b426f.png",
     "static/media/LUKA slogan.png": "/static/media/LUKA slogan.0c9dd707cf413b3ee1a3.png",
     "index.html": "/index.html",
-    "main.484d06fb.css.map": "/static/css/main.484d06fb.css.map",
-    "main.798390b9.js.map": "/static/js/main.798390b9.js.map"
+    "main.e831036d.css.map": "/static/css/main.e831036d.css.map",
+    "main.762056e4.js.map": "/static/js/main.762056e4.js.map"
   },
   "entrypoints": [
-    "static/css/main.484d06fb.css",
-    "static/js/main.798390b9.js"
+    "static/css/main.e831036d.css",
+    "static/js/main.762056e4.js"
   ]
 }
