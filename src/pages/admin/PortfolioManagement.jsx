@@ -88,17 +88,15 @@ const PortfolioManagement = () => {
     formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    // 반응형 이미지 설정 추가
+    // 반응형 이미지 설정 추가 (원본 비율 유지)
     formData.append('responsive_breakpoints', JSON.stringify({
       create_derived: true,
       bytes_step: 20000,
       min_width: 200,
       max_width: 2000,
       transformation: { 
-        crop: 'fill', 
-        aspect_ratio: '4:5', // 포트폴리오 이미지 비율에 맞춤
-        gravity: 'auto',
-        format: 'auto', // 브라우저별 최적 형식 자동 선택
+        crop: 'limit', // 원본 비율 유지하면서 크기만 조정
+        format: 'auto', // 브라우저별 최적 형식 자동 선택 (WebP, AVIF 등)
         quality: 'auto' // 자동 품질 최적화
       }
     }));
