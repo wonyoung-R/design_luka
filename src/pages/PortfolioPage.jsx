@@ -93,6 +93,30 @@ export default function PortfolioPage() {
       alert('포트폴리오 페이지 에러 발생: ' + (event.error?.message || '알 수 없는 에러'));
     };
     
+    // Firebase 연결 상태 확인
+    const checkFirebaseConnection = () => {
+      console.log('Firebase 연결 상태 확인 중...');
+      try {
+        const testRef = ref(database, 'portfolio');
+        onValue(testRef, (snapshot) => {
+          console.log('Firebase 연결 성공!');
+          console.log('데이터 존재 여부:', snapshot.exists());
+          if (snapshot.exists()) {
+            console.log('데이터 개수:', Object.keys(snapshot.val()).length);
+          }
+        }, (error) => {
+          console.error('Firebase 연결 실패:', error);
+          alert('Firebase 연결 실패: ' + error.message);
+        });
+      } catch (error) {
+        console.error('Firebase 초기화 에러:', error);
+        alert('Firebase 초기화 에러: ' + error.message);
+      }
+    };
+    
+    // 3초 후 Firebase 연결 확인
+    setTimeout(checkFirebaseConnection, 3000);
+    
     window.addEventListener('error', handleError);
     
     return () => {
@@ -249,6 +273,16 @@ export default function PortfolioPage() {
             commercial: sortedCommercial.length
           });
           
+          // 모바일에서 데이터 확인용 알림
+          const totalProjects = sortedResidential.length + sortedCommercial.length;
+          console.log(`총 ${totalProjects}개의 프로젝트 로드됨`);
+          
+          if (totalProjects === 0) {
+            alert('⚠️ 포트폴리오 데이터가 없습니다. 관리자 페이지에서 프로젝트를 추가해주세요.');
+          } else {
+            console.log('✅ 포트폴리오 데이터 로드 완료');
+          }
+          
           setPortfolioData({
             residential: sortedResidential,
             commercial: sortedCommercial
@@ -371,14 +405,10 @@ export default function PortfolioPage() {
   };
 
   const getProjectsToShow = () => {
-    switch (activeTab) {
-      case 'residential':
-        return filteredProjects(portfolioData.residential);
-      case 'commercial':
-        return filteredProjects(portfolioData.commercial);
-      default:
-        return filteredProjects(portfolioData.residential);
-    }
+    const projects = activeTab === 'residential' ? portfolioData.residential : portfolioData.commercial;
+    const filtered = filteredProjects(projects);
+    console.log(`getProjectsToShow: ${activeTab} 탭, ${projects.length}개 중 ${filtered.length}개 표시`);
+    return filtered;
   };
 
   const handleProjectClick = (project, event) => {
@@ -493,9 +523,26 @@ export default function PortfolioPage() {
 
   // Masonry layout component
   const MasonryGallery = ({ projects }) => {
+    console.log('MasonryGallery 렌더링:', projects.length, '개 프로젝트');
+    
+    if (projects.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="text-gray-500 text-lg font-['Noto_Sans_KR']">
+            표시할 프로젝트가 없습니다.
+          </div>
+          <div className="text-gray-400 text-sm mt-2">
+            관리자 페이지에서 프로젝트를 추가해주세요.
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6">
-        {projects.map((project, index) => (
+        {projects.map((project, index) => {
+          console.log(`프로젝트 ${index + 1}/${projects.length}:`, project.title, project.id);
+          return (
           <div
             key={project.id}
             className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
@@ -534,7 +581,8 @@ export default function PortfolioPage() {
               </div>
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
     );
   };
