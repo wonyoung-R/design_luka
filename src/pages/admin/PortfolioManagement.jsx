@@ -81,29 +81,21 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 반응형 이미지 업로드 함수
+  // Cloudinary 기본 업로드 함수
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    // eager 변환으로 여러 크기 자동 생성
-    formData.append('eager', JSON.stringify([
-      { width: 300, height: 400, crop: 'limit', format: 'auto', quality: 'auto' },
-      { width: 600, height: 800, crop: 'limit', format: 'auto', quality: 'auto' },
-      { width: 1200, height: 1600, crop: 'limit', format: 'auto', quality: 'auto' }
-    ]));
-    
-    // 기본 변환 설정
+    // 기본 최적화만 적용
     formData.append('transformation', 'f_auto,q_auto');
 
     try {
-      console.log('Uploading image with eager transformations:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Cloudinary eager settings:', {
+      console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Cloudinary settings:', {
         cloud_name: CLOUDINARY_CLOUD_NAME,
-        upload_preset: 'ml_default',
-        eager: 'enabled'
+        upload_preset: 'ml_default'
       });
       
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -122,28 +114,13 @@ const PortfolioManagement = () => {
       const result = await response.json();
       console.log('Upload success:', result);
       
-      // eager 변환 결과 추출
-      const responsiveImages = [];
-      if (result.eager && result.eager.length > 0) {
-        result.eager.forEach((variant, index) => {
-          responsiveImages.push({
-            width: variant.width,
-            height: variant.height,
-            url: variant.secure_url,
-            size: variant.bytes
-          });
-        });
-      }
-      
       return {
         id: result.public_id,
         url: result.secure_url,
         name: file.name,
         width: result.width,
         height: result.height,
-        format: result.format,
-        responsiveImages: responsiveImages,
-        originalUrl: result.secure_url
+        format: result.format
       };
     } catch (error) {
       console.error('Cloudinary 업로드 오류:', error);
@@ -200,9 +177,7 @@ const PortfolioManagement = () => {
           name: uploadedFile.name,
           width: uploadedFile.width,
           height: uploadedFile.height,
-          format: uploadedFile.format,
-          responsiveImages: uploadedFile.responsiveImages,
-          originalUrl: uploadedFile.originalUrl
+          format: uploadedFile.format
         });
         
         setUploadProgress(((i + 1) / selectedFiles.length) * 100);
@@ -340,9 +315,7 @@ const PortfolioManagement = () => {
             name: uploadedFile.name,
             width: uploadedFile.width,
             height: uploadedFile.height,
-            format: uploadedFile.format,
-            responsiveImages: uploadedFile.responsiveImages,
-            originalUrl: uploadedFile.originalUrl
+            format: uploadedFile.format
           });
         }
         // 기존 이미지 + 새 이미지 합치기
