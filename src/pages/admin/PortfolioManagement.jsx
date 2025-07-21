@@ -10,6 +10,9 @@ const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
 // API Secret은 클라이언트에서 제거 (보안상 위험)
 const UPLOAD_PRESET = 'ml_default'; // 기본 preset 사용
 
+// Cloudinary 기본 URL
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
 const PortfolioManagement = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -40,8 +43,8 @@ const PortfolioManagement = () => {
   const [editSelectedFiles, setEditSelectedFiles] = useState([]);
   const [filterType, setFilterType] = useState('all'); // 'all', 'residential', 'commercial'
 
-  // 파일 크기 제한 추가
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  // 파일 크기 제한 추가 (더 작게 설정)
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
@@ -82,7 +85,7 @@ const PortfolioManagement = () => {
     const imageFiles = files.filter(file => {
       // 파일 크기 체크
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 5MB)`);
         return false;
       }
       // 이미지 파일 체크
@@ -103,17 +106,20 @@ const PortfolioManagement = () => {
     try {
       console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
       console.log('Using upload preset:', UPLOAD_PRESET);
+      console.log('Upload URL:', CLOUDINARY_UPLOAD_URL);
       
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      const response = await fetch(CLOUDINARY_UPLOAD_URL, {
         method: 'POST',
         body: formData
       });
 
       console.log('Upload response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Cloudinary error response:', errorText);
+        console.error('Full response:', response);
         
         // 더 자세한 에러 정보 제공
         let errorMessage = `Cloudinary 업로드 실패: ${response.status}`;
@@ -310,7 +316,7 @@ const PortfolioManagement = () => {
     const imageFiles = files.filter(file => {
       // 파일 크기 체크
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 5MB)`);
         return false;
       }
       // 이미지 파일 체크
@@ -409,7 +415,7 @@ const PortfolioManagement = () => {
             <p className="text-gray-800 font-medium">☁️ Cloudinary 설정 정보</p>
             <p className="text-gray-600 text-sm">Cloud Name: <code className="bg-gray-200 px-1 rounded">{CLOUDINARY_CLOUD_NAME}</code></p>
             <p className="text-gray-600 text-sm mt-1">Upload Preset: <code className="bg-gray-200 px-1 rounded">{UPLOAD_PRESET}</code></p>
-            <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">10MB</code></p>
+            <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">5MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
             <p className="text-gray-500 text-xs mt-2">
               ⚠️ 기본 ml_default preset 사용 중. 500 에러가 계속 발생하면 Cloudinary Dashboard에서 preset 설정을 확인하세요
