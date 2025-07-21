@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 // Cloudinary 설정
 const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
 // API Secret은 클라이언트에서 제거 (보안상 위험)
-const UPLOAD_PRESET = 'portfolio_upload'; // 실제 존재하는 preset 사용
+const UPLOAD_PRESET = 'ml_default'; // 기본 preset 사용
 
 // Cloudinary 기본 URL
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -439,7 +439,7 @@ const PortfolioManagement = () => {
             <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">5MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
             <p className="text-gray-500 text-xs mt-2">
-              ✅ portfolio_upload preset 사용 중. 상세한 디버깅 로그가 Console에 출력됩니다
+              ⚠️ ml_default preset 사용 중. 400 에러가 발생하면 Cloudinary Dashboard에서 preset 설정을 확인하세요
             </p>
           </div>
 
