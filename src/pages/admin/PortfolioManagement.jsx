@@ -6,10 +6,9 @@ import { ref, push, set, onValue, remove } from 'firebase/database';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Cloudinary 설정
-const CLOUDINARY_URL = 'cloudinary://324293491948238:Mb8GBN8qaPzHmKpmapoBCXIwD_A@dti1gtd3u';
 const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
-const CLOUDINARY_API_KEY = '324293491948238';
-const CLOUDINARY_API_SECRET = 'Mb8GBN8qaPzHmKpmapoBCXIwD_A';
+// API Secret은 클라이언트에서 제거 (보안상 위험)
+const UPLOAD_PRESET = 'portfolio_upload'; // 실제 생성한 preset 이름
 
 const PortfolioManagement = () => {
   const navigate = useNavigate();
@@ -40,6 +39,9 @@ const PortfolioManagement = () => {
   });
   const [editSelectedFiles, setEditSelectedFiles] = useState([]);
   const [filterType, setFilterType] = useState('all'); // 'all', 'residential', 'commercial'
+
+  // 파일 크기 제한 추가
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
@@ -77,26 +79,32 @@ const PortfolioManagement = () => {
       return;
     }
     
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    const imageFiles = files.filter(file => {
+      // 파일 크기 체크
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
+        return false;
+      }
+      // 이미지 파일 체크
+      return file.type.startsWith('image/');
+    });
+    
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 기본 업로드 함수
+  // Cloudinary 업로드 함수 (Upload Preset 사용)
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
-    formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
+    formData.append('upload_preset', UPLOAD_PRESET); // 실제 존재하는 preset 사용
     
-    // 기본 최적화만 적용
-    formData.append('transformation', 'f_auto,q_auto');
+    // 불필요한 파라미터들 제거
+    // formData.append('cloud_name', CLOUDINARY_CLOUD_NAME); // 제거
+    // formData.append('transformation', 'f_auto,q_auto'); // 제거 (preset에서 설정)
 
     try {
       console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Cloudinary settings:', {
-        cloud_name: CLOUDINARY_CLOUD_NAME,
-        upload_preset: 'ml_default'
-      });
+      console.log('Using upload preset:', UPLOAD_PRESET);
       
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
         method: 'POST',
@@ -108,7 +116,19 @@ const PortfolioManagement = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Cloudinary error response:', errorText);
-        throw new Error(`Cloudinary 업로드 실패: ${response.status} ${response.statusText} - ${errorText}`);
+        
+        // 더 자세한 에러 정보 제공
+        let errorMessage = `Cloudinary 업로드 실패: ${response.status}`;
+        
+        if (response.status === 400) {
+          errorMessage += ' - Upload preset이 존재하지 않거나 설정이 잘못되었습니다.';
+        } else if (response.status === 401) {
+          errorMessage += ' - API 인증 실패. Upload preset 설정을 확인하세요.';
+        } else if (response.status === 500) {
+          errorMessage += ' - 서버 오류. 파일 크기나 형식을 확인하세요.';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
@@ -289,7 +309,15 @@ const PortfolioManagement = () => {
 
   const handleEditFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    const imageFiles = files.filter(file => {
+      // 파일 크기 체크
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
+        return false;
+      }
+      // 이미지 파일 체크
+      return file.type.startsWith('image/');
+    });
     setEditSelectedFiles(imageFiles);
   };
 
@@ -382,11 +410,11 @@ const PortfolioManagement = () => {
           <div className="bg-gray-50 border border-gray-200 rounded-md p-4 mb-6">
             <p className="text-gray-800 font-medium">☁️ Cloudinary 설정 정보</p>
             <p className="text-gray-600 text-sm">Cloud Name: <code className="bg-gray-200 px-1 rounded">{CLOUDINARY_CLOUD_NAME}</code></p>
-            <p className="text-gray-600 text-sm mt-1">API Key: <code className="bg-gray-200 px-1 rounded">{CLOUDINARY_API_KEY}</code></p>
-            <p className="text-gray-600 text-sm mt-1">Upload Preset: <code className="bg-gray-200 px-1 rounded">ml_default</code></p>
+            <p className="text-gray-600 text-sm mt-1">Upload Preset: <code className="bg-gray-200 px-1 rounded">{UPLOAD_PRESET}</code></p>
+            <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">10MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
             <p className="text-gray-500 text-xs mt-2">
-              ⚠️ Cloudinary Dashboard에서 Upload Preset이 설정되어 있는지 확인하세요
+              ✅ Upload Preset 설정: transformation:c_scale,w_800/q_auto, eager:f_auto/q_auto
             </p>
           </div>
 
