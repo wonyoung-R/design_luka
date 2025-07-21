@@ -81,32 +81,21 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 반응형 이미지 업로드 함수
+  // Cloudinary 간단한 업로드 함수
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    // 반응형 이미지 설정 추가 (원본 비율 유지)
-    formData.append('responsive_breakpoints', JSON.stringify({
-      create_derived: true,
-      bytes_step: 20000,
-      min_width: 200,
-      max_width: 2000,
-      transformation: { 
-        crop: 'limit', // 원본 비율 유지하면서 크기만 조정
-        format: 'auto', // 브라우저별 최적 형식 자동 선택 (WebP, AVIF 등)
-        quality: 'auto' // 자동 품질 최적화
-      }
-    }));
+    // 간단한 최적화 설정만 추가
+    formData.append('transformation', 'f_auto,q_auto');
 
     try {
-      console.log('Uploading responsive image:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Cloudinary responsive settings:', {
+      console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Cloudinary settings:', {
         cloud_name: CLOUDINARY_CLOUD_NAME,
-        upload_preset: 'ml_default',
-        responsive_breakpoints: 'enabled'
+        upload_preset: 'ml_default'
       });
       
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
