@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 // Cloudinary 설정
 const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
 // API Secret은 클라이언트에서 제거 (보안상 위험)
-const UPLOAD_PRESET = 'portfolio_upload'; // 실제 생성한 preset 이름
+const UPLOAD_PRESET = 'ml_default'; // 기본 preset 사용
 
 const PortfolioManagement = () => {
   const navigate = useNavigate();
@@ -92,15 +92,13 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 업로드 함수 (Upload Preset 사용)
+  // Cloudinary 기본 업로드 함수 (가장 간단한 방법)
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET); // 실제 존재하는 preset 사용
+    formData.append('upload_preset', UPLOAD_PRESET);
     
-    // 불필요한 파라미터들 제거
-    // formData.append('cloud_name', CLOUDINARY_CLOUD_NAME); // 제거
-    // formData.append('transformation', 'f_auto,q_auto'); // 제거 (preset에서 설정)
+    // 추가 파라미터 없이 가장 기본적인 설정만 사용
 
     try {
       console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
@@ -414,7 +412,7 @@ const PortfolioManagement = () => {
             <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">10MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
             <p className="text-gray-500 text-xs mt-2">
-              ✅ Upload Preset 설정: transformation:c_scale,w_800/q_auto, eager:f_auto/q_auto
+              ⚠️ 기본 ml_default preset 사용 중. 500 에러가 계속 발생하면 Cloudinary Dashboard에서 preset 설정을 확인하세요
             </p>
           </div>
 
