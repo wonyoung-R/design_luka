@@ -81,21 +81,32 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 간단한 업로드 함수
+  // Cloudinary 반응형 이미지 업로드 함수
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'ml_default'); // Cloudinary upload preset
     formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
     
-    // 간단한 최적화 설정만 추가
-    formData.append('transformation', 'f_auto,q_auto');
+    // 반응형 이미지 설정 (안전한 설정)
+    formData.append('responsive_breakpoints', JSON.stringify({
+      create_derived: true,
+      bytes_step: 50000, // 더 큰 단위로 설정
+      min_width: 300,    // 최소 너비 증가
+      max_width: 1200,   // 최대 너비 감소
+      transformation: { 
+        crop: 'limit',    // 원본 비율 유지
+        format: 'auto',   // 자동 형식 선택
+        quality: 'auto'   // 자동 품질 최적화
+      }
+    }));
 
     try {
-      console.log('Uploading image:', file.name, 'Size:', file.size, 'Type:', file.type);
-      console.log('Cloudinary settings:', {
+      console.log('Uploading responsive image:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Cloudinary responsive settings:', {
         cloud_name: CLOUDINARY_CLOUD_NAME,
-        upload_preset: 'ml_default'
+        upload_preset: 'ml_default',
+        responsive_breakpoints: 'enabled'
       });
       
       const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -114,13 +125,29 @@ const PortfolioManagement = () => {
       const result = await response.json();
       console.log('Upload success:', result);
       
+      // 반응형 이미지 정보 추출
+      const responsiveImages = [];
+      if (result.responsive_breakpoints && result.responsive_breakpoints[0]) {
+        const breakpoints = result.responsive_breakpoints[0].breakpoints;
+        breakpoints.forEach((breakpoint, index) => {
+          responsiveImages.push({
+            width: breakpoint.width,
+            height: breakpoint.height,
+            url: breakpoint.secure_url,
+            size: breakpoint.bytes
+          });
+        });
+      }
+      
       return {
         id: result.public_id,
         url: result.secure_url,
         name: file.name,
         width: result.width,
         height: result.height,
-        format: result.format
+        format: result.format,
+        responsiveImages: responsiveImages,
+        originalUrl: result.secure_url
       };
     } catch (error) {
       console.error('Cloudinary 업로드 오류:', error);
@@ -177,7 +204,9 @@ const PortfolioManagement = () => {
           name: uploadedFile.name,
           width: uploadedFile.width,
           height: uploadedFile.height,
-          format: uploadedFile.format
+          format: uploadedFile.format,
+          responsiveImages: uploadedFile.responsiveImages,
+          originalUrl: uploadedFile.originalUrl
         });
         
         setUploadProgress(((i + 1) / selectedFiles.length) * 100);
@@ -315,7 +344,9 @@ const PortfolioManagement = () => {
             name: uploadedFile.name,
             width: uploadedFile.width,
             height: uploadedFile.height,
-            format: uploadedFile.format
+            format: uploadedFile.format,
+            responsiveImages: uploadedFile.responsiveImages,
+            originalUrl: uploadedFile.originalUrl
           });
         }
         // 기존 이미지 + 새 이미지 합치기
