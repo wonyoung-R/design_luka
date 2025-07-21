@@ -79,8 +79,27 @@ export default function PortfolioPage() {
     area: [],
     type: []
   });
-  // 모바일 최적화를 위한 간단한 상태 관리
-
+    // 모바일 최적화를 위한 간단한 상태 관리
+  
+  // 모바일 디버깅을 위한 useEffect 추가
+  useEffect(() => {
+    console.log('PortfolioPage 컴포넌트 마운트됨');
+    console.log('현재 화면 크기:', window.innerWidth, 'x', window.innerHeight);
+    console.log('User Agent:', navigator.userAgent);
+    
+    // 모바일에서 에러 확인용
+    const handleError = (event) => {
+      console.error('PortfolioPage JavaScript 에러:', event.error);
+      alert('포트폴리오 페이지 에러 발생: ' + (event.error?.message || '알 수 없는 에러'));
+    };
+    
+    window.addEventListener('error', handleError);
+    
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+  
   const navigate = useNavigate();
 
   // Function to get fallback image
@@ -701,8 +720,8 @@ export default function PortfolioPage() {
     };
   }, [isDragging]);
 
-  // 썸네일 중앙 정렬 useLayoutEffect (scrollLeft 직접 계산, 양끝 보정, 썸네일 적을 때 예외)
-  useLayoutEffect(() => {
+  // 썸네일 중앙 정렬 useEffect (scrollLeft 직접 계산, 양끝 보정, 썸네일 적을 때 예외)
+  useEffect(() => {
     if (isModalOpen && thumbnailNavRef.current && allImages.length > 0) {
       const container = thumbnailNavRef.current;
       const buttons = Array.from(container.children).filter(el => el.tagName === 'BUTTON');
@@ -811,9 +830,7 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  <LayoutGroup>
-                    <MasonryGallery projects={getProjectsToShow()} />
-                  </LayoutGroup>
+                  <MasonryGallery projects={getProjectsToShow()} />
                 </motion.div>
               </div>
             </section>

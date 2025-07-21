@@ -16,6 +16,7 @@ import ContactPage from './pages/ContactPage';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import InsightDetailPage from './pages/InsightDetailPage';
+import MobileDebug from './pages/MobileDebug';
 
 // Business sub-pages
 import TotalLivingPage from './pages/business/TotalLivingPage';
@@ -58,6 +59,9 @@ function App() {
             
             {/* Contact Route */}
             <Route path="/contact" element={<ContactPage />} />
+            
+            {/* Debug Route */}
+            <Route path="/debug" element={<MobileDebug />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
