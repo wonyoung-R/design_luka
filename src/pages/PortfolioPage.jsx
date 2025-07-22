@@ -420,11 +420,19 @@ export default function PortfolioPage() {
     
     console.log('Project clicked:', project);
     setSelectedProject(project);
+    
+    // 상세 페이지 열 때 히스토리에 상태 추가
+    window.history.pushState({ detailView: true, projectId: project.id }, '', window.location.href);
   };
 
   const closeDetailView = () => {
     console.log('Closing detail view');
     setSelectedProject(null);
+    
+    // 상세 페이지 닫을 때 히스토리에서 상태 제거
+    if (window.history.state?.detailView) {
+      window.history.back();
+    }
   };
 
   // 모달 관련 함수들
@@ -503,12 +511,17 @@ export default function PortfolioPage() {
       }
     };
 
+    // 상세 페이지에서도 popstate 이벤트 리스너 추가
+    if (selectedProject) {
+      window.addEventListener('popstate', handlePopState);
+    }
+
     if (selectedProject || isModalOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
     }
 
-    if (isModalOpen) {
+    if (isModalOpen || selectedProject) {
       window.addEventListener('popstate', handlePopState);
     }
 
@@ -658,13 +671,12 @@ export default function PortfolioPage() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="flex gap-2 md:gap-3" style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="flex" style={{ display: 'flex', gap: '8px' }}>
               {/* 왼쪽 컬럼 - 홀수번째 이미지들 (1, 3, 5, 7, 9...) */}
-              <div className="flex-1 flex flex-col gap-2 md:gap-3">
+              <div className="flex-1 flex flex-col" style={{ gap: '8px' }}>
                 {project.images.filter((_, index) => index % 2 === 0).map((image, index) => (
                   <motion.div
                     key={`left-${index}`}
-                    className="mb-2 md:mb-3"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
@@ -689,11 +701,10 @@ export default function PortfolioPage() {
               </div>
               
               {/* 오른쪽 컬럼 - 짝수번째 이미지들 (2, 4, 6, 8, 10...) */}
-              <div className="flex-1 flex flex-col gap-2 md:gap-3">
+              <div className="flex-1 flex flex-col" style={{ gap: '8px' }}>
                 {project.images.filter((_, index) => index % 2 === 1).map((image, index) => (
                   <motion.div
                     key={`right-${index}`}
-                    className="mb-2 md:mb-3"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
