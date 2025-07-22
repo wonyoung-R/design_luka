@@ -181,10 +181,7 @@ export default function PortfolioDetailPage() {
     };
 
     return (
-      <div 
-        className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4"
-        style={{ columnFill: 'balance' }}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {images.map((image, index) => (
           <motion.div
             key={index}
@@ -192,7 +189,7 @@ export default function PortfolioDetailPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="break-inside-avoid mb-4"
+            className="w-full"
           >
             <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index)}`}>
               <img
