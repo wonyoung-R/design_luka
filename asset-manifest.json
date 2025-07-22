@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/static/css/main.c9e1bf6e.css",
-    "main.js": "/static/js/main.f301033d.js",
-    "static/media/main09.JPG": "/static/media/main09.a1d01464a8b223af1271.JPG",
-    "static/media/main10.JPG": "/static/media/main10.694e32176c3e9db3d132.JPG",
+    "main.js": "/static/js/main.44028c94.js",
     "static/media/4.jpg": "/static/media/4.28f9aa5a51cd58ecaa96.jpg",
+    "static/media/main09.JPG": "/static/media/main09.c9649ac96571723a9145.JPG",
     "static/media/luka_design.png": "/static/media/luka_design.8ffd09b34bc8ed19d693.png",
     "static/media/3.jpg": "/static/media/3.be041e0e86175a1e5549.jpg",
     "static/media/luka_cusotmize.png": "/static/media/luka_cusotmize.529c3c7125e127c20203.png",
+    "static/media/main10.JPG": "/static/media/main10.a335df8a34a67d92b60a.JPG",
     "static/media/10.jpg": "/static/media/10.079047c412191bd5581f.jpg",
     "static/media/5.jpg": "/static/media/5.938c4efb0a40df0411ce.jpg",
     "static/media/6.jpg": "/static/media/6.dbdadcad6e804eb080b1.jpg",
@@ -31,10 +31,10 @@
     "static/media/LUKA slogan.png": "/static/media/LUKA slogan.0c9dd707cf413b3ee1a3.png",
     "index.html": "/index.html",
     "main.c9e1bf6e.css.map": "/static/css/main.c9e1bf6e.css.map",
-    "main.f301033d.js.map": "/static/js/main.f301033d.js.map"
+    "main.44028c94.js.map": "/static/js/main.44028c94.js.map"
   },
   "entrypoints": [
     "static/css/main.c9e1bf6e.css",
-    "static/js/main.f301033d.js"
+    "static/js/main.44028c94.js"
   ]
 }
