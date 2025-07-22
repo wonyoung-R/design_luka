@@ -208,34 +208,55 @@ export default function PortfolioDetailPage() {
 
     return (
       <div style={{ 
-        display: 'grid !important',
-        gridTemplateColumns: 'repeat(2, 1fr) !important',
-        gridAutoFlow: 'row !important',
+        display: 'flex !important',
         gap: '1rem',
-        width: '100%',
-        maxHeight: '30vh',
-        overflowY: 'auto'
+        width: '100%'
       }}>
-        {images.map((image, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="w-full"
-            style={{ maxHeight: '15vh' }}
-          >
-            <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index)}`} style={{ maxHeight: '15vh' }}>
-              <img
-                src={image}
-                alt={`Gallery image ${index + 1}`}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                onClick={() => openModal(image)}
-              />
-            </div>
-          </motion.div>
-        ))}
+        {/* 왼쪽 컬럼 - 홀수번째 이미지들 (1, 3, 5, 7, 9...) */}
+        <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {images.filter((_, index) => index % 2 === 0).map((image, index) => (
+            <motion.div
+              key={`left-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="w-full"
+            >
+              <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index * 2)}`}>
+                <img
+                  src={image}
+                  alt={`Gallery image ${index * 2 + 1}`}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                  onClick={() => openModal(image)}
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        {/* 오른쪽 컬럼 - 짝수번째 이미지들 (2, 4, 6, 8, 10...) */}
+        <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {images.filter((_, index) => index % 2 === 1).map((image, index) => (
+            <motion.div
+              key={`right-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="w-full"
+            >
+              <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index * 2 + 1)}`}>
+                <img
+                  src={image}
+                  alt={`Gallery image ${index * 2 + 2}`}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                  onClick={() => openModal(image)}
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     );
   };

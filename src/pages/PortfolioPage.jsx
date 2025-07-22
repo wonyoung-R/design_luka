@@ -580,10 +580,10 @@ export default function PortfolioPage() {
               
               {/* Hover content */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                <div className="text-center text-white px-6">
-                  <h3 className="text-xl font-bold mb-2 font-['Noto_Sans_KR']">{project.title}</h3>
-                  <p className="text-sm text-gray-200 mb-1 font-['Noto_Sans_KR']">{project.type}</p>
-                  <p className="text-sm text-gray-300 font-['Noto_Sans_KR']">{project.style}</p>
+                <div className="text-center text-white px-3 py-2" style={{ minWidth: '120px', height: '60px', width: 'fit-content' }}>
+                  <h3 className="text-sm font-bold mb-1 font-['Noto_Sans_KR'] whitespace-nowrap">{project.title}</h3>
+                  <p className="text-xs text-gray-200 mb-0.5 font-['Noto_Sans_KR'] whitespace-nowrap">{project.type}</p>
+                  <p className="text-xs text-gray-300 font-['Noto_Sans_KR'] whitespace-nowrap">{project.style}</p>
                 </div>
               </div>
             </div>
@@ -654,72 +654,68 @@ export default function PortfolioPage() {
           {/* Right side - Image gallery (including main image) */}
           <motion.div
             className="w-full md:w-2/3 p-4 md:p-16 overflow-y-auto"
-            style={{ 
-              maxHeight: isModalOpen ? '70vh' : '100vh',
-              transition: 'max-height 0.3s ease-in-out'
-            }}
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div style={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem',
-              width: '100%'
-            }}>
-              {/* 이미지를 두 개씩 담는 row 생성 */}
-              {(() => {
-                const allImages = [project.images[0], ...project.images.slice(1)];
-                const rows = [];
-                
-                for (let i = 0; i < allImages.length; i += 2) {
-                  const rowImages = allImages.slice(i, i + 2);
-                  rows.push(
-                    <div key={i} style={{ 
-                      display: 'flex',
-                      gap: '1rem',
-                      width: '100%',
-                      maxHeight: isModalOpen ? '70%' : 'auto'
-                    }}>
-                      {rowImages.map((image, rowIndex) => (
-                        <motion.div
-                          key={`${i}-${rowIndex}`}
-                          style={{ 
-                            flex: rowImages.length === 1 ? '0 0 50%' : '1', 
-                            width: rowImages.length === 1 ? '50%' : '50%' 
-                          }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2, delay: (i + rowIndex) * 0.1 }}
-                        >
-                          <div className="relative overflow-hidden rounded-xl" style={{ 
-                            width: '100%', 
-                            height: isModalOpen ? '70%' : 'auto',
-                            maxHeight: isModalOpen ? '300px' : 'none'
-                          }}>
-                            <ProjectImage
-                              src={image}
-                              alt={rowIndex === 0 && i === 0 ? project.title : `${project.title} detail ${i + rowIndex}`}
-                              projectId={project.id}
-                              imageIndex={i + rowIndex}
-                              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                              loading="eager"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                openModal(image);
-                              }}
-                            />
-                          </div>
-                        </motion.div>
-                      ))}
+            <div className="flex gap-2 md:gap-3" style={{ display: 'flex', gap: '0.5rem' }}>
+              {/* 왼쪽 컬럼 - 홀수번째 이미지들 (1, 3, 5, 7, 9...) */}
+              <div className="flex-1 flex flex-col gap-2 md:gap-3">
+                {project.images.filter((_, index) => index % 2 === 0).map((image, index) => (
+                  <motion.div
+                    key={`left-${index}`}
+                    className="mb-2 md:mb-3"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: index * 0.1 }}
+                  >
+                    <div className="relative overflow-hidden rounded-xl">
+                      <ProjectImage
+                        src={image}
+                        alt={`${project.title} detail ${index * 2 + 1}`}
+                        projectId={project.id}
+                        imageIndex={index * 2}
+                        className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                        loading="eager"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openModal(image);
+                        }}
+                      />
                     </div>
-                  );
-                }
-                
-                return rows;
-              })()}
+                  </motion.div>
+                ))}
+              </div>
+              
+              {/* 오른쪽 컬럼 - 짝수번째 이미지들 (2, 4, 6, 8, 10...) */}
+              <div className="flex-1 flex flex-col gap-2 md:gap-3">
+                {project.images.filter((_, index) => index % 2 === 1).map((image, index) => (
+                  <motion.div
+                    key={`right-${index}`}
+                    className="mb-2 md:mb-3"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: index * 0.1 }}
+                  >
+                    <div className="relative overflow-hidden rounded-xl">
+                      <ProjectImage
+                        src={image}
+                        alt={`${project.title} detail ${index * 2 + 2}`}
+                        projectId={project.id}
+                        imageIndex={index * 2 + 1}
+                        className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                        loading="eager"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openModal(image);
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
@@ -732,9 +728,8 @@ export default function PortfolioPage() {
     const [imageError, setImageError] = useState(false);
     const [imageSrc, setImageSrc] = useState(src || FALLBACK_IMAGES[0]);
 
-    // src가 변경될 때마다 imageSrc 업데이트 (원래 해상도 유지)
+    // src가 변경될 때마다 imageSrc 업데이트
     useEffect(() => {
-      // 원래 URL을 그대로 사용하여 해상도 유지
       setImageSrc(src || FALLBACK_IMAGES[0]);
       setImageError(false);
     }, [src]);
@@ -870,14 +865,14 @@ export default function PortfolioPage() {
             
             {/* 필터 토글 버튼 - 디바이스별 유연한 레이아웃 */}
             <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
-              <div className="flex gap-1 sm:gap-2 md:gap-4 justify-center max-w-full px-2 sm:px-4 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-0.25 sm:gap-0.5 md:gap-1 justify-center max-w-full px-2 sm:px-4 overflow-x-auto scrollbar-hide">
                 {activeTab === 'residential' ? (
                   ["전체", "10PY", "20PY", "30PY", "40PY", "50PY~"].map((area) => (
                     <button
                       key={area}
                       type="button"
                       onClick={() => handleFilterChange('area', area)}
-                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-sm md:text-base font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "전체")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
@@ -892,7 +887,7 @@ export default function PortfolioPage() {
                       key={type}
                       type="button"
                       onClick={() => handleFilterChange('type', type)}
-                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-sm md:text-base font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "전체")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
@@ -1025,16 +1020,37 @@ export default function PortfolioPage() {
                   <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-5" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
                   <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-5" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   {selectedImage && selectedImage.includes('cloudinary.com') ? (
-                    <img
-                      src={selectedImage}
-                      alt="Gallery view"
-                      className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
-                      style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    />
+                    <picture>
+                      {/* 모바일용 작은 이미지 */}
+                      <source
+                        media="(max-width: 640px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 320)}
+                        sizes="100vw"
+                      />
+                      {/* 태블릿용 중간 이미지 */}
+                      <source
+                        media="(max-width: 1024px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 640)}
+                        sizes="100vw"
+                      />
+                      {/* 데스크탑용 큰 이미지 */}
+                      <source
+                        media="(min-width: 1025px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1280)}
+                        sizes="100vw"
+                      />
+                      {/* 기본 이미지 */}
+                      <img
+                        src={getResponsiveCloudinaryUrl(selectedImage)}
+                        alt="Gallery view"
+                        className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                        style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      />
+                    </picture>
                   ) : (
                     <ProjectImage
                       src={selectedImage}
