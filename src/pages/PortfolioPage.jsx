@@ -542,6 +542,13 @@ export default function PortfolioPage() {
       <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6">
         {projects.map((project, index) => {
           console.log(`프로젝트 ${index + 1}/${projects.length}:`, project.title, project.id);
+          
+          // 프로젝트 데이터가 유효하지 않으면 건너뛰기
+          if (!project || !project.id) {
+            console.warn('유효하지 않은 프로젝트 데이터:', project);
+            return null;
+          }
+          
           return (
           <div
             key={project.id}
@@ -647,60 +654,72 @@ export default function PortfolioPage() {
           {/* Right side - Image gallery (including main image) */}
           <motion.div
             className="w-full md:w-2/3 p-4 md:p-16 overflow-y-auto"
+            style={{ 
+              maxHeight: isModalOpen ? '70vh' : '100vh',
+              transition: 'max-height 0.3s ease-in-out'
+            }}
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <div className="columns-1 md:columns-2 gap-2 md:gap-3">
-              {/* Main image first */}
-              <motion.div
-                className="break-inside-avoid mb-2 md:mb-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, delay: 0.1 }}
-              >
-                <div className="relative overflow-hidden rounded-xl">
-                  <ProjectImage
-                    src={project.images[0]}
-                    alt={project.title}
-                    projectId={project.id}
-                    imageIndex={0}
-                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      openModal(project.images[0]);
-                    }}
-                  />
-                </div>
-              </motion.div>
-
-              {/* Sub images - masonry layout with eager loading and no delay */}
-              {project.images.slice(1).map((image, index) => (
-                <motion.div
-                  key={index}
-                  className="break-inside-avoid mb-2 md:mb-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="relative overflow-hidden rounded-xl">
-                    <ProjectImage
-                      src={image}
-                      alt={`${project.title} detail ${index + 1}`}
-                      projectId={project.id}
-                      imageIndex={index + 1}
-                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                      loading="eager"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        openModal(image);
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
+            <div style={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              width: '100%'
+            }}>
+              {/* 이미지를 두 개씩 담는 row 생성 */}
+              {(() => {
+                const allImages = [project.images[0], ...project.images.slice(1)];
+                const rows = [];
+                
+                for (let i = 0; i < allImages.length; i += 2) {
+                  const rowImages = allImages.slice(i, i + 2);
+                  rows.push(
+                    <div key={i} style={{ 
+                      display: 'flex',
+                      gap: '1rem',
+                      width: '100%',
+                      maxHeight: isModalOpen ? '70%' : 'auto'
+                    }}>
+                      {rowImages.map((image, rowIndex) => (
+                        <motion.div
+                          key={`${i}-${rowIndex}`}
+                          style={{ 
+                            flex: rowImages.length === 1 ? '0 0 50%' : '1', 
+                            width: rowImages.length === 1 ? '50%' : '50%' 
+                          }}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2, delay: (i + rowIndex) * 0.1 }}
+                        >
+                          <div className="relative overflow-hidden rounded-xl" style={{ 
+                            width: '100%', 
+                            height: isModalOpen ? '70%' : 'auto',
+                            maxHeight: isModalOpen ? '300px' : 'none'
+                          }}>
+                            <ProjectImage
+                              src={image}
+                              alt={rowIndex === 0 && i === 0 ? project.title : `${project.title} detail ${i + rowIndex}`}
+                              projectId={project.id}
+                              imageIndex={i + rowIndex}
+                              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                              loading="eager"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                openModal(image);
+                              }}
+                            />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  );
+                }
+                
+                return rows;
+              })()}
             </div>
           </motion.div>
         </div>
@@ -710,8 +729,23 @@ export default function PortfolioPage() {
 
   // 반응형 이미지 컴포넌트 - 중복 이벤트 방지
   const ProjectImage = ({ src, alt, projectId, imageIndex = 0, className, onClick }) => {
-    // 모바일 최적화: 가장 단순한 이미지 태그 사용
-    const imageSrc = src || FALLBACK_IMAGES[0];
+    const [imageError, setImageError] = useState(false);
+    const [imageSrc, setImageSrc] = useState(src || FALLBACK_IMAGES[0]);
+
+    // src가 변경될 때마다 imageSrc 업데이트 (원래 해상도 유지)
+    useEffect(() => {
+      // 원래 URL을 그대로 사용하여 해상도 유지
+      setImageSrc(src || FALLBACK_IMAGES[0]);
+      setImageError(false);
+    }, [src]);
+
+    const handleImageError = () => {
+      console.error('이미지 로딩 실패:', imageSrc);
+      if (!imageError) {
+        setImageError(true);
+        setImageSrc(FALLBACK_IMAGES[0]);
+      }
+    };
 
     return (
       <img
@@ -720,6 +754,7 @@ export default function PortfolioPage() {
         className={className}
         onClick={onClick}
         loading="lazy"
+        onError={handleImageError}
         style={{ pointerEvents: 'auto' }}
       />
     );
@@ -990,37 +1025,16 @@ export default function PortfolioPage() {
                   <div className="block md:hidden absolute left-0 top-0 bottom-0 w-1/2 z-5" onClick={goToPreviousImage} style={{cursor:'pointer'}} />
                   <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-5" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   {selectedImage && selectedImage.includes('cloudinary.com') ? (
-                    <picture>
-                      {/* 모바일용 작은 이미지 */}
-                      <source
-                        media="(max-width: 640px)"
-                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 320)}
-                        sizes="100vw"
-                      />
-                      {/* 태블릿용 중간 이미지 */}
-                      <source
-                        media="(max-width: 1024px)"
-                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 640)}
-                        sizes="100vw"
-                      />
-                      {/* 데스크탑용 큰 이미지 */}
-                      <source
-                        media="(min-width: 1025px)"
-                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1280)}
-                        sizes="100vw"
-                      />
-                      {/* 기본 이미지 */}
-                      <img
-                        src={getResponsiveCloudinaryUrl(selectedImage)}
-                        alt="Gallery view"
-                        className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
-                        style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      />
-                    </picture>
+                    <img
+                      src={selectedImage}
+                      alt="Gallery view"
+                      className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                      style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    />
                   ) : (
                     <ProjectImage
                       src={selectedImage}
