@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { database, auth } from '../../firebase/config';
-import { ref, push, set, onValue, remove } from 'firebase/database';
+import { ref, push, set, onValue, remove, update } from 'firebase/database';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Cloudinary 설정
@@ -42,6 +42,8 @@ const PortfolioManagement = () => {
   });
   const [editSelectedFiles, setEditSelectedFiles] = useState([]);
   const [filterType, setFilterType] = useState('all'); // 'all', 'residential', 'commercial'
+  const [dragIndex, setDragIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   // 파일 크기 제한 추가 (더 작게 설정)
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -277,7 +279,7 @@ const PortfolioManagement = () => {
         alert('Firebase 권한 오류가 발생했습니다. 관리자로 로그인되어 있는지 확인해주세요.');
         console.error('Firebase permission error:', error);
       } else {
-        alert('업로드 중 오류가 발생했습니다: ' + error.message);
+      alert('업로드 중 오류가 발생했습니다: ' + error.message);
       }
     } finally {
       setIsUploading(false);
@@ -313,11 +315,16 @@ const PortfolioManagement = () => {
     return project.type === filterType;
   });
 
-  // 공사일자 기준으로 정렬 (최신순)
+  // 순서 필드 기준으로 정렬 (order 필드가 있으면 사용, 없으면 생성일 기준)
   const sortedProjects = filteredProjects.sort((a, b) => {
-    const dateA = a.constructionDate ? new Date(a.constructionDate) : new Date(0);
-    const dateB = b.constructionDate ? new Date(b.constructionDate) : new Date(0);
-    return dateB - dateA; // 최신순
+    // order 필드가 있으면 그것을 우선 사용
+    if (a.order !== undefined && b.order !== undefined) {
+      return a.order - b.order;
+    }
+    // order 필드가 없으면 생성일 기준 (최신순)
+    const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+    const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+    return dateB - dateA;
   });
 
   const handleEdit = (project) => {
@@ -398,6 +405,60 @@ const PortfolioManagement = () => {
     }
   };
 
+  // 드래그 앤 드롭 핸들러
+  const handleDragStart = (e, index) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = async (e, dropIndex) => {
+    e.preventDefault();
+    
+    if (dragIndex === null || dragIndex === dropIndex) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    try {
+      // 새로운 순서 배열 생성
+      const newOrderedProjects = [...sortedProjects];
+      const draggedProject = newOrderedProjects[dragIndex];
+      
+      // 드래그된 아이템 제거
+      newOrderedProjects.splice(dragIndex, 1);
+      
+      // 새로운 위치에 삽입
+      newOrderedProjects.splice(dropIndex, 0, draggedProject);
+      
+      // Firebase에 순서 업데이트
+      const updates = {};
+      newOrderedProjects.forEach((project, index) => {
+        updates[`portfolio/${project.id}/order`] = index;
+      });
+      
+      await update(ref(database), updates);
+      
+      // 알림창 제거 - 성공 시 조용히 처리
+    } catch (error) {
+      console.error('순서 변경 실패:', error);
+      alert('순서 변경 중 오류가 발생했습니다: ' + error.message);
+    }
+    
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
@@ -443,19 +504,41 @@ const PortfolioManagement = () => {
             </p>
           </div>
 
-          {/* 필터 */}
+          {/* 탭 필터 */}
           <div className="bg-white shadow rounded-lg p-4 mb-6">
-            <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-700">필터:</label>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">전체</option>
-                <option value="residential">주거</option>
-                <option value="commercial">상업</option>
-              </select>
+            <div className="flex items-center justify-between">
+              <div className="flex space-x-1">
+                <button
+                  onClick={() => setFilterType('all')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'all'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  전체
+                </button>
+                <button
+                  onClick={() => setFilterType('residential')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'residential'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  주거
+                </button>
+                <button
+                  onClick={() => setFilterType('commercial')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'commercial'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  상업
+                </button>
+              </div>
               <span className="text-sm text-gray-600">
                 총 {sortedProjects.length}개 프로젝트
               </span>
@@ -468,6 +551,9 @@ const PortfolioManagement = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      순서
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       프로젝트명
                     </th>
@@ -492,8 +578,30 @@ const PortfolioManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {sortedProjects.map((project) => (
-                    <tr key={project.id} className="hover:bg-gray-50">
+                  {sortedProjects.map((project, index) => (
+                    <tr 
+                      key={project.id} 
+                      className={`hover:bg-gray-50 transition-colors ${
+                        dragIndex === index ? 'opacity-50 bg-blue-50' : ''
+                      } ${
+                        dragOverIndex === index ? 'bg-yellow-50 border-l-4 border-yellow-400' : ''
+                      }`}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                      onDrop={(e) => handleDrop(e, index)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium">
+                            {index + 1}
+                          </div>
+                          <div className="text-gray-400 text-xs">
+                            {project.order !== undefined ? `순서: ${project.order + 1}` : '순서 미설정'}
+                          </div>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{project.title}</div>
                       </td>
@@ -631,12 +739,12 @@ const PortfolioManagement = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700">짧은 스타일 설명</label>
                   <input
                     type="text"
-                    name="style"
-                    value={formData.style}
+                  name="style"
+                  value={formData.style}
                     onChange={handleInputChange}
                     placeholder="예: 모던, 미니멀, 클래식"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
@@ -647,11 +755,11 @@ const PortfolioManagement = () => {
                   <textarea
                     name="styleDescription"
                     value={formData.styleDescription}
-                    onChange={handleInputChange}
-                    rows="3"
+                  onChange={handleInputChange}
+                  rows="3"
                     placeholder="프로젝트의 상세한 스타일 설명을 입력해주세요"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                  />
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                />
                 </div>
               </div>
 
@@ -678,8 +786,8 @@ const PortfolioManagement = () => {
                 {selectedFiles.length > 0 && (
                   <div className="mt-4">
                     <p className="text-sm text-gray-600 mb-2">
-                      {selectedFiles.length}장의 이미지가 선택되었습니다.
-                    </p>
+                    {selectedFiles.length}장의 이미지가 선택되었습니다.
+                  </p>
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                       {selectedFiles.map((file, index) => (
                         <div key={index} className="relative">
@@ -803,12 +911,12 @@ const PortfolioManagement = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700">짧은 스타일 설명</label>
                   <input
                     type="text"
-                    name="style"
-                    value={editFormData.style}
+                  name="style"
+                  value={editFormData.style}
                     onChange={handleEditInputChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
                   />
@@ -818,10 +926,10 @@ const PortfolioManagement = () => {
                   <textarea
                     name="styleDescription"
                     value={editFormData.styleDescription}
-                    onChange={handleEditInputChange}
-                    rows="3"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                  />
+                  onChange={handleEditInputChange}
+                  rows="3"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                />
                 </div>
               </div>
 

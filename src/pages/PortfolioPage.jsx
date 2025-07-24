@@ -91,8 +91,8 @@ export default function PortfolioPage() {
     const handleError = (event) => {
       console.error('PortfolioPage JavaScript 에러:', event.error);
       alert('포트폴리오 페이지 에러 발생: ' + (event.error?.message || '알 수 없는 에러'));
-    };
-    
+  };
+
     // Firebase 연결 상태 확인
     const checkFirebaseConnection = () => {
       console.log('Firebase 연결 상태 확인 중...');
@@ -103,7 +103,7 @@ export default function PortfolioPage() {
           console.log('데이터 존재 여부:', snapshot.exists());
           if (snapshot.exists()) {
             console.log('데이터 개수:', Object.keys(snapshot.val()).length);
-          }
+    }
         }, (error) => {
           console.error('Firebase 연결 실패:', error);
           alert('Firebase 연결 실패: ' + error.message);
@@ -113,7 +113,7 @@ export default function PortfolioPage() {
         alert('Firebase 초기화 에러: ' + error.message);
       }
     };
-    
+
     // 3초 후 Firebase 연결 확인
     setTimeout(checkFirebaseConnection, 3000);
     
@@ -255,14 +255,24 @@ export default function PortfolioPage() {
             index === self.findIndex(p => p.id === project.id)
           );
           
-          // 생성일 기준으로 정렬 (최신순)
+          // 순서 필드 기준으로 정렬 (order 필드가 있으면 사용, 없으면 생성일 기준)
           const sortedResidential = uniqueResidential.sort((a, b) => {
+            // order 필드가 있으면 그것을 우선 사용
+            if (a.originalProject?.order !== undefined && b.originalProject?.order !== undefined) {
+              return a.originalProject.order - b.originalProject.order;
+            }
+            // order 필드가 없으면 생성일 기준 (최신순)
             const dateA = a.originalProject?.createdAt ? new Date(a.originalProject.createdAt) : new Date(0);
             const dateB = b.originalProject?.createdAt ? new Date(b.originalProject.createdAt) : new Date(0);
             return dateB - dateA;
           });
           
           const sortedCommercial = uniqueCommercial.sort((a, b) => {
+            // order 필드가 있으면 그것을 우선 사용
+            if (a.originalProject?.order !== undefined && b.originalProject?.order !== undefined) {
+              return a.originalProject.order - b.originalProject.order;
+            }
+            // order 필드가 없으면 생성일 기준 (최신순)
             const dateA = a.originalProject?.createdAt ? new Date(a.originalProject.createdAt) : new Date(0);
             const dateB = b.originalProject?.createdAt ? new Date(b.originalProject.createdAt) : new Date(0);
             return dateB - dateA;
@@ -552,7 +562,7 @@ export default function PortfolioPage() {
     }
     
     return (
-      <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {projects.map((project, index) => {
           console.log(`프로젝트 ${index + 1}/${projects.length}:`, project.title, project.id);
           
@@ -565,7 +575,7 @@ export default function PortfolioPage() {
           return (
           <div
             key={project.id}
-            className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
+            className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
             onClick={(event) => handleProjectClick(project, event)}
           >
             <div className="relative aspect-[4/5] overflow-hidden" style={{ pointerEvents: 'auto' }}>
@@ -675,57 +685,57 @@ export default function PortfolioPage() {
               {/* 왼쪽 컬럼 - 홀수번째 이미지들 (1, 3, 5, 7, 9...) */}
               <div className="flex-1 flex flex-col" style={{ gap: '8px' }}>
                 {project.images.filter((_, index) => index % 2 === 0).map((image, index) => (
-                  <motion.div
+              <motion.div
                     key={`left-${index}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
-                  >
-                    <div className="relative overflow-hidden rounded-xl">
-                      <ProjectImage
+              >
+                <div className="relative overflow-hidden rounded-xl">
+                  <ProjectImage
                         src={image}
                         alt={`${project.title} detail ${index * 2 + 1}`}
-                        projectId={project.id}
+                    projectId={project.id}
                         imageIndex={index * 2}
-                        className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                         loading="eager"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
                           openModal(image);
-                        }}
-                      />
-                    </div>
-                  </motion.div>
+                    }}
+                  />
+                </div>
+              </motion.div>
                 ))}
               </div>
-              
+
               {/* 오른쪽 컬럼 - 짝수번째 이미지들 (2, 4, 6, 8, 10...) */}
               <div className="flex-1 flex flex-col" style={{ gap: '8px' }}>
                 {project.images.filter((_, index) => index % 2 === 1).map((image, index) => (
-                  <motion.div
+                <motion.div
                     key={`right-${index}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
-                  >
-                    <div className="relative overflow-hidden rounded-xl">
-                      <ProjectImage
-                        src={image}
+                >
+                  <div className="relative overflow-hidden rounded-xl">
+                    <ProjectImage
+                      src={image}
                         alt={`${project.title} detail ${index * 2 + 2}`}
-                        projectId={project.id}
+                      projectId={project.id}
                         imageIndex={index * 2 + 1}
-                        className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
-                        loading="eager"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          openModal(image);
-                        }}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                      loading="eager"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        openModal(image);
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
               </div>
             </div>
           </motion.div>
@@ -753,15 +763,22 @@ export default function PortfolioPage() {
       }
     };
 
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
     return (
-      <img
+        <img
         src={imageSrc}
-        alt={alt}
-        className={className}
-        onClick={onClick}
+          alt={alt}
+          className={className}
+          onClick={onClick}
         loading="lazy"
         onError={handleImageError}
+        onContextMenu={handleContextMenu}
         style={{ pointerEvents: 'auto' }}
+        draggable={false}
       />
     );
   };
@@ -829,8 +846,14 @@ export default function PortfolioPage() {
     }
   }, [isModalOpen, selectedImageIndex, allImages.length, selectedProject?.id]);
 
+  // 우클릭 방지 함수
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    return false;
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" onContextMenu={handleContextMenu}>
       {/* Main content - only show if no project is selected */}
       <Navbar />
       <AnimatePresence>
@@ -919,7 +942,7 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  <MasonryGallery projects={getProjectsToShow()} />
+                    <MasonryGallery projects={getProjectsToShow()} />
                 </motion.div>
               </div>
             </section>
@@ -1063,18 +1086,18 @@ export default function PortfolioPage() {
                       />
                     </picture>
                   ) : (
-                    <ProjectImage
-                      src={selectedImage}
-                      alt="Gallery view"
-                      projectId={selectedProject?.id || 'modal'}
-                      imageIndex={selectedImageIndex}
-                      className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
-                      style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    />
+                  <ProjectImage
+                    src={selectedImage}
+                    alt="Gallery view"
+                    projectId={selectedProject?.id || 'modal'}
+                    imageIndex={selectedImageIndex}
+                    className="w-full h-full object-contain select-none rounded-lg shadow-2xl"
+                    style={{ touchAction: 'pan-x pan-y', userSelect: 'none', WebkitUserSelect: 'none', msUserSelect: 'none' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  />
                   )}
                 </motion.div>
               </div>
@@ -1124,13 +1147,13 @@ export default function PortfolioPage() {
                             />
                           </picture>
                         ) : (
-                          <img
-                            src={image}
-                            alt={`Thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover user-select-none"
-                            draggable={false}
-                            style={{ userSelect: 'none' }}
-                          />
+                        <img
+                          src={image}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover user-select-none"
+                          draggable={false}
+                          style={{ userSelect: 'none' }}
+                        />
                         )}
                       </button>
                     ))}

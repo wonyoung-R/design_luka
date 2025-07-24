@@ -315,6 +315,12 @@ const HomePage = () => {
     preloadImages();
   }, []);
 
+  // 우클릭 방지 함수
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    return false;
+  };
+
   return (
     <>
       <Navbar />
@@ -336,6 +342,7 @@ const HomePage = () => {
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onContextMenu={handleContextMenu}
       >
         {/* 슬라이드 카루셀 구조 */}
         <div 
@@ -385,6 +392,7 @@ const HomePage = () => {
                     backfaceVisibility: 'hidden',
                     willChange: 'transform' // 성능 최적화
                   }}
+                  onContextMenu={handleContextMenu}
                 />
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
