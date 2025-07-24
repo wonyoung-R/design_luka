@@ -21,8 +21,8 @@ const getResponsiveCloudinaryUrl = (url, width = null) => {
     const baseUrl = url.split('/upload/')[0] + '/upload/';
     const imagePath = url.split('/upload/')[1];
     
-    // 반응형 파라미터 추가
-    let params = 'f_auto,q_auto'; // 자동 형식, 자동 품질
+    // 고화질 반응형 파라미터 추가
+    let params = 'f_auto,q_auto:good,fl_progressive'; // 고화질 자동 최적화
     
     if (width) {
       params += `,w_${width}`; // 특정 너비 지정
@@ -52,7 +52,7 @@ const generateResponsiveSrcSet = (url) => {
 const convertToOptimizedUrl = (url) => {
   if (!url) return null;
   
-  // Cloudinary URL인 경우 반응형 최적화
+  // Cloudinary URL인 경우 고화질 반응형 최적화
   if (url.includes('cloudinary.com')) {
     return getResponsiveCloudinaryUrl(url);
   }

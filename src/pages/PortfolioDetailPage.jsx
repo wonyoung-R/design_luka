@@ -6,6 +6,28 @@ import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import Footer from '../components/Footer';
 
+// 고화질 Cloudinary URL 생성 함수
+const getHighQualityCloudinaryUrl = (url, width = null) => {
+  if (!url) return null;
+  
+  // Cloudinary URL인 경우 고화질 최적화
+  if (url.includes('cloudinary.com')) {
+    const baseUrl = url.split('/upload/')[0] + '/upload/';
+    const imagePath = url.split('/upload/')[1];
+    
+    // 고화질 파라미터 추가
+    let params = 'f_auto,q_auto:good,fl_progressive'; // 고화질 자동 최적화
+    
+    if (width) {
+      params += `,w_${width}`; // 특정 너비 지정
+    }
+    
+    return `${baseUrl}${params}/${imagePath}`;
+  }
+  
+  return url;
+};
+
 export default function PortfolioDetailPage() {
   const { id, type } = useParams();
   const navigate = useNavigate();
@@ -225,7 +247,7 @@ export default function PortfolioDetailPage() {
             >
               <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index * 2)}`}>
                 <img
-                  src={image}
+                  src={getHighQualityCloudinaryUrl(image)}
                   alt={`Gallery image ${index * 2 + 1}`}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                   onClick={() => openModal(image)}
@@ -250,7 +272,7 @@ export default function PortfolioDetailPage() {
           >
               <div className={`relative overflow-hidden rounded-lg ${getImageAspectRatio(index * 2 + 1)}`}>
               <img
-                src={image}
+                src={getHighQualityCloudinaryUrl(image)}
                   alt={`Gallery image ${index * 2 + 2}`}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
                 onClick={() => openModal(image)}
@@ -335,7 +357,7 @@ export default function PortfolioDetailPage() {
                 {/* Main Image */}
                 <div className="aspect-[4/3] overflow-hidden rounded-lg">
                                   <img
-                  src={project.main_img}
+                  src={getHighQualityCloudinaryUrl(project.main_img)}
                   alt={project.title}
                   className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                   onClick={() => openModal(project.main_img)}
@@ -435,7 +457,7 @@ export default function PortfolioDetailPage() {
               {/* Image */}
               <div className="w-full h-full flex items-center justify-center p-4">
                 <img
-                  src={selectedImage}
+                  src={getHighQualityCloudinaryUrl(selectedImage)}
                   alt="Expanded view"
                   className="max-w-full max-h-full object-contain"
                   onContextMenu={handleContextMenu}

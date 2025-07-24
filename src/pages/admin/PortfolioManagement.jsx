@@ -97,7 +97,7 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 기본 업로드 함수 (가장 간단한 방법)
+  // Cloudinary 고화질 업로드 함수
   const uploadToCloudinary = async (file) => {
     console.log('=== UPLOAD START ===');
     console.log('File:', file);
@@ -109,12 +109,16 @@ const PortfolioManagement = () => {
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
     
-    console.log('FormData created');
+    // 화질 최적화 파라미터 추가
+    formData.append('quality', 'auto:good'); // 고화질 자동 최적화
+    formData.append('fetch_format', 'auto'); // 자동 형식 변환 (WebP 등)
+    formData.append('flags', 'progressive'); // 프로그레시브 JPEG
+    formData.append('transformation', 'f_auto,q_auto:good,fl_progressive'); // 종합 최적화
+    
+    console.log('FormData created with quality optimization');
     console.log('Upload preset:', UPLOAD_PRESET);
     console.log('Upload URL:', CLOUDINARY_UPLOAD_URL);
     
-    // 추가 파라미터 없이 가장 기본적인 설정만 사용
-
     try {
       console.log('Starting fetch request...');
       
