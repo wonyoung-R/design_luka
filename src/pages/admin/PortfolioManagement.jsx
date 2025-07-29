@@ -97,7 +97,7 @@ const PortfolioManagement = () => {
     setSelectedFiles(imageFiles);
   };
 
-  // Cloudinary 고화질 업로드 함수
+  // Cloudinary 업로드 함수 (단순화된 버전)
   const uploadToCloudinary = async (file) => {
     console.log('=== UPLOAD START ===');
     console.log('File:', file);
@@ -109,20 +109,15 @@ const PortfolioManagement = () => {
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
     
-    // 화질 최적화 파라미터 추가
-    formData.append('quality', 'auto:good'); // 고화질 자동 최적화
-    formData.append('fetch_format', 'auto'); // 자동 형식 변환 (WebP 등)
-    formData.append('flags', 'progressive'); // 프로그레시브 JPEG
-    formData.append('transformation', 'f_auto,q_auto:good,fl_progressive'); // 종합 최적화
+    // 기본 파라미터만 사용 (복잡한 최적화 제거)
+    formData.append('quality', 'auto');
     
-    console.log('FormData created with quality optimization');
+    console.log('FormData created with basic parameters');
     console.log('Upload preset:', UPLOAD_PRESET);
     console.log('Upload URL:', CLOUDINARY_UPLOAD_URL);
     
     try {
       console.log('Starting fetch request...');
-      
-      console.log('Fetch request sent, waiting for response...');
       
       const response = await fetch(CLOUDINARY_UPLOAD_URL, {
         method: 'POST',
@@ -131,25 +126,28 @@ const PortfolioManagement = () => {
 
       console.log('Response received!');
       console.log('Upload response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
-        console.log('Response is not OK, reading error text...');
         const errorText = await response.text();
         console.error('Cloudinary error response:', errorText);
-        console.error('Full response:', response);
         console.error('Response status:', response.status);
-        console.error('Response statusText:', response.statusText);
         
         // 더 자세한 에러 정보 제공
         let errorMessage = `Cloudinary 업로드 실패: ${response.status}`;
         
         if (response.status === 400) {
           errorMessage += ' - Upload preset이 존재하지 않거나 설정이 잘못되었습니다.';
+          errorMessage += ` (현재 preset: ${UPLOAD_PRESET})`;
+          errorMessage += ' - Cloudinary Dashboard에서 preset 설정을 확인하세요.';
         } else if (response.status === 401) {
           errorMessage += ' - API 인증 실패. Upload preset 설정을 확인하세요.';
         } else if (response.status === 500) {
           errorMessage += ' - 서버 오류. 파일 크기나 형식을 확인하세요.';
+        }
+        
+        // 에러 응답 내용도 포함
+        if (errorText) {
+          errorMessage += `\n\n에러 상세: ${errorText}`;
         }
         
         console.error('Throwing error:', errorMessage);
@@ -503,9 +501,15 @@ const PortfolioManagement = () => {
             <p className="text-gray-600 text-sm mt-1">Upload Preset: <code className="bg-gray-200 px-1 rounded">{UPLOAD_PRESET}</code></p>
             <p className="text-gray-600 text-sm mt-1">최대 파일 크기: <code className="bg-gray-200 px-1 rounded">5MB</code></p>
             <p className="text-gray-600 text-sm mt-1">상태: <span className="text-green-600 font-medium">{apiStatus}</span></p>
-            <p className="text-gray-500 text-xs mt-2">
-              ⚠️ ml_default preset 사용 중. 400 에러가 발생하면 Cloudinary Dashboard에서 preset 설정을 확인하세요
-            </p>
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+              <p className="text-blue-800 text-sm font-medium">🔧 문제 해결 가이드</p>
+              <ul className="text-blue-700 text-xs mt-1 space-y-1">
+                <li>• 400 에러 발생 시: Cloudinary Dashboard → Settings → Upload → Upload presets 확인</li>
+                <li>• ml_default preset이 활성화되어 있는지 확인</li>
+                <li>• preset이 "Unsigned" 모드로 설정되어 있는지 확인</li>
+                <li>• 파일 크기가 5MB 이하인지 확인</li>
+              </ul>
+            </div>
           </div>
 
           {/* 탭 필터 */}
