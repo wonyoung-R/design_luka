@@ -24,11 +24,10 @@ const PortfolioManagement = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [apiStatus, setApiStatus] = useState('Cloudinary 준비됨');
   const [formData, setFormData] = useState({
-    type: 'residential',
     title: '',
     address: '',
     area: '',
-    businessType: 'cafe',
+    businessType: 'retail',
     style: '',
     styleDescription: '',
     constructionDate: '',
@@ -257,11 +256,10 @@ const PortfolioManagement = () => {
 
       setIsModalOpen(false);
       setFormData({
-        type: 'residential',
         title: '',
         address: '',
         area: '',
-        businessType: 'cafe',
+        businessType: 'retail',
         style: '',
         styleDescription: '',
         constructionDate: '',
@@ -304,11 +302,12 @@ const PortfolioManagement = () => {
   };
 
   const businessTypes = [
-    { value: 'cafe', label: '카페' },
-    { value: 'restaurant', label: '레스토랑' },
-    { value: 'office', label: '사무실' },
-    { value: 'retail', label: '상가' },
-    { value: 'beauty', label: '뷰티샵' }
+    { value: 'retail', label: 'Retail' },
+    { value: 'f&b', label: 'F&B' },
+    { value: 'beauty-wellness', label: 'Beauty · Wellness' },
+    { value: 'education', label: 'Education' },
+    { value: 'office', label: 'Office' },
+    { value: 'etc', label: 'Etc' }
   ];
 
   // 필터링된 프로젝트 목록
@@ -527,24 +526,64 @@ const PortfolioManagement = () => {
                   전체
                 </button>
                 <button
-                  onClick={() => setFilterType('residential')}
+                  onClick={() => setFilterType('retail')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'residential'
+                    filterType === 'retail'
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  주거
+                  Retail
                 </button>
                 <button
-                  onClick={() => setFilterType('commercial')}
+                  onClick={() => setFilterType('f&b')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'commercial'
+                    filterType === 'f&b'
                       ? 'bg-green-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  상업
+                  F&B
+                </button>
+                <button
+                  onClick={() => setFilterType('beauty-wellness')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'beauty-wellness'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Beauty · Wellness
+                </button>
+                <button
+                  onClick={() => setFilterType('education')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'education'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Education
+                </button>
+                <button
+                  onClick={() => setFilterType('office')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'office'
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Office
+                </button>
+                <button
+                  onClick={() => setFilterType('etc')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filterType === 'etc'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Etc
                 </button>
               </div>
               <span className="text-sm text-gray-600">
@@ -615,11 +654,21 @@ const PortfolioManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          project.type === 'residential' 
+                          project.businessType === 'retail' 
                             ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-green-100 text-green-800'
+                            : project.businessType === 'f&b'
+                            ? 'bg-green-100 text-green-800'
+                            : project.businessType === 'beauty-wellness'
+                            ? 'bg-purple-100 text-purple-800'
+                            : project.businessType === 'education'
+                            ? 'bg-indigo-100 text-indigo-800'
+                            : project.businessType === 'office'
+                            ? 'bg-orange-100 text-orange-800'
+                            : project.businessType === 'etc'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {project.type === 'residential' ? '주거' : '상업'}
+                          {businessTypes.find(t => t.value === project.businessType)?.label || project.businessType}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

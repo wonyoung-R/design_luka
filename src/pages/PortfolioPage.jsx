@@ -139,26 +139,28 @@ export default function PortfolioPage() {
       area: ['20평 미만', '20-30평', '30-40평', '40평 이상']
     },
     commercial: {
-      type: ['카페', '레스토랑', '사무실', '상가', '뷰티샵']
+      type: ['Retail', 'F&B', 'Beauty · Wellness', 'Education', 'Office', 'Etc']
     }
   };
 
   const businessTypeLabels = {
-    cafe: '카페',
-    restaurant: '레스토랑',
-    office: '사무실',
-    retail: '상가',
-    beauty: '뷰티샵'
+    retail: 'Retail',
+    'f&b': 'F&B',
+    'beauty-wellness': 'Beauty · Wellness',
+    education: 'Education',
+    office: 'Office',
+    etc: 'Etc'
   };
 
   // businessType을 한글로 변환하는 함수 추가
   const convertBusinessTypeToKorean = (businessType) => {
     const typeMap = {
-      'cafe': '카페',
-      'restaurant': '레스토랑', 
-      'office': '사무실',
-      'retail': '상가',
-      'beauty': '뷰티샵'
+      'retail': 'Retail',
+      'f&b': 'F&B',
+      'beauty-wellness': 'Beauty · Wellness',
+      'education': 'Education',
+      'office': 'Office',
+      'etc': 'Etc'
     };
     return typeMap[businessType] || businessType;
   };
@@ -916,7 +918,7 @@ export default function PortfolioPage() {
                     </button>
                   ))
                 ) : (
-                  ["전체", "Retail", "Commercial", "Beauty & Wellness", "Education", "Office"].map((type) => (
+                  ["전체", "Retail", "F&B", "Beauty · Wellness", "Education", "Office", "Etc"].map((type) => (
                     <button
                       key={type}
                       type="button"
