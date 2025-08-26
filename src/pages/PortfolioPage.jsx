@@ -916,7 +916,7 @@ export default function PortfolioPage() {
                     </button>
                   ))
                 ) : (
-                  ["전체", "카페", "레스토랑", "사무실", "상가", "뷰티샵"].map((type) => (
+                  ["전체", "Retail", "Commercial", "Beauty & Wellness", "Education", "Office"].map((type) => (
                     <button
                       key={type}
                       type="button"
