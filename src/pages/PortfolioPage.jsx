@@ -340,7 +340,7 @@ export default function PortfolioPage() {
     return projects.filter(project => {
       if (activeTab === 'residential') {
         // 주거공간 필터
-        if (selectedFilters.area.length === 0 || selectedFilters.area.includes("전체")) {
+        if (selectedFilters.area.length === 0 || selectedFilters.area.includes("ALL")) {
           return true;
         }
         
@@ -365,7 +365,7 @@ export default function PortfolioPage() {
         });
       } else {
         // 상업공간 필터
-        if (selectedFilters.type.length === 0 || selectedFilters.type.includes("전체")) {
+        if (selectedFilters.type.length === 0 || selectedFilters.type.includes("ALL")) {
           return true;
         }
         return selectedFilters.type.includes(project.type);
@@ -375,20 +375,20 @@ export default function PortfolioPage() {
 
   const handleFilterChange = (category, value) => {
     setSelectedFilters(prev => {
-      if (value === "전체") {
-        // 전체를 누르면 해당 카테고리만 전체 선택
+      if (value === "ALL") {
+        // ALL을 누르면 해당 카테고리만 전체 선택
         return {
           ...prev,
           [category]: []
         };
       } else {
-        // 전체가 아닌 항목을 누르면 전체는 해제
+        // ALL이 아닌 항목을 누르면 ALL은 해제
         const prevArr = prev[category] || [];
         let newArr;
         if (prevArr.includes(value)) {
           newArr = prevArr.filter(item => item !== value);
         } else {
-          newArr = [...prevArr.filter(item => item !== "전체"), value];
+          newArr = [...prevArr.filter(item => item !== "ALL"), value];
         }
         return {
           ...prev,
@@ -903,13 +903,13 @@ export default function PortfolioPage() {
             <div className="w-full flex justify-center items-center py-4 bg-white border-b border-gray-100">
               <div className="flex gap-0.25 sm:gap-0.5 md:gap-1 justify-center max-w-full px-2 sm:px-4 overflow-x-auto scrollbar-hide">
                 {activeTab === 'residential' ? (
-                  ["전체", "10PY", "20PY", "30PY", "40PY", "50PY~"].map((area) => (
+                  ["ALL", "10PY", "20PY", "30PY", "40PY", "50PY~"].map((area) => (
                     <button
                       key={area}
                       type="button"
                       onClick={() => handleFilterChange('area', area)}
                       className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
-                        ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "전체")
+                        ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "ALL")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
                       `}
@@ -918,13 +918,13 @@ export default function PortfolioPage() {
                     </button>
                   ))
                 ) : (
-                  ["전체", "Retail", "F&B", "Beauty · Wellness", "Education", "Office", "Etc"].map((type) => (
+                  ["ALL", "Retail", "F&B", "Beauty · Wellness", "Education", "Office", "Etc"].map((type) => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => handleFilterChange('type', type)}
                       className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
-                        ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "전체")
+                        ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "ALL")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
                       `}
