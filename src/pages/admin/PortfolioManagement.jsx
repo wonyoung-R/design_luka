@@ -526,64 +526,24 @@ const PortfolioManagement = () => {
                   전체
                 </button>
                 <button
-                  onClick={() => setFilterType('retail')}
+                  onClick={() => setFilterType('residential')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'retail'
+                    filterType === 'residential'
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  Retail
+                  주거
                 </button>
                 <button
-                  onClick={() => setFilterType('f&b')}
+                  onClick={() => setFilterType('commercial')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'f&b'
+                    filterType === 'commercial'
                       ? 'bg-green-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  F&B
-                </button>
-                <button
-                  onClick={() => setFilterType('beauty-wellness')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'beauty-wellness'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Beauty · Wellness
-                </button>
-                <button
-                  onClick={() => setFilterType('education')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'education'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Education
-                </button>
-                <button
-                  onClick={() => setFilterType('office')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'office'
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Office
-                </button>
-                <button
-                  onClick={() => setFilterType('etc')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterType === 'etc'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Etc
+                  상업
                 </button>
               </div>
               <span className="text-sm text-gray-600">
@@ -602,10 +562,10 @@ const PortfolioManagement = () => {
                       순서
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      프로젝트명
+                      구분
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      유형
+                      프로젝트명
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       주소
@@ -650,26 +610,16 @@ const PortfolioManagement = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{project.title}</div>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          project.type === 'residential'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {project.type === 'residential' ? '주거' : '상업'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          project.businessType === 'retail' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : project.businessType === 'f&b'
-                            ? 'bg-green-100 text-green-800'
-                            : project.businessType === 'beauty-wellness'
-                            ? 'bg-purple-100 text-purple-800'
-                            : project.businessType === 'education'
-                            ? 'bg-indigo-100 text-indigo-800'
-                            : project.businessType === 'office'
-                            ? 'bg-orange-100 text-orange-800'
-                            : project.businessType === 'etc'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {businessTypes.find(t => t.value === project.businessType)?.label || project.businessType}
-                        </span>
+                        <div className="text-sm font-medium text-gray-900">{project.title}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {project.address}
