@@ -21,8 +21,8 @@ const getResponsiveCloudinaryUrl = (url, width = null) => {
     const baseUrl = url.split('/upload/')[0] + '/upload/';
     const imagePath = url.split('/upload/')[1];
     
-    // 고화질 반응형 파라미터 추가
-    let params = 'f_auto,q_auto:good,fl_progressive'; // 고화질 자동 최적화
+    // 고화질 설정 (용량과 화질의 균형점)
+    let params = 'f_auto,q_90,fl_progressive'; // 90% 품질로 균형점 설정
     
     if (width) {
       params += `,w_${width}`; // 특정 너비 지정
@@ -39,8 +39,8 @@ const generateResponsiveSrcSet = (url) => {
     return url;
   }
   
-  // 다양한 화면 크기에 맞는 이미지 URL 생성
-  const widths = [320, 640, 960, 1280, 1920];
+  // 다양한 화면 크기에 맞는 고화질 이미지 URL 생성
+  const widths = [640, 1280, 1920, 2560]; // 더 큰 해상도 지원
   const srcSet = widths.map(width => {
     const responsiveUrl = getResponsiveCloudinaryUrl(url, width);
     return `${responsiveUrl} ${width}w`;
@@ -52,7 +52,7 @@ const generateResponsiveSrcSet = (url) => {
 const convertToOptimizedUrl = (url) => {
   if (!url) return null;
   
-  // Cloudinary URL인 경우 고화질 반응형 최적화
+  // Cloudinary URL인 경우 원본 화질 유지
   if (url.includes('cloudinary.com')) {
     return getResponsiveCloudinaryUrl(url);
   }
@@ -1057,22 +1057,22 @@ export default function PortfolioPage() {
                   <div className="block md:hidden absolute right-0 top-0 bottom-0 w-1/2 z-5" onClick={goToNextImage} style={{cursor:'pointer'}} />
                   {selectedImage && selectedImage.includes('cloudinary.com') ? (
                     <picture>
-                      {/* 모바일용 작은 이미지 */}
+                      {/* 모바일용 고화질 이미지 */}
                       <source
                         media="(max-width: 640px)"
-                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 320)}
-                        sizes="100vw"
-                      />
-                      {/* 태블릿용 중간 이미지 */}
-                      <source
-                        media="(max-width: 1024px)"
                         srcSet={getResponsiveCloudinaryUrl(selectedImage, 640)}
                         sizes="100vw"
                       />
-                      {/* 데스크탑용 큰 이미지 */}
+                      {/* 태블릿용 고화질 이미지 */}
+                      <source
+                        media="(max-width: 1024px)"
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1280)}
+                        sizes="100vw"
+                      />
+                      {/* 데스크탑용 고화질 이미지 */}
                       <source
                         media="(min-width: 1025px)"
-                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1280)}
+                        srcSet={getResponsiveCloudinaryUrl(selectedImage, 1920)}
                         sizes="100vw"
                       />
                       {/* 기본 이미지 */}

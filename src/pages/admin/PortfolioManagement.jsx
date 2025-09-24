@@ -44,8 +44,8 @@ const PortfolioManagement = () => {
   const [dragIndex, setDragIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
 
-  // 파일 크기 제한 추가 (더 작게 설정)
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  // 파일 크기 제한 추가 (Cloudinary 무료 플랜 고려)
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB (안전한 크기)
 
   // Firebase에서 포트폴리오 데이터 로드
   useEffect(() => {
@@ -86,7 +86,7 @@ const PortfolioManagement = () => {
     const imageFiles = files.filter(file => {
       // 파일 크기 체크
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 5MB)`);
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
         return false;
       }
       // 이미지 파일 체크
@@ -108,8 +108,8 @@ const PortfolioManagement = () => {
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
     
-    // 기본 파라미터만 사용 (복잡한 최적화 제거)
-    formData.append('quality', 'auto');
+    // 고화질 설정 (Cloudinary 무료 플랜 고려하여 균형점 설정)
+    formData.append('quality', '90'); // 90% 품질로 용량과 화질의 균형
     
     console.log('FormData created with basic parameters');
     console.log('Upload preset:', UPLOAD_PRESET);
@@ -345,7 +345,7 @@ const PortfolioManagement = () => {
     const imageFiles = files.filter(file => {
       // 파일 크기 체크
       if (file.size > MAX_FILE_SIZE) {
-        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 5MB)`);
+        alert(`${file.name}은(는) 파일 크기가 너무 큽니다. (최대 10MB)`);
         return false;
       }
       // 이미지 파일 체크
