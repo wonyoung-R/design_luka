@@ -99,11 +99,12 @@ const InsightDetailPage = () => {
 
     try {
       let date;
+      const trimmedValue = typeof dateValue === 'string' ? dateValue.trim() : String(dateValue);
       
       // 다양한 날짜 형식 처리
       if (typeof dateValue === 'string') {
-        // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초"
-        const koreanDateWithTimeMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
+        // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초" (다양한 공백/슬래시 변형 지원)
+        const koreanDateWithTimeMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일\s*[\/\s]*\s*(\d{1,2})\s*시\s*(\d{1,2})\s*분\s*(\d{1,2})\s*초/);
         if (koreanDateWithTimeMatch) {
           const year = koreanDateWithTimeMatch[1];
           const month = String(koreanDateWithTimeMatch[2]).padStart(2, '0');
@@ -112,74 +113,156 @@ const InsightDetailPage = () => {
           const minute = String(koreanDateWithTimeMatch[5]).padStart(2, '0');
           const second = String(koreanDateWithTimeMatch[6]).padStart(2, '0');
           date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+          }
         }
+        
         // 한글 날짜 형식 처리 (시간 없음): "2025년 12월 16일"
-        else {
-          const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일/);
-          if (koreanDateMatch) {
-            const year = koreanDateMatch[1];
-            const month = String(koreanDateMatch[2]).padStart(2, '0');
-            const day = String(koreanDateMatch[3]).padStart(2, '0');
-            date = new Date(`${year}-${month}-${day}`);
+        const koreanDateMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+        if (koreanDateMatch) {
+          const year = koreanDateMatch[1];
+          const month = String(koreanDateMatch[2]).padStart(2, '0');
+          const day = String(koreanDateMatch[3]).padStart(2, '0');
+          date = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
           }
-          // YYYYMMDD HHMMSS 형식 처리
-          else if (/^\d{8}\s\d{6}$/.test(dateValue)) {
-            const year = dateValue.substring(0, 4);
-            const month = dateValue.substring(4, 6);
-            const day = dateValue.substring(6, 8);
-            const hour = dateValue.substring(9, 11);
-            const minute = dateValue.substring(11, 13);
-            const second = dateValue.substring(13, 15);
-            date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        }
+        
+        // YYYYMMDD HHMMSS 형식 처리
+        if (/^\d{8}\s+\d{6}$/.test(trimmedValue)) {
+          const year = trimmedValue.substring(0, 4);
+          const month = trimmedValue.substring(4, 6);
+          const day = trimmedValue.substring(6, 8);
+          const hour = trimmedValue.substring(9, 11);
+          const minute = trimmedValue.substring(11, 13);
+          const second = trimmedValue.substring(13, 15);
+          date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
           }
-          // YYYYMMDD 형식 처리
-          else if (/^\d{8}$/.test(dateValue)) {
-            const year = dateValue.substring(0, 4);
-            const month = dateValue.substring(4, 6);
-            const day = dateValue.substring(6, 8);
-            date = new Date(`${year}-${month}-${day}`);
+        }
+        
+        // YYYYMMDD 형식 처리
+        if (/^\d{8}$/.test(trimmedValue)) {
+          const year = trimmedValue.substring(0, 4);
+          const month = trimmedValue.substring(4, 6);
+          const day = trimmedValue.substring(6, 8);
+          date = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
           }
-          // ISO 문자열 형식 처리
-          else if (dateValue.includes('T') || dateValue.includes('-')) {
-            date = new Date(dateValue);
+        }
+        
+        // ISO 문자열 형식 처리 (YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS 등)
+        if (trimmedValue.includes('T') || /^\d{4}-\d{2}-\d{2}/.test(trimmedValue)) {
+          date = new Date(trimmedValue);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
           }
-          // 기타 문자열 형식
-          else {
-            date = new Date(dateValue);
-          }
+        }
+        
+        // 마지막 시도: JavaScript Date 생성자로 파싱
+        date = new Date(trimmedValue);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
         }
       } else if (dateValue instanceof Date) {
         date = dateValue;
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+        }
       } else {
         date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+        }
       }
 
-      // 유효한 날짜인지 확인
-      if (isNaN(date.getTime())) {
-        console.warn('Invalid date value:', dateValue);
-        // 날짜 파싱 실패 시 원본 값의 일부를 표시하거나 기본 메시지 반환
-        if (typeof dateValue === 'string' && dateValue.length > 0) {
-          // 한글 날짜 형식이 부분적으로라도 있으면 그 부분만 표시
-          const partialMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일/);
-          if (partialMatch) {
-            return `${partialMatch[1]}년 ${partialMatch[2]}월 ${partialMatch[3]}일`;
-          }
-          // 숫자만 있는 경우
-          if (/^\d+/.test(dateValue)) {
-            return dateValue.substring(0, 10); // 처음 10자만 표시
+      // 모든 파싱 시도 실패 시 fallback 처리
+      console.warn('Invalid date value:', dateValue);
+      if (typeof dateValue === 'string' && dateValue.length > 0) {
+        // 한글 날짜 형식이 부분적으로라도 있으면 그 부분만 표시
+        const partialMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+        if (partialMatch) {
+          return `${partialMatch[1]}년 ${partialMatch[2]}월 ${partialMatch[3]}일`;
+        }
+        // 숫자 패턴이 있으면 추출 시도
+        const numberMatch = trimmedValue.match(/(\d{4})[-\/\.]?(\d{1,2})[-\/\.]?(\d{1,2})/);
+        if (numberMatch) {
+          const year = numberMatch[1];
+          const month = String(numberMatch[2]).padStart(2, '0');
+          const day = String(numberMatch[3]).padStart(2, '0');
+          date = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
           }
         }
-        return '날짜 정보 없음';
+        // 숫자만 있는 경우 처음 8자리 추출 시도
+        const digitsOnly = trimmedValue.replace(/\D/g, '');
+        if (digitsOnly.length >= 8) {
+          const year = digitsOnly.substring(0, 4);
+          const month = digitsOnly.substring(4, 6);
+          const day = digitsOnly.substring(6, 8);
+          date = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+          }
+        }
       }
-
-      return date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      
+      return '날짜 정보 없음';
     } catch (error) {
       console.error('Date formatting error:', error, 'Date value:', dateValue);
-      return '날짜 처리 오류';
+      // 에러 발생 시에도 원본 값에서 날짜 추출 시도
+      if (typeof dateValue === 'string') {
+        const partialMatch = dateValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+        if (partialMatch) {
+          return `${partialMatch[1]}년 ${partialMatch[2]}월 ${partialMatch[3]}일`;
+        }
+      }
+      return '날짜 정보 없음';
     }
   };
 
@@ -345,4 +428,5 @@ const InsightDetailPage = () => {
   );
 };
 
+export default InsightDetailPage;
 export default InsightDetailPage;
