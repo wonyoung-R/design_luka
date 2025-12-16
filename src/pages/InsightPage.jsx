@@ -35,8 +35,19 @@ export default function InsightPage() {
       
       // 다양한 날짜 형식 처리
       if (typeof dateValue === 'string') {
+        // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초"
+        const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
+        if (koreanDateMatch) {
+          const year = koreanDateMatch[1];
+          const month = String(koreanDateMatch[2]).padStart(2, '0');
+          const day = String(koreanDateMatch[3]).padStart(2, '0');
+          const hour = String(koreanDateMatch[4]).padStart(2, '0');
+          const minute = String(koreanDateMatch[5]).padStart(2, '0');
+          const second = String(koreanDateMatch[6]).padStart(2, '0');
+          date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+        }
         // YYYYMMDD HHMMSS 형식 처리
-        if (/^\d{8}\s\d{6}$/.test(dateValue)) {
+        else if (/^\d{8}\s\d{6}$/.test(dateValue)) {
           const year = dateValue.substring(0, 4);
           const month = dateValue.substring(4, 6);
           const day = dateValue.substring(6, 8);

@@ -43,6 +43,9 @@ const PortfolioManagement = () => {
   const [filterType, setFilterType] = useState('all'); // 'all', 'residential', 'commercial'
   const [dragIndex, setDragIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  // 이미지 드래그 앤 드롭을 위한 상태
+  const [imageDragIndex, setImageDragIndex] = useState(null);
+  const [imageDragOverIndex, setImageDragOverIndex] = useState(null);
 
   // 파일 크기 제한 추가 (Cloudinary 무료 플랜 고려)
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB (안전한 크기)
@@ -268,6 +271,9 @@ const PortfolioManagement = () => {
       });
       setSelectedFiles([]);
       setUploadProgress(0);
+      // 새 이미지 드래그 상태 초기화
+      setNewImageDragIndex(null);
+      setNewImageDragOverIndex(null);
       
       alert('프로젝트가 성공적으로 업로드되었습니다!');
       
@@ -333,6 +339,9 @@ const PortfolioManagement = () => {
     setEditFormData({ ...project });
     setIsEditModalOpen(true);
     setEditSelectedFiles([]);
+    // 이미지 드래그 상태 초기화
+    setImageDragIndex(null);
+    setImageDragOverIndex(null);
   };
 
   const handleEditInputChange = (e) => {
@@ -355,10 +364,157 @@ const PortfolioManagement = () => {
   };
 
   const handleRemoveEditImage = (idx) => {
-    setEditFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== idx)
-    }));
+    setEditFormData(prev => {
+      const newImages = prev.images.filter((_, i) => i !== idx);
+      // 썸네일 인덱스 조정
+      let newThumbnailIndex = prev.thumbnailIndex || 0;
+      if (idx < newThumbnailIndex) {
+        newThumbnailIndex = newThumbnailIndex - 1;
+      } else if (idx === newThumbnailIndex && newImages.length > 0) {
+        newThumbnailIndex = 0; // 삭제된 이미지가 썸네일이었으면 첫 번째 이미지로 설정
+      } else if (newImages.length === 0) {
+        newThumbnailIndex = 0;
+      }
+      return {
+        ...prev,
+        images: newImages,
+        thumbnailIndex: newThumbnailIndex
+      };
+    });
+  };
+
+  // 이미지 드래그 앤 드롭 핸들러 (편집 모달용)
+  const handleImageDragStart = (e, index) => {
+    setImageDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    // 드래그 중 이미지 선택 방지
+    e.dataTransfer.setDragImage(e.target, 0, 0);
+  };
+
+  const handleImageDragOver = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setImageDragOverIndex(index);
+  };
+
+  const handleImageDragEnd = () => {
+    setImageDragIndex(null);
+    setImageDragOverIndex(null);
+  };
+
+  const handleImageDrop = (e, dropIndex) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (imageDragIndex === null || imageDragIndex === dropIndex) {
+      setImageDragIndex(null);
+      setImageDragOverIndex(null);
+      return;
+    }
+
+    setEditFormData(prev => {
+      const newImages = [...prev.images];
+      const draggedImage = newImages[imageDragIndex];
+      
+      // 드래그된 이미지 제거
+      newImages.splice(imageDragIndex, 1);
+      
+      // 새로운 위치에 삽입
+      newImages.splice(dropIndex, 0, draggedImage);
+      
+      // 썸네일 인덱스 조정
+      let newThumbnailIndex = prev.thumbnailIndex || 0;
+      if (imageDragIndex < dropIndex) {
+        // 아래로 드래그한 경우
+        if (newThumbnailIndex === imageDragIndex) {
+          newThumbnailIndex = dropIndex;
+        } else if (newThumbnailIndex > imageDragIndex && newThumbnailIndex <= dropIndex) {
+          newThumbnailIndex = newThumbnailIndex - 1;
+        }
+      } else {
+        // 위로 드래그한 경우
+        if (newThumbnailIndex === imageDragIndex) {
+          newThumbnailIndex = dropIndex;
+        } else if (newThumbnailIndex >= dropIndex && newThumbnailIndex < imageDragIndex) {
+          newThumbnailIndex = newThumbnailIndex + 1;
+        }
+      }
+      
+      return {
+        ...prev,
+        images: newImages,
+        thumbnailIndex: newThumbnailIndex
+      };
+    });
+    
+    setImageDragIndex(null);
+    setImageDragOverIndex(null);
+  };
+
+  // 새 프로젝트 추가 모달용 이미지 드래그 앤 드롭 핸들러
+  const [newImageDragIndex, setNewImageDragIndex] = useState(null);
+  const [newImageDragOverIndex, setNewImageDragOverIndex] = useState(null);
+
+  const handleNewImageDragStart = (e, index) => {
+    setNewImageDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setDragImage(e.target, 0, 0);
+  };
+
+  const handleNewImageDragOver = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setNewImageDragOverIndex(index);
+  };
+
+  const handleNewImageDragEnd = () => {
+    setNewImageDragIndex(null);
+    setNewImageDragOverIndex(null);
+  };
+
+  const handleNewImageDrop = (e, dropIndex) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (newImageDragIndex === null || newImageDragIndex === dropIndex) {
+      setNewImageDragIndex(null);
+      setNewImageDragOverIndex(null);
+      return;
+    }
+
+    const newFiles = [...selectedFiles];
+    const draggedFile = newFiles[newImageDragIndex];
+    
+    // 드래그된 파일 제거
+    newFiles.splice(newImageDragIndex, 1);
+    
+    // 새로운 위치에 삽입
+    newFiles.splice(dropIndex, 0, draggedFile);
+    
+    setSelectedFiles(newFiles);
+    
+    // 썸네일 인덱스 조정
+    let newThumbnailIndex = formData.thumbnailIndex || 0;
+    if (newImageDragIndex < dropIndex) {
+      // 아래로 드래그한 경우
+      if (newThumbnailIndex === newImageDragIndex) {
+        newThumbnailIndex = dropIndex;
+      } else if (newThumbnailIndex > newImageDragIndex && newThumbnailIndex <= dropIndex) {
+        newThumbnailIndex = newThumbnailIndex - 1;
+      }
+    } else {
+      // 위로 드래그한 경우
+      if (newThumbnailIndex === newImageDragIndex) {
+        newThumbnailIndex = dropIndex;
+      } else if (newThumbnailIndex >= dropIndex && newThumbnailIndex < newImageDragIndex) {
+        newThumbnailIndex = newThumbnailIndex + 1;
+      }
+    }
+    
+    setFormData(prev => ({ ...prev, thumbnailIndex: newThumbnailIndex }));
+    
+    setNewImageDragIndex(null);
+    setNewImageDragOverIndex(null);
   };
 
   const handleEditSave = async () => {
@@ -793,27 +949,52 @@ const PortfolioManagement = () => {
                 {selectedFiles.length > 0 && (
                   <div className="mt-4">
                     <p className="text-sm text-gray-600 mb-2">
-                    {selectedFiles.length}장의 이미지가 선택되었습니다.
-                  </p>
+                      {selectedFiles.length}장의 이미지가 선택되었습니다. (드래그하여 순서 변경, 클릭하여 썸네일 선택)
+                    </p>
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                       {selectedFiles.map((file, index) => (
-                        <div key={index} className="relative">
+                        <div 
+                          key={index} 
+                          className={`relative ${
+                            newImageDragIndex === index ? 'opacity-50 scale-95' : ''
+                          } ${
+                            newImageDragOverIndex === index ? 'ring-2 ring-blue-400 ring-offset-2' : ''
+                          } transition-all duration-200`}
+                          draggable
+                          onDragStart={(e) => handleNewImageDragStart(e, index)}
+                          onDragOver={(e) => handleNewImageDragOver(e, index)}
+                          onDragEnd={handleNewImageDragEnd}
+                          onDrop={(e) => handleNewImageDrop(e, index)}
+                        >
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Preview ${index + 1}`}
-                            className={`w-full h-20 object-cover rounded cursor-pointer border-2 ${
+                            className={`w-full h-20 object-cover rounded cursor-move border-2 ${
                               formData.thumbnailIndex === index ? 'border-blue-500' : 'border-gray-300'
                             }`}
-                            onClick={() => setFormData(prev => ({ ...prev, thumbnailIndex: index }))}
+                            onClick={(e) => {
+                              // 드래그 중이 아닐 때만 썸네일 선택
+                              if (newImageDragIndex === null) {
+                                setFormData(prev => ({ ...prev, thumbnailIndex: index }));
+                              }
+                            }}
+                            draggable={false}
                           />
                           {formData.thumbnailIndex === index && (
-                            <div className="absolute top-1 right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                               ✓
                             </div>
                           )}
+                          {/* 순서 표시 */}
+                          <div className="absolute bottom-1 right-1 bg-black/50 text-white text-xs rounded px-1 pointer-events-none">
+                            {index + 1}
+                          </div>
                         </div>
                       ))}
                     </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                      💡 이미지를 드래그하여 순서를 변경할 수 있습니다
+                    </p>
                   </div>
                 )}
               </div>
@@ -835,7 +1016,11 @@ const PortfolioManagement = () => {
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setNewImageDragIndex(null);
+                    setNewImageDragOverIndex(null);
+                  }}
                   disabled={isUploading}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                 >
@@ -951,22 +1136,45 @@ const PortfolioManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">기존 이미지 (썸네일 선택)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  기존 이미지 (드래그하여 순서 변경, 클릭하여 썸네일 선택)
+                </label>
                 <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-2">
                   {editFormData.images && editFormData.images.map((img, idx) => (
-                    <div key={idx} className="relative">
+                    <div 
+                      key={idx} 
+                      className={`relative ${
+                        imageDragIndex === idx ? 'opacity-50 scale-95' : ''
+                      } ${
+                        imageDragOverIndex === idx ? 'ring-2 ring-blue-400 ring-offset-2' : ''
+                      } transition-all duration-200`}
+                      draggable
+                      onDragStart={(e) => handleImageDragStart(e, idx)}
+                      onDragOver={(e) => handleImageDragOver(e, idx)}
+                      onDragEnd={handleImageDragEnd}
+                      onDrop={(e) => handleImageDrop(e, idx)}
+                    >
                       <img 
                         src={img.url || img} 
                         alt="project" 
-                        className={`w-full h-20 object-cover rounded cursor-pointer border-2 ${
+                        className={`w-full h-20 object-cover rounded cursor-move border-2 ${
                           (editFormData.thumbnailIndex || 0) === idx ? 'border-blue-500' : 'border-gray-300'
                         }`}
-                        onClick={() => setEditFormData(prev => ({ ...prev, thumbnailIndex: idx }))}
+                        onClick={(e) => {
+                          // 드래그 중이 아닐 때만 썸네일 선택
+                          if (imageDragIndex === null) {
+                            setEditFormData(prev => ({ ...prev, thumbnailIndex: idx }));
+                          }
+                        }}
+                        draggable={false}
                       />
                       <button
                         type="button"
-                        onClick={() => handleRemoveEditImage(idx)}
-                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveEditImage(idx);
+                        }}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 z-10"
                         title="이미지 삭제"
                       >
                         ×
@@ -976,9 +1184,18 @@ const PortfolioManagement = () => {
                           ✓
                         </div>
                       )}
+                      {/* 드래그 가능 표시 */}
+                      <div className="absolute bottom-1 right-1 bg-black/50 text-white text-xs rounded px-1 pointer-events-none">
+                        {idx + 1}
+                      </div>
                     </div>
                   ))}
                 </div>
+                {editFormData.images && editFormData.images.length > 0 && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    💡 이미지를 드래그하여 순서를 변경할 수 있습니다
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">이미지 추가</label>
@@ -996,7 +1213,11 @@ const PortfolioManagement = () => {
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setImageDragIndex(null);
+                    setImageDragOverIndex(null);
+                  }}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   취소

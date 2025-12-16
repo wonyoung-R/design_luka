@@ -31,7 +31,57 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
     
-    return `${year}년 ${month}월 ${day}일 / ${hours}시 ${minutes}분 ${seconds}초`;
+    // YYYYMMDD HHMMSS 형식으로 반환 (기존 형식 유지)
+    return `${year}${month}${day} ${hours}${minutes}${seconds}`;
+  }
+
+  // 날짜 형식을 YYYYMMDD HHMMSS로 정규화하는 함수
+  function normalizeDate(dateValue) {
+    if (!dateValue) {
+      return formatCurrentDateTime();
+    }
+
+    try {
+      // 이미 올바른 형식인 경우
+      if (/^\d{8}\s\d{6}$/.test(dateValue)) {
+        return dateValue;
+      }
+
+      // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초"
+      const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
+      if (koreanDateMatch) {
+        const year = koreanDateMatch[1];
+        const month = String(koreanDateMatch[2]).padStart(2, '0');
+        const day = String(koreanDateMatch[3]).padStart(2, '0');
+        const hour = String(koreanDateMatch[4]).padStart(2, '0');
+        const minute = String(koreanDateMatch[5]).padStart(2, '0');
+        const second = String(koreanDateMatch[6]).padStart(2, '0');
+        return `${year}${month}${day} ${hour}${minute}${second}`;
+      }
+
+      // YYYYMMDD 형식 처리 (시간은 000000으로 설정)
+      if (/^\d{8}$/.test(dateValue)) {
+        return `${dateValue} 000000`;
+      }
+
+      // Date 객체나 ISO 문자열 형식 처리
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}${month}${day} ${hours}${minutes}${seconds}`;
+      }
+
+      // 파싱 실패 시 현재 시간 반환
+      return formatCurrentDateTime();
+    } catch (error) {
+      console.error('Date normalization error:', error, 'Date value:', dateValue);
+      return formatCurrentDateTime();
+    }
   }
 
   // 구글 드라이브 URL 변환 (여러 형식 지원)
@@ -263,7 +313,7 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
       const insightData = {
         title: formData.title.trim(),
         category: formData.category,
-        date: formData.date,
+        date: normalizeDate(formData.date), // 날짜 형식 정규화
         url: formData.url.trim(),
         thumbnail: formData.thumbnail.trim(),
         content: formData.content.trim(),

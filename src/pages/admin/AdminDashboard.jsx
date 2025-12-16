@@ -84,7 +84,7 @@ const AdminDashboard = () => {
   };
 
   const handleDataMigration = () => {
-    if (window.confirm('기존 인사이트 데이터에 thumbnail과 url 필드를 추가하시겠습니까?\n\n이 작업은 기존 데이터를 수정합니다.')) {
+    if (window.confirm('기존 인사이트 데이터를 업데이트하시겠습니까?\n\n- 한글 날짜 형식을 "YYYYMMDD HHMMSS" 형식으로 변환\n- thumbnail과 url 필드 추가\n\n이 작업은 기존 데이터를 수정합니다.')) {
       runDataMigration();
     }
   };
