@@ -36,40 +36,50 @@ export default function InsightPage() {
       // 다양한 날짜 형식 처리
       if (typeof dateValue === 'string') {
         // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초"
-        const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
-        if (koreanDateMatch) {
-          const year = koreanDateMatch[1];
-          const month = String(koreanDateMatch[2]).padStart(2, '0');
-          const day = String(koreanDateMatch[3]).padStart(2, '0');
-          const hour = String(koreanDateMatch[4]).padStart(2, '0');
-          const minute = String(koreanDateMatch[5]).padStart(2, '0');
-          const second = String(koreanDateMatch[6]).padStart(2, '0');
+        const koreanDateWithTimeMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
+        if (koreanDateWithTimeMatch) {
+          const year = koreanDateWithTimeMatch[1];
+          const month = String(koreanDateWithTimeMatch[2]).padStart(2, '0');
+          const day = String(koreanDateWithTimeMatch[3]).padStart(2, '0');
+          const hour = String(koreanDateWithTimeMatch[4]).padStart(2, '0');
+          const minute = String(koreanDateWithTimeMatch[5]).padStart(2, '0');
+          const second = String(koreanDateWithTimeMatch[6]).padStart(2, '0');
           date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
         }
-        // YYYYMMDD HHMMSS 형식 처리
-        else if (/^\d{8}\s\d{6}$/.test(dateValue)) {
-          const year = dateValue.substring(0, 4);
-          const month = dateValue.substring(4, 6);
-          const day = dateValue.substring(6, 8);
-          const hour = dateValue.substring(9, 11);
-          const minute = dateValue.substring(11, 13);
-          const second = dateValue.substring(13, 15);
-          date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
-        }
-        // YYYYMMDD 형식 처리
-        else if (/^\d{8}$/.test(dateValue)) {
-          const year = dateValue.substring(0, 4);
-          const month = dateValue.substring(4, 6);
-          const day = dateValue.substring(6, 8);
-          date = new Date(`${year}-${month}-${day}`);
-        }
-        // ISO 문자열 형식 처리
-        else if (dateValue.includes('T') || dateValue.includes('-')) {
-          date = new Date(dateValue);
-        }
-        // 기타 문자열 형식
+        // 한글 날짜 형식 처리 (시간 없음): "2025년 12월 16일"
         else {
-          date = new Date(dateValue);
+          const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일/);
+          if (koreanDateMatch) {
+            const year = koreanDateMatch[1];
+            const month = String(koreanDateMatch[2]).padStart(2, '0');
+            const day = String(koreanDateMatch[3]).padStart(2, '0');
+            date = new Date(`${year}-${month}-${day}`);
+          }
+          // YYYYMMDD HHMMSS 형식 처리
+          else if (/^\d{8}\s\d{6}$/.test(dateValue)) {
+            const year = dateValue.substring(0, 4);
+            const month = dateValue.substring(4, 6);
+            const day = dateValue.substring(6, 8);
+            const hour = dateValue.substring(9, 11);
+            const minute = dateValue.substring(11, 13);
+            const second = dateValue.substring(13, 15);
+            date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+          }
+          // YYYYMMDD 형식 처리
+          else if (/^\d{8}$/.test(dateValue)) {
+            const year = dateValue.substring(0, 4);
+            const month = dateValue.substring(4, 6);
+            const day = dateValue.substring(6, 8);
+            date = new Date(`${year}-${month}-${day}`);
+          }
+          // ISO 문자열 형식 처리
+          else if (dateValue.includes('T') || dateValue.includes('-')) {
+            date = new Date(dateValue);
+          }
+          // 기타 문자열 형식
+          else {
+            date = new Date(dateValue);
+          }
         }
       } else if (dateValue instanceof Date) {
         date = dateValue;
@@ -80,7 +90,19 @@ export default function InsightPage() {
       // 유효한 날짜인지 확인
       if (isNaN(date.getTime())) {
         console.warn('Invalid date value:', dateValue);
-        return '날짜 형식 오류';
+        // 날짜 파싱 실패 시 원본 값의 일부를 표시하거나 기본 메시지 반환
+        if (typeof dateValue === 'string' && dateValue.length > 0) {
+          // 한글 날짜 형식이 부분적으로라도 있으면 그 부분만 표시
+          const partialMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일/);
+          if (partialMatch) {
+            return `${partialMatch[1]}년 ${partialMatch[2]}월 ${partialMatch[3]}일`;
+          }
+          // 숫자만 있는 경우
+          if (/^\d+/.test(dateValue)) {
+            return dateValue.substring(0, 10); // 처음 10자만 표시
+          }
+        }
+        return '날짜 정보 없음';
       }
 
       return date.toLocaleDateString('ko-KR', {
