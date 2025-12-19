@@ -1,5 +1,5 @@
 // components/admin/InsightEditor.jsx - CORS 문제 해결 버전
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { database } from '../../firebase/config';
 import { ref as dbRef, push, set } from 'firebase/database';
@@ -15,6 +15,20 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
     thumbnail: editingInsight?.thumbnail || '',
     content: editingInsight?.content || ''
   });
+
+  // editingInsight가 변경될 때 formData 업데이트
+  useEffect(() => {
+    if (editingInsight) {
+      setFormData({
+        title: editingInsight.title || '',
+        category: editingInsight.category || 'trend',
+        date: editingInsight.date || formatCurrentDateTime(),
+        url: editingInsight.url || '',
+        thumbnail: editingInsight.thumbnail || '',
+        content: editingInsight.content || ''
+      });
+    }
+  }, [editingInsight]);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -42,30 +56,53 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
     }
 
     try {
+      const trimmedValue = String(dateValue).trim();
+      
       // 이미 올바른 형식인 경우
-      if (/^\d{8}\s\d{6}$/.test(dateValue)) {
-        return dateValue;
+      if (/^\d{8}\s+\d{6}$/.test(trimmedValue)) {
+        return trimmedValue;
       }
 
-      // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초"
-      const koreanDateMatch = dateValue.match(/(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s*\/\s*(\d{1,2})시\s+(\d{1,2})분\s+(\d{1,2})초/);
+      // 한글 날짜 형식 처리: "2025년 12월 16일 / 15시 27분 04초" (다양한 공백/슬래시 변형 지원)
+      const koreanDateWithTimeMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일\s*[\/\s]*\s*(\d{1,2})\s*시\s*(\d{1,2})\s*분\s*(\d{1,2})\s*초/);
+      if (koreanDateWithTimeMatch) {
+        const year = koreanDateWithTimeMatch[1];
+        const month = String(koreanDateWithTimeMatch[2]).padStart(2, '0');
+        const day = String(koreanDateWithTimeMatch[3]).padStart(2, '0');
+        const hour = String(koreanDateWithTimeMatch[4]).padStart(2, '0');
+        const minute = String(koreanDateWithTimeMatch[5]).padStart(2, '0');
+        const second = String(koreanDateWithTimeMatch[6]).padStart(2, '0');
+        return `${year}${month}${day} ${hour}${minute}${second}`;
+      }
+
+      // 한글 날짜 형식 처리 (시간 없음): "2025년 12월 16일"
+      const koreanDateMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
       if (koreanDateMatch) {
         const year = koreanDateMatch[1];
         const month = String(koreanDateMatch[2]).padStart(2, '0');
         const day = String(koreanDateMatch[3]).padStart(2, '0');
-        const hour = String(koreanDateMatch[4]).padStart(2, '0');
-        const minute = String(koreanDateMatch[5]).padStart(2, '0');
-        const second = String(koreanDateMatch[6]).padStart(2, '0');
-        return `${year}${month}${day} ${hour}${minute}${second}`;
+        return `${year}${month}${day} 000000`;
       }
 
       // YYYYMMDD 형식 처리 (시간은 000000으로 설정)
-      if (/^\d{8}$/.test(dateValue)) {
-        return `${dateValue} 000000`;
+      if (/^\d{8}$/.test(trimmedValue)) {
+        return `${trimmedValue} 000000`;
+      }
+
+      // 숫자 패턴 추출 시도 (YYYY-MM-DD, YYYY/MM/DD 등)
+      const numberMatch = trimmedValue.match(/(\d{4})[-\/\.]?(\d{1,2})[-\/\.]?(\d{1,2})/);
+      if (numberMatch) {
+        const year = numberMatch[1];
+        const month = String(numberMatch[2]).padStart(2, '0');
+        const day = String(numberMatch[3]).padStart(2, '0');
+        const date = new Date(`${year}-${month}-${day}`);
+        if (!isNaN(date.getTime())) {
+          return `${year}${month}${day} 000000`;
+        }
       }
 
       // Date 객체나 ISO 문자열 형식 처리
-      const date = new Date(dateValue);
+      const date = new Date(trimmedValue);
       if (!isNaN(date.getTime())) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -77,6 +114,7 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
       }
 
       // 파싱 실패 시 현재 시간 반환
+      console.warn('날짜 파싱 실패, 현재 시간 사용:', dateValue);
       return formatCurrentDateTime();
     } catch (error) {
       console.error('Date normalization error:', error, 'Date value:', dateValue);
@@ -310,10 +348,13 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
 
       setIsLoading(true);
 
+      const normalizedDate = normalizeDate(formData.date);
+      console.log('날짜 변환:', formData.date, '→', normalizedDate);
+      
       const insightData = {
         title: formData.title.trim(),
         category: formData.category,
-        date: normalizeDate(formData.date), // 날짜 형식 정규화
+        date: normalizedDate, // 날짜 형식 정규화
         url: formData.url.trim(),
         thumbnail: formData.thumbnail.trim(),
         content: formData.content.trim(),
@@ -324,10 +365,12 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
       if (editingInsight) {
         // 편집 모드: 기존 데이터 업데이트
         const insightRef = dbRef(database, `insights/${editingInsight.id}`);
-        await set(insightRef, {
+        const updatedData = {
           ...editingInsight,
           ...insightData
-        });
+        };
+        console.log('저장할 데이터:', updatedData);
+        await set(insightRef, updatedData);
         alert('인사이트가 성공적으로 수정되었습니다.');
       } else {
         // 새 작성 모드: 새 데이터 생성

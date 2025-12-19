@@ -429,4 +429,3 @@ const InsightDetailPage = () => {
 };
 
 export default InsightDetailPage;
-export default InsightDetailPage;
