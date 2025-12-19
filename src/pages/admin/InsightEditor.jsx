@@ -420,15 +420,12 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    disabled={editingInsight !== null}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      editingInsight ? 'bg-gray-100 cursor-not-allowed' : ''
-                    }`}
-                    placeholder="yyyy년 mm월 dd일 / hh시 mi분 ss초"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="YYYYMMDD HHMMSS 또는 2025년 12월 16일 / 15시 27분 04초"
                   />
-                  {editingInsight && (
-                    <p className="text-xs text-gray-500 mt-1">편집 시에는 날짜를 변경할 수 없습니다.</p>
-                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    형식: YYYYMMDD HHMMSS (예: 20251216 152704) 또는 한글 형식
+                  </p>
                 </div>
 
                 <div>
