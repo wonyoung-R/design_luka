@@ -89,14 +89,14 @@ const formatDate = (dateValue) => {
       
       // 기타 문자열 형식
       date = new Date(trimmedValue);
-      if (!isNaN(date.getTime())) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        return `${year}${month}${day} ${hours}${minutes}${seconds}`;
+        if (!isNaN(date.getTime())) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          const seconds = String(date.getSeconds()).padStart(2, '0');
+          return `${year}${month}${day} ${hours}${minutes}${seconds}`;
       }
     } else if (dateValue instanceof Date) {
       if (!isNaN(dateValue.getTime())) {
@@ -156,9 +156,9 @@ export const updateExistingInsights = async () => {
         
         // 날짜 형식 수정 (항상 확인하고 변환)
         if (insight.date) {
-          const formattedDate = formatDate(insight.date);
-          if (formattedDate !== insight.date) {
-            updatedInsight.date = formattedDate;
+        const formattedDate = formatDate(insight.date);
+        if (formattedDate !== insight.date) {
+          updatedInsight.date = formattedDate;
             needsUpdate = true;
             console.log(`인사이트 ${id} 날짜 수정: "${insight.date}" → "${formattedDate}"`);
             updateCount++;

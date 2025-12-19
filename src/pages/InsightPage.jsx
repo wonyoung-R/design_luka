@@ -113,7 +113,7 @@ export default function InsightPage() {
               month: 'short',
               day: 'numeric'
             });
-          }
+        }
         }
         
         // 마지막 시도: JavaScript Date 생성자로 파싱
@@ -146,7 +146,7 @@ export default function InsightPage() {
       }
 
       // 모든 파싱 시도 실패 시 fallback 처리
-      console.warn('Invalid date value:', dateValue);
+        console.warn('Invalid date value:', dateValue);
       if (typeof dateValue === 'string' && dateValue.length > 0) {
         // 한글 날짜 형식이 부분적으로라도 있으면 그 부분만 표시
         const partialMatch = trimmedValue.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
@@ -176,11 +176,11 @@ export default function InsightPage() {
           const day = digitsOnly.substring(6, 8);
           date = new Date(`${year}-${month}-${day}`);
           if (!isNaN(date.getTime())) {
-            return date.toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            });
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
           }
         }
       }
@@ -752,5 +752,4 @@ export default function InsightPage() {
       )}
     </div>
   );
-}
 }

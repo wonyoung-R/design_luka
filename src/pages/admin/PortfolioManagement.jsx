@@ -376,7 +376,7 @@ const PortfolioManagement = () => {
         newThumbnailIndex = 0;
       }
       return {
-        ...prev,
+      ...prev,
         images: newImages,
         thumbnailIndex: newThumbnailIndex
       };
@@ -950,7 +950,7 @@ const PortfolioManagement = () => {
                   <div className="mt-4">
                     <p className="text-sm text-gray-600 mb-2">
                       {selectedFiles.length}장의 이미지가 선택되었습니다. (드래그하여 순서 변경, 클릭하여 썸네일 선택)
-                    </p>
+                  </p>
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                       {selectedFiles.map((file, index) => (
                         <div 
