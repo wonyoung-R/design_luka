@@ -22,7 +22,7 @@ const getResponsiveCloudinaryUrl = (url, width = null) => {
     const imagePath = url.split('/upload/')[1];
     
     // 고화질 설정 (용량과 화질의 균형점)
-    let params = 'f_auto,q_90,fl_progressive'; // 90% 품질로 균형점 설정
+    let params = 'f_auto,q_100,fl_progressive';
     
     if (width) {
       params += `,w_${width}`; // 특정 너비 지정
@@ -208,7 +208,7 @@ export default function PortfolioPage() {
                     }
                     // Cloudinary ID가 있는 경우 (public_id)
                     else if (img.id) {
-                      return `https://res.cloudinary.com/dti1gtd3u/image/upload/f_auto,q_auto/${img.id}`;
+                      return `https://res.cloudinary.com/dti1gtd3u/image/upload/f_auto,q_100/${img.id}`;
                     }
                   }
                   
@@ -459,21 +459,14 @@ export default function PortfolioPage() {
     }
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
-    window.history.pushState({ modalOpen: true }, '', window.location.href);
   };
 
   const closeModal = () => {
-    console.log('Closing modal');
     setIsModalOpen(false);
     setSelectedImage('');
     setSelectedImageIndex(0);
     setAllImages([]);
     document.body.style.overflow = 'unset';
-    
-    // Remove history entry when modal closes
-    if (window.history.state?.modalOpen) {
-      window.history.back();
-    }
   };
 
   const goToPreviousImage = () => {

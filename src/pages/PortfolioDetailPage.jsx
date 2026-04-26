@@ -16,7 +16,7 @@ const getHighQualityCloudinaryUrl = (url, width = null) => {
     const imagePath = url.split('/upload/')[1];
     
     // 고화질 파라미터 추가
-    let params = 'f_auto,q_auto:good,fl_progressive'; // 고화질 자동 최적화
+    let params = 'f_auto,q_100,fl_progressive';
     
     if (width) {
       params += `,w_${width}`; // 특정 너비 지정
