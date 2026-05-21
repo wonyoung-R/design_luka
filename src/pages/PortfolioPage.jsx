@@ -622,7 +622,10 @@ export default function PortfolioPage() {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
       >
-        {/* Close button */}
+        {/* Close button — hidden while the image modal is open so a tap at the
+            top-right can only ever hit the modal's own close (depth 3 → depth 2),
+            never fall through to closing the whole detail view (depth 3 → depth 1). */}
+        {!isModalOpen && (
         <button
           onClick={closeDetailView}
           className="fixed top-3 right-3 z-60 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
@@ -632,6 +635,7 @@ export default function PortfolioPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+        )}
 
         <div className="flex flex-col md:flex-row h-full">
           {/* Left side - Project info */}
