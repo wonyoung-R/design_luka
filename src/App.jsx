@@ -2,6 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 // import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // # 제거하려면 이 줄 사용
 import { AuthProvider } from './contexts/AuthContext';
+import { HelmetProvider } from 'react-helmet-async';
+import RouteSEO from './components/RouteSEO';
 
 // Components
 import ScrollToTop from './components/ScrollToTop';
@@ -31,10 +33,12 @@ import InsightManagement from './pages/admin/InsightManagement';
 
 function App() {
   return (
+    <HelmetProvider>
     <Router>
       <AuthProvider>
         <div className="App">
           <ScrollToTop />
+          <RouteSEO />
           <Routes>
             {/* Home Route */}
             <Route path="/" element={<HomePage />} />
@@ -75,6 +79,7 @@ function App() {
         </div>
       </AuthProvider>
     </Router>
+    </HelmetProvider>
   );
 }
 
