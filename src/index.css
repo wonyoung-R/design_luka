@@ -15,6 +15,10 @@
   
   body {
     @apply font-sans text-primary bg-neutral-lightest;
+    /* Korean line-breaking: break at word boundaries, never mid-word.
+       overflow-wrap keeps long Latin strings/URLs from overflowing. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
