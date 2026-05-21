@@ -32,8 +32,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['"Noto Sans KR"', 'sans-serif'],
-        serif: ['"Playfair Display"', 'serif'],
+        sans: ['"Pretendard Variable"', 'sans-serif'],
+        serif: ['"Pretendard Variable"', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

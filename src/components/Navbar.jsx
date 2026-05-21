@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logoWhite from '../images/logo/LUKA(W).png';
+import { SCROLL_ROOM } from '../constants/homeScroll';
 
 const navigation = [
   { name: 'About LUKA', href: '/about', current: false },
@@ -27,15 +28,27 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [homeGridVisible, setHomeGridVisible] = useState(false);
   const [businessOpen, setBusinessOpen] = useState(false);
   const [portfolioOpen, setPortfolioOpen] = useState(false);
   const [businessTimeout, setBusinessTimeout] = useState(null);
   const [portfolioTimeout, setPortfolioTimeout] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isPortfolioHovered, setIsPortfolioHovered] = useState(false);
   const location = useLocation();
-  
+
   const isHomePage = location.pathname === '/';
+
+  // Listen to internal scroll from HomePage (bypasses window scroll which is always 0)
+  useEffect(() => {
+    if (!isHomePage) {
+      setHomeGridVisible(false);
+      return;
+    }
+    const handler = (e) => {
+      setHomeGridVisible(e.detail.scrollTop > SCROLL_ROOM);
+    };
+    window.addEventListener('homePageScroll', handler);
+    return () => window.removeEventListener('homePageScroll', handler);
+  }, [isHomePage]);
 
   useEffect(() => {
     if (!isHomePage) {
@@ -51,35 +64,35 @@ export default function Navbar() {
     }
   }, [scrolled, isHomePage]);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
+  // When grid section is in view on homepage, treat navbar as if scrolled (opaque)
+  const effectiveScrolled = homeGridVisible || scrolled;
+  const onWhiteBackground = !isHomePage || homeGridVisible;
 
   return (
     <Disclosure as="nav" className={classNames(
-      'fixed w-full z-40 transition-all duration-300 h-16',
-      isHomePage 
-        ? 'bg-transparent' 
-        : scrolled ? 'bg-white/70 backdrop-blur-sm shadow-md' : 'bg-white'
+      'fixed w-full z-40 transition-all duration-500 h-16',
+      isHomePage
+        ? homeGridVisible
+          ? 'bg-white/95 backdrop-blur-sm shadow-sm'
+          : 'bg-transparent'
+        : effectiveScrolled ? 'bg-white/70 backdrop-blur-sm shadow-md' : 'bg-white'
     )}>
       {({ open }) => (
         <>
           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
-              {/* Logo - Left side */}
-              <motion.div 
+              {/* Logo - Left side (hidden on homepage; animated brand text takes over) */}
+              <motion.div
                 className="flex-shrink-0 flex items-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                style={{ opacity: isHomePage ? 0 : 1, pointerEvents: isHomePage ? 'none' : 'auto' }}
+                whileHover={isHomePage ? {} : { scale: 1.05 }}
+                whileTap={isHomePage ? {} : { scale: 0.95 }}
               >
                 <Link to="/" className="flex items-center">
                   <img
                     src={logoWhite}
                     alt="LUKA"
-                    className={classNames(
-                      "h-8 w-auto",
-                      isHomePage ? "" : "filter brightness-0"
-                    )}
+                    className="h-8 w-auto filter brightness-0"
                   />
                 </Link>
               </motion.div>
@@ -123,14 +136,14 @@ export default function Navbar() {
                         <Link
                           to={item.href}
                           className={classNames(
-                            'inline-flex items-center px-1 pt-1 text-sm font-normal font-[\'Noto_Sans_KR\'] transition-colors duration-200 relative',
+                            'inline-flex items-center px-1 pt-1 text-sm font-normal font-sans transition-colors duration-200 relative',
                             location.pathname.startsWith(item.href)
-                              ? isHomePage ? 'text-white' : 'text-accent'
-                              : isHomePage 
-                                ? 'text-white/80 hover:text-white' 
+                              ? !onWhiteBackground ? 'text-white' : 'text-accent'
+                              : !onWhiteBackground
+                                ? 'text-white/80 hover:text-white'
                                 : 'text-black hover:text-primary-dark',
                             'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 after:ease-in-out hover:after:w-full',
-                            isHomePage ? 'after:bg-white' : 'after:bg-black'
+                            !onWhiteBackground ? 'after:bg-white' : 'after:bg-black'
                           )}
                         >
                           {item.name}
@@ -206,14 +219,14 @@ export default function Navbar() {
                       <Link
                         to={item.href}
                         className={classNames(
-                          'inline-flex items-center px-1 pt-1 text-sm font-normal font-[\'Noto_Sans_KR\'] transition-colors duration-200 relative',
+                          'inline-flex items-center px-1 pt-1 text-sm font-normal font-sans transition-colors duration-200 relative',
                           location.pathname === item.href
-                            ? isHomePage ? 'text-white' : 'text-accent'
-                            : isHomePage 
-                              ? 'text-white/80 hover:text-white' 
+                            ? !onWhiteBackground ? 'text-white' : 'text-accent'
+                            : !onWhiteBackground
+                              ? 'text-white/80 hover:text-white'
                               : 'text-black hover:text-primary-dark',
                           'after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:transition-all after:duration-300 after:ease-in-out hover:after:w-full',
-                          isHomePage ? 'after:bg-white' : 'after:bg-black'
+                          !onWhiteBackground ? 'after:bg-white' : 'after:bg-black'
                         )}
                       >
                         {item.name}
@@ -227,7 +240,7 @@ export default function Navbar() {
               <div className="sm:hidden">
                 <Disclosure.Button className={classNames(
                   "inline-flex items-center justify-center p-2 focus:outline-none",
-                  isHomePage ? "text-white" : "text-black"
+                  !onWhiteBackground ? "text-white" : "text-black"
                 )}>
                   <span className="sr-only">메뉴 열기</span>
                   {open ? (
@@ -264,7 +277,7 @@ export default function Navbar() {
                             (item.submenu && location.pathname.startsWith('/portfolio'))
                               ? isHomePage ? 'bg-white/20 text-white' : 'bg-accent-light text-primary-dark'
                               : isHomePage ? 'text-white hover:bg-white/20' : 'text-black hover:bg-neutral-light',
-                            'block px-3 py-2 rounded-md text-base font-normal font-[\'Noto_Sans_KR\']'
+                            'block px-3 py-2 rounded-md text-base font-normal font-sans'
                           )}
                         >
                           {item.name}

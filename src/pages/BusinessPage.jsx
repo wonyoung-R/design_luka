@@ -99,13 +99,13 @@ const BusinessPage = () => {
         }}
       />
       <Navbar />
-      <main className="pt-16 font-['Noto_Sans_KR'] relative z-10 min-h-screen">
+      <main className="pt-16 font-sans relative z-10 min-h-screen">
         {/* Hero Section */}
         <section className="min-h-[320px] flex items-center justify-center text-white">
           <div className="w-full px-4">
             <div className="text-center max-w-4xl mx-auto">
               <motion.h1
-                className="text-4xl md:text-5xl font-['Noto_Sans_KR'] font-bold mb-6"
+                className="text-4xl md:text-5xl font-sans font-bold mb-6"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -114,7 +114,7 @@ const BusinessPage = () => {
                 Business
               </motion.h1>
               <motion.p
-                className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto font-['Noto_Sans_KR']"
+                className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto font-sans"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

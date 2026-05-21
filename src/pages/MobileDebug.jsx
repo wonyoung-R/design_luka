@@ -107,7 +107,7 @@ const MobileDebug = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen font-['Noto_Sans_KR']">
+    <div className="p-4 bg-gray-100 min-h-screen font-sans">
       <h1 className="text-2xl font-bold mb-6 text-center">📱 모바일 디버그 정보</h1>
       
       {/* 기본 정보 */}

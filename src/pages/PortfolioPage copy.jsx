@@ -403,9 +403,9 @@ export default function PortfolioPage() {
               {/* Hover content */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
                 <div className="text-center text-white px-6">
-                  <h3 className="text-xl font-bold mb-2 font-['Noto_Sans_KR']">{project.title}</h3>
-                  <p className="text-sm text-gray-200 mb-1 font-['Noto_Sans_KR']">{project.type}</p>
-                  <p className="text-sm text-gray-300 font-['Noto_Sans_KR']">{project.style}</p>
+                  <h3 className="text-xl font-bold mb-2 font-sans">{project.title}</h3>
+                  <p className="text-sm text-gray-200 mb-1 font-sans">{project.type}</p>
+                  <p className="text-sm text-gray-300 font-sans">{project.style}</p>
                 </div>
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function PortfolioPage() {
           >
             <div className="space-y-6">
               {/* Project type & info */}
-              <div className="flex items-center gap-2 text-sm text-gray-600 font-['Noto_Sans_KR']">
+              <div className="flex items-center gap-2 text-sm text-gray-600 font-sans">
                 <span className="px-3 py-1 bg-gray-200 rounded-full">
                   {project.type === 'residential' ? '주거 공간' : '상업 공간'}
                 </span>
@@ -455,14 +455,14 @@ export default function PortfolioPage() {
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl font-bold text-gray-900 font-['Noto_Sans_KR']">{project.title}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 font-sans">{project.title}</h1>
 
               {/* Location */}
-              <p className="text-lg text-gray-600 font-['Noto_Sans_KR']">{project.location}</p>
+              <p className="text-lg text-gray-600 font-sans">{project.location}</p>
 
               {/* Description */}
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR']">
+                <p className="text-gray-700 leading-relaxed font-sans">
                   {project.type === 'residential' ? 
                     `${project.style} 스타일의 아파트 인테리어 프로젝트입니다. 주거 공간의 기능성과 심미성을 모두 고려한 설계로, 일상 속 편안함과 세련된 분위기를 동시에 구현했습니다.` :
                     `${project.style} 스타일의 ${project.type} 인테리어 프로젝트입니다. 공간의 특성을 살린 디자인으로, 실용성과 아름다움을 조화롭게 구현했습니다.`
@@ -528,7 +528,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+    <div className="min-h-screen bg-white font-sans">
       {/* Main content - only show if no project is selected */}
       <Navbar />
       <AnimatePresence>
@@ -547,7 +547,7 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h1 className="text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Portfolio</h1>
+                  <h1 className="text-5xl font-bold text-gray-900 mb-4 font-sans">Portfolio</h1>
                 </motion.div>
                 <section className="py-1"></section>
               </div>
@@ -560,7 +560,7 @@ export default function PortfolioPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-64 h-12 rounded-xl text-lg  transition-all duration-300 font-['Noto_Sans_KR'] focus:outline-none ${
+                    className={`w-64 h-12 rounded-xl text-lg  transition-all duration-300 font-sans focus:outline-none ${
                       activeTab === tab.id
                         ? 'bg-gray-900 text-white'
                         : 'bg-white text-gray-900 hover:bg-gray-50'
@@ -579,7 +579,7 @@ export default function PortfolioPage() {
               <div className="flex flex-wrap gap-4">
                 {activeTab === 'residential' ? (
                   ['20평▼', '30평형', '40평형', '50평형', '60평▲'].map((area) => (
-                    <label key={area} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                    <label key={area} className="flex items-center text-base font-sans gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedFilters.area.includes(area)}
@@ -591,7 +591,7 @@ export default function PortfolioPage() {
                   ))
                 ) : (
                   ['카페', '레스토랑', '사무실', '상가', '뷰티샵'].map((type) => (
-                    <label key={type} className="flex items-center text-base font-['Noto_Sans_KR'] gap-2 cursor-pointer">
+                    <label key={type} className="flex items-center text-base font-sans gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedFilters.type.includes(type)}
@@ -630,7 +630,7 @@ export default function PortfolioPage() {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR']"
+                className="px-8 py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-sans"
                 onClick={() => window.location.href = '/contact'}
               >
                 이런 공간 우리도 가능할까요?
@@ -705,7 +705,7 @@ export default function PortfolioPage() {
 
               {/* Image Counter */}
               {allImages.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR']">
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full font-sans">
                   {selectedImageIndex + 1} / {allImages.length}
                 </div>
               )}

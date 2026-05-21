@@ -546,7 +546,7 @@ export default function PortfolioPage() {
     if (projects.length === 0) {
       return (
         <div className="text-center py-12">
-          <div className="text-gray-500 text-lg font-['Noto_Sans_KR']">
+          <div className="text-gray-500 text-lg font-sans">
             표시할 프로젝트가 없습니다.
           </div>
           <div className="text-gray-400 text-sm mt-2">
@@ -599,9 +599,9 @@ export default function PortfolioPage() {
               {/* Hover content */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
                 <div className="text-center text-white px-3 py-2" style={{ minWidth: '120px', height: '60px', width: 'fit-content' }}>
-                  <h3 className="text-sm font-bold mb-1 font-['Noto_Sans_KR'] whitespace-nowrap">{project.title}</h3>
-                  <p className="text-xs text-gray-200 mb-0.5 font-['Noto_Sans_KR'] whitespace-nowrap">{project.type}</p>
-                  <p className="text-xs text-gray-300 font-['Noto_Sans_KR'] whitespace-nowrap">{project.style}</p>
+                  <h3 className="text-sm font-bold mb-1 font-sans whitespace-nowrap">{project.title}</h3>
+                  <p className="text-xs text-gray-200 mb-0.5 font-sans whitespace-nowrap">{project.type}</p>
+                  <p className="text-xs text-gray-300 font-sans whitespace-nowrap">{project.style}</p>
                 </div>
               </div>
             </div>
@@ -643,7 +643,7 @@ export default function PortfolioPage() {
           >
             <div className="space-y-4 md:space-y-6 text-left">
               {/* Project type & info */}
-              <div className="flex items-center gap-2 text-sm text-gray-600 font-['Noto_Sans_KR']">
+              <div className="flex items-center gap-2 text-sm text-gray-600 font-sans">
                 <span className="px-3 py-1 bg-gray-200 rounded-full">
                   {activeTab === 'residential' ? '주거 공간' : '상업 공간'}
                 </span>
@@ -652,17 +652,17 @@ export default function PortfolioPage() {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 font-['Noto_Sans_KR'] text-left">{project.title}</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 font-sans text-left">{project.title}</h1>
 
               {/* Location */}
-              <p className="text-base md:text-lg text-gray-600 font-['Noto_Sans_KR'] text-left">{project.location}</p>
+              <p className="text-base md:text-lg text-gray-600 font-sans text-left">{project.location}</p>
 
               {/* Short Style Description */}
-              <p className="text-sm md:text-md text-gray-500 font-['Noto_Sans_KR'] text-left">{project.style}</p>
+              <p className="text-sm md:text-md text-gray-500 font-sans text-left">{project.style}</p>
 
               {/* Description */}
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 leading-relaxed font-['Noto_Sans_KR'] text-left text-sm md:text-base">
+                <p className="text-gray-700 leading-relaxed font-sans text-left text-sm md:text-base">
                   {project.styleDescription || '상세 설명이 없습니다.'}
                 </p>
               </div>
@@ -857,7 +857,7 @@ export default function PortfolioPage() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-['Noto_Sans_KR']"
+            className="font-sans"
           >
             {/* Hero Section - Simplified */}
             <section className="pt-16 pb-4 md:pb-8 bg-gradient-to-br from-gray-50 to-white">
@@ -868,7 +868,7 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 md:mb-4 tracking-tight font-['Noto_Sans_KR']">Portfolio</h1>
+                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 md:mb-4 tracking-tight font-sans">Portfolio</h1>
                 </motion.div>
               </div>
             </section>
@@ -880,7 +880,7 @@ export default function PortfolioPage() {
                   <button
                     key={tab.id}
                     onClick={(event) => handleCategoryClick(tab.id, event)}
-                    className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
+                    className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-sans transition-all duration-300 focus:outline-none ${
                       activeTab === tab.id
                         ? 'bg-gray-900 text-white'
                         : 'bg-white text-gray-900 hover:bg-gray-50'
@@ -901,7 +901,7 @@ export default function PortfolioPage() {
                       key={area}
                       type="button"
                       onClick={() => handleFilterChange('area', area)}
-                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-sans transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.area.includes(area) || (selectedFilters.area.length === 0 && area === "ALL")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
@@ -916,7 +916,7 @@ export default function PortfolioPage() {
                       key={type}
                       type="button"
                       onClick={() => handleFilterChange('type', type)}
-                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-['Noto_Sans_KR'] transition-all duration-200 whitespace-nowrap flex-shrink-0
+                      className={`px-2 sm:px-3 md:px-4 py-2 rounded-full text-xs sm:text-xs md:text-sm font-sans transition-all duration-200 whitespace-nowrap flex-shrink-0
                         ${selectedFilters.type.includes(type) || (selectedFilters.type.length === 0 && type === "ALL")
                           ? 'text-black font-bold'
                           : 'text-gray-400'}
@@ -952,7 +952,7 @@ export default function PortfolioPage() {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-4 md:px-8 py-3 md:py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-['Noto_Sans_KR'] text-sm md:text-base"
+                className="px-4 md:px-8 py-3 md:py-4 bg-white text-black rounded-2xl shadow-2xl hover:bg-gray-100 transition-all duration-300 font-bold font-sans text-sm md:text-base"
                 onClick={handleCTAClick}
               >
                 이런 공간 우리도 가능할까요?
@@ -1002,7 +1002,7 @@ export default function PortfolioPage() {
                   </button>
                   
                   {allImages.length > 1 && (
-                    <div className="px-4 py-2 bg-black/50 text-white text-sm rounded-full font-['Noto_Sans_KR'] backdrop-blur-sm">
+                    <div className="px-4 py-2 bg-black/50 text-white text-sm rounded-full font-sans backdrop-blur-sm">
                       {selectedImageIndex + 1} / {allImages.length}
                     </div>
                   )}

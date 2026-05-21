@@ -1,480 +1,366 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { SCROLL_RANGE, SPRING_SETTLE, SCROLL_ROOM } from '../constants/homeScroll';
 
-// Import main images (desktop)
+// Hero background images (crossfade rotation)
+import main09 from '../images/main/main09.JPG';
+import main08 from '../images/main/main08.jpg';
+import main07 from '../images/main/main07.jpg';
+import mobile01 from '../images/main/mobile/1.jpg';
+
+// Grid section images
 import main01 from '../images/main/main01.jpg';
 import main02 from '../images/main/main02.jpg';
 import main03 from '../images/main/main03.jpg';
 import main04 from '../images/main/main04.jpg';
 import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
-import main07 from '../images/main/main07.jpg';
-import main08 from '../images/main/main08.jpg';
-import main09 from '../images/main/main09.JPG';
-import main10 from '../images/main/main10.JPG';
 
-// Import mobile images
-import mobile01 from '../images/main/mobile/1.jpg';
-import mobile02 from '../images/main/mobile/2.jpg';
-import mobile03 from '../images/main/mobile/3.jpg';
-import mobile04 from '../images/main/mobile/4.jpg';
-import mobile05 from '../images/main/mobile/5.jpg';
-import mobile06 from '../images/main/mobile/6.jpg';
-import mobile07 from '../images/main/mobile/7.jpg';
-import mobile08 from '../images/main/mobile/8.jpg';
-import mobile09 from '../images/main/mobile/9.jpg';
-import mobile10 from '../images/main/mobile/10.jpg';
+// Hero brand-text start font size (px). Reduced on mobile so "design LUKA"
+// fits within narrow viewports (it overflowed ~22px at 375px width).
+// Desktop value is unchanged from the original design.
+const HERO_FONT_DESKTOP = 46;
+const HERO_FONT_MOBILE = 32;
+const SPRING_CFG = { stiffness: 52, damping: 19, mass: 1 };
 
-const SLIDE_DURATION = 4500; // 4.5초로 변경
+const BG_DESKTOP = [main09, main08, main07];
+const BG_MOBILE  = [mobile01, mobile01, mobile01]; // single mobile image (can expand later)
 
 const HomePage = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const [direction, setDirection] = useState(0);
-  const [progressKey, setProgressKey] = useState(0);
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  
-  const timerRef = useRef(null);
-  const lastManualChangeRef = useRef(0);
+  const scrollRef = useRef(null);
+  const { scrollY } = useScroll({ container: scrollRef });
 
-  // 모바일/데스크탑 감지
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+
+  // Track viewport height so the brand text stays vertically centered after
+  // resize / orientation change (previously captured once at module load).
+  const [viewportH, setViewportH] = useState(
+    typeof window !== 'undefined' ? window.innerHeight : 768
+  );
+
   useEffect(() => {
-    const checkMobile = () => {
+    const upd = () => {
       setIsMobile(window.innerWidth <= 768);
+      setViewportH(window.innerHeight);
     };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    upd();
+    window.addEventListener('resize', upd);
+    return () => window.removeEventListener('resize', upd);
   }, []);
 
-  // 슬라이드 배열을 동적으로 생성 (모바일/데스크탑에 따라 다른 이미지 사용)
-  const slides = [
-    {
-      id: 1,
-      image: isMobile ? mobile01 : main09,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 2,
-      image: isMobile ? mobile02 : main10,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 3,
-      image: isMobile ? mobile03 : main03,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 4,
-      image: isMobile ? mobile04 : main04,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 5,
-      image: isMobile ? mobile05 : main05,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 6,
-      image: isMobile ? mobile06 : main06,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 7,
-      image: isMobile ? mobile07 : main07,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 8,
-      image: isMobile ? mobile08 : main08,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 9,
-      image: isMobile ? mobile09 : main01,
-      title: 'designLuka의 빛'
-    },
-    {
-      id: 10,
-      image: isMobile ? mobile10 : main02,
-      title: 'designLuka의 빛'
-    }
-  ];
+  const heroFont = isMobile ? HERO_FONT_MOBILE : HERO_FONT_DESKTOP;
 
-  // 자동 슬라이드 시작 함수
-  const startAutoSlide = useCallback(() => {
-    // 기존 타이머 클리어
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-
-    timerRef.current = setInterval(() => {
-      setCurrentSlide((prev) => {
-        const nextSlide = (prev + 1) % slides.length;
-        setDirection(1);
-        setProgressKey(prevKey => prevKey + 1);
-        return nextSlide;
-      });
-    }, SLIDE_DURATION);
+  // Notify Navbar when grid section enters view
+  const handleScroll = useCallback(() => {
+    const top = scrollRef.current?.scrollTop ?? 0;
+    window.dispatchEvent(new CustomEvent('homePageScroll', { detail: { scrollTop: top } }));
   }, []);
 
-  // 자동 슬라이드 기능
-  useEffect(() => {
-    startAutoSlide();
+  const BG = isMobile ? BG_MOBILE : BG_DESKTOP;
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [startAutoSlide]);
+  // ─── Background image crossfade ────────────────────────────────────────
+  // Three overlapping images fade in/out across the hero scroll range.
+  // No spring here — precise scroll-driven timing.
+  const bg0Opacity = useTransform(scrollY, [0, 80, 200],    [1, 1, 0]);
+  const bg1Opacity = useTransform(scrollY, [80, 200, 330, 430], [0, 1, 1, 0]);
+  const bg2Opacity = useTransform(scrollY, [300, 430],      [0, 1]);
 
-  // 첫 번째 로드 후 isFirstLoad를 false로 설정
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsFirstLoad(false);
-    }, 100); // 첫 번째 슬라이드가 렌더링된 후 바로 false로 설정
+  const bgOpacities = [bg0Opacity, bg1Opacity, bg2Opacity];
 
-    return () => clearTimeout(timer);
-  }, []);
+  // ─── Text animation (spring smoothed) ──────────────────────────────────
+  const rawY           = useTransform(scrollY, [0, SCROLL_RANGE], [viewportH / 2 - heroFont * 0.6, 24]);
+  const rawFontSize    = useTransform(scrollY, [0, SCROLL_RANGE], [heroFont, 12]);
+  const rawSpacing     = useTransform(scrollY, [0, SCROLL_RANGE], [12, 3]);
 
-  // 통합된 슬라이드 변경 함수
-  const handleSlideChange = useCallback((newSlide, newDirection = 1) => {
-    const now = Date.now();
-    
-    // 수동 변경 시 타이머 재시작을 지연시켜 빠른 전환 방지
-    if (now - lastManualChangeRef.current < SLIDE_DURATION) {
-      // 기존 타이머 클리어
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      
-      // SLIDE_DURATION 후에 타이머 재시작
-      setTimeout(() => {
-        startAutoSlide();
-      }, SLIDE_DURATION - (now - lastManualChangeRef.current));
-    } else {
-      // 충분한 시간이 지났으면 바로 재시작
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setTimeout(() => {
-        startAutoSlide();
-      }, 100);
-    }
+  const textY          = useSpring(rawY,        SPRING_CFG);
+  const smoothFont     = useSpring(rawFontSize, SPRING_CFG);
+  const smoothSpacing  = useSpring(rawSpacing,  SPRING_CFG);
 
-    setDirection(newDirection);
-    setCurrentSlide(newSlide);
-    setProgressKey(prev => prev + 1); // Progress bar 리셋
-    lastManualChangeRef.current = now;
-  }, [startAutoSlide]);
+  const fontSize       = useTransform(smoothFont,    v => `${Math.max(11, Math.min(heroFont, v)).toFixed(1)}px`);
+  const letterSpacing  = useTransform(smoothSpacing, v => `${v.toFixed(1)}px`);
 
-  const goToSlide = useCallback((index) => {
-    const newDirection = index > currentSlide ? 1 : -1;
-    handleSlideChange(index, newDirection);
-  }, [currentSlide, handleSlideChange]);
+  // Brand text fades out as it approaches navbar (timed with spring settling)
+  const textOpacity = useTransform(
+    scrollY,
+    [SCROLL_RANGE - 40, SCROLL_RANGE + SPRING_SETTLE - 20],
+    [1, 0]
+  );
 
-  const goToPrevSlide = useCallback(() => {
-    const prevSlide = (currentSlide - 1 + slides.length) % slides.length;
-    handleSlideChange(prevSlide, -1);
-  }, [currentSlide, handleSlideChange]);
-
-  const goToNextSlide = useCallback(() => {
-    const nextSlide = (currentSlide + 1) % slides.length;
-    handleSlideChange(nextSlide, 1);
-  }, [currentSlide, handleSlideChange]);
-
-  // 터치 이벤트 핸들러 (모바일 스와이프)
-  const minSwipeDistance = 15;
-
-  const onTouchStart = (e) => {
-    console.log('Touch start:', e.targetTouches[0].clientX);
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-    setIsDragging(true);
-    setDragOffset(0);
-    
-    // 드래그 중일 때 자동 슬라이드 중지
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
-  const onTouchMove = (e) => {
-    if (!touchStart) return;
-    
-    const currentTouch = e.targetTouches[0].clientX;
-    const offset = currentTouch - touchStart;
-    
-    // 드래그 거리를 제한하여 과도한 이동 방지 (더 부드럽게)
-    const maxDragDistance = window.innerWidth * 0.25; // 30%에서 25%로 줄임
-    const clampedOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, offset));
-    
-    setDragOffset(clampedOffset);
-    setTouchEnd(currentTouch);
-  };
-
-  const onTouchEnd = (e) => {
-    console.log('Touch end:', touchStart, touchEnd);
-    
-    if (!touchStart || !touchEnd) {
-      setIsDragging(false);
-      setDragOffset(0);
-      // 자동 슬라이드 재시작
-      setTimeout(() => {
-        startAutoSlide();
-      }, 100);
-      return;
-    }
-    
-    const distance = touchStart - touchEnd;
-    console.log('Swipe distance:', distance);
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    // 즉시 드래그 상태 해제
-    setIsDragging(false);
-    setDragOffset(0);
-
-    if (isLeftSwipe) {
-      console.log('Left swipe detected');
-      goToNextSlide();
-    } else if (isRightSwipe) {
-      console.log('Right swipe detected');
-      goToPrevSlide();
-    } else {
-      // 스와이프가 충분하지 않으면 원래 위치로 돌아감
-      // 자동 슬라이드 재시작
-      setTimeout(() => {
-        startAutoSlide();
-      }, 100);
-    }
-  };
-
-  // 키보드 내비게이션
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.key === 'ArrowLeft') {
-        goToPrevSlide();
-      } else if (e.key === 'ArrowRight') {
-        goToNextSlide();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [goToPrevSlide, goToNextSlide]);
-
-  // 컴포넌트 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, []);
-
-  // 모바일 뷰포트 높이 설정
-  useEffect(() => {
-    const setVH = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    setVH();
-    window.addEventListener('resize', setVH);
-    window.addEventListener('orientationchange', setVH);
-
-    return () => {
-      window.removeEventListener('resize', setVH);
-      window.removeEventListener('orientationchange', setVH);
-    };
-  }, []);
-
-  // 이미지 프리로딩
-  useEffect(() => {
-    const preloadImages = () => {
-      slides.forEach((slide) => {
-        const img = new Image();
-        img.src = slide.image;
-      });
-    };
-
-    preloadImages();
-  }, []);
-
-  // 우클릭 방지 함수
-  const handleContextMenu = (e) => {
-    e.preventDefault();
-    return false;
-  };
+  // Scroll indicator fades quickly
+  const indicatorOpacity = useTransform(scrollY, [0, 100], [1, 0]);
 
   return (
     <>
       <Navbar />
-      <main 
-        className="relative w-screen h-screen overflow-hidden mobile-full-height"
-        style={{ 
-          height: '100vh',
-          height: '100dvh',
-          minHeight: '100vh',
-          width: '100vw',
-          overflow: 'hidden',
-          position: 'relative',
-          background: 'black',
-          touchAction: 'pan-x pinch-zoom', // Y축 스크롤 방지, X축과 줌만 허용
-          userSelect: 'none', // 텍스트 선택 방지
-          WebkitUserSelect: 'none', // Safari 지원
-          msUserSelect: 'none' // IE 지원
-        }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onContextMenu={handleContextMenu}
+
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', zIndex: 0 }}
+        onContextMenu={e => e.preventDefault()}
       >
-        {/* 슬라이드 카루셀 구조 */}
-        <div 
-          className="absolute inset-0 w-full h-full"
-          style={{
-            touchAction: 'pan-x pinch-zoom',
-            userSelect: 'none',
-            WebkitUserSelect: 'none',
-            msUserSelect: 'none'
-          }}
-        >
-          {slides.map((slide, idx) => {
-            // 현재 슬라이드와의 거리 계산
-            const offset = idx - currentSlide;
-            // 드래그 중이면 오프셋 적용
-            const dragX = isDragging ? dragOffset : 0;
-            // x값 계산 (px)
-            const xValue = `calc(${offset * 100}vw + ${offset === 0 ? dragX : 0}px)`;
-            return (
-              <motion.div
-                key={slide.id}
-                className="absolute top-0 left-0 w-full h-full"
-                animate={{ x: xValue }}
-                transition={{ 
-                  type: 'tween', 
-                  duration: isDragging ? 0 : 0.5, // 0.6에서 0.5로 단축
-                  ease: [0.25, 0.1, 0.25, 1] // 더 부드러운 easing
-                }}
-                style={{ 
-                  willChange: 'transform', 
-                  width: '100vw', 
-                  height: '100vh',
-                  transform: 'translateZ(0)', // 하드웨어 가속
-                  backfaceVisibility: 'hidden' // 깜빡임 방지
-                }}
-              >
-                {/* Background Image */}
-                <div 
-                  className="absolute inset-0 w-full h-full"
-                  style={{
-                    backgroundImage: `url(${slide.image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundAttachment: 'fixed',
-                    transform: 'translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    willChange: 'transform' // 성능 최적화
-                  }}
-                  onContextMenu={handleContextMenu}
-                />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
-                {/* Brand Logo Watermark */}
-                <motion.div
-                  className="absolute bottom-8 right-8 z-10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.6 }}
-                >
-                  <div className="text-white/30 text-xs sm:text-sm font-light tracking-widest">
-                    DESIGN LUKA
-                  </div>
-                </motion.div>
-              </motion.div>
-            );
-          })}
-        </div>
+        {/* ── Sticky hero: stays at top while scroll room passes ────────── */}
+        <div style={{ position: 'sticky', top: 0, height: '100vh' }}>
 
-        {/* Navigation Arrows - 데스크톱용 */}
-        <button
-          onClick={goToPrevSlide}
-          className="hidden lg:flex absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-3 transition-all duration-200 active:scale-95 items-center justify-center group"
-          aria-label="이전 슬라이드"
-        >
-          <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <button
-          onClick={goToNextSlide}
-          className="hidden lg:flex absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-3 transition-all duration-200 active:scale-95 items-center justify-center group"
-          aria-label="다음 슬라이드"
-        >
-          <svg className="w-6 h-6 text-white transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3 lg:space-x-4">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 hover:scale-125 ${
-                index === currentSlide 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/40 hover:bg-white/60'
-              }`}
-              aria-label={`슬라이드 ${index + 1}로 이동`}
+          {/* Crossfading background images */}
+          {BG.map((src, i) => (
+            <motion.div
+              key={i}
+              style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: `url(${src})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                opacity: bgOpacities[i],
+                willChange: 'opacity',
+              }}
             />
           ))}
-        </div>
 
-        {/* Progress Bar with Gradient */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-20">
-          <motion.div
-            key={progressKey}
-            className="h-full bg-gradient-to-r from-white/60 to-white/80"
-            initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ 
-              duration: SLIDE_DURATION / 1000, 
-              ease: [0.4, 0, 0.2, 1]
+          {/* Gradient overlay — always on top of images */}
+          <div
+            style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.04) 42%, rgba(0,0,0,0.42) 100%)',
+              zIndex: 1,
             }}
           />
         </div>
 
-        {/* Mobile Touch Instruction */}
-        {/* <motion.div
-          className="sm:hidden absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 text-white/40 text-xs text-center"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: [1, 0.5, 1] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          좌우로 스와이프하여 이동
-        </motion.div> */}
-      </main>
+        {/*
+          Scroll room: SCROLL_ROOM px (480).
+          At scrollTop = SCROLL_ROOM, the grid section top reaches the viewport bottom.
+          By then the spring has settled and the text is at navbar position.
+        */}
+        <div style={{ height: `${SCROLL_ROOM}px` }} />
+
+        {/* ── Grid section ──────────────────────────────────────────────── */}
+        <div style={{ background: '#fff', position: 'relative', zIndex: 5, wordBreak: 'keep-all' }}>
+
+          {/* Header bar */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              padding: isMobile ? '48px 24px 32px' : '72px 64px 44px',
+              borderBottom: '1px solid #e5e5e5',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px' }}>
+              <h2 style={{
+                fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+                fontSize: isMobile ? '28px' : '40px',
+                fontWeight: 400, color: '#111',
+                letterSpacing: '-0.5px', margin: 0, lineHeight: 1,
+              }}>Selected Works</h2>
+              <span style={{ fontSize: '10px', color: '#aaa', letterSpacing: '2px', fontWeight: 300 }}>
+                2020 — 2025
+              </span>
+            </div>
+            <Link to="/portfolio" style={{
+              fontSize: '10px', letterSpacing: '3px', color: '#555',
+              textDecoration: 'none', textTransform: 'uppercase', flexShrink: 0,
+            }}>View All</Link>
+          </div>
+
+          {/* ── Featured 2-column ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr' }}>
+            <div style={{ position: 'relative', overflow: 'hidden', minHeight: isMobile ? '300px' : '520px' }}>
+              <motion.img
+                src={main01} alt="주거공간"
+                whileHover={{ scale: 1.04 }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onContextMenu={e => e.preventDefault()}
+              />
+              <div style={{
+                position: 'absolute', bottom: '24px', left: '24px',
+                background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(8px)',
+                padding: '10px 16px',
+              }}>
+                <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#999', display: 'block', textTransform: 'uppercase', marginBottom: '3px' }}>Residential</span>
+                <span style={{ fontSize: '13px', color: '#111', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif" }}>강동 래미안 36PY</span>
+              </div>
+            </div>
+
+            <div style={{
+              padding: isMobile ? '40px 24px' : '72px 60px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              background: '#f8f7f5',
+            }}>
+              <span style={{ fontSize: '9px', letterSpacing: '4px', color: '#bbb', textTransform: 'uppercase', marginBottom: '22px', display: 'block' }}>01 / Featured</span>
+              <h3 style={{
+                fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+                fontSize: isMobile ? '24px' : '30px', fontWeight: 400,
+                color: '#1a1a1a', lineHeight: 1.45, marginBottom: '22px',
+              }}>공간을 통해<br />삶의 격을 높이다</h3>
+              <p style={{ fontSize: '14px', lineHeight: 1.95, color: '#777', marginBottom: '36px', maxWidth: '340px' }}>
+                자연의 질감과 고요한 빛을 담은 주거공간. 소재의 진정성과 비례의 아름다움이 일상의 품격을 만듭니다.
+              </p>
+              <Link to="/portfolio?category=residential" style={{
+                fontSize: '10px', letterSpacing: '3px', color: '#111',
+                textDecoration: 'none', textTransform: 'uppercase',
+                display: 'inline-flex', alignItems: 'center', gap: '14px',
+              }}>
+                View Project
+                <span style={{ display: 'block', width: '40px', height: '1px', background: '#111' }} />
+              </Link>
+            </div>
+          </div>
+
+          {/* ── 3-column grid ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', borderTop: '1px solid #e5e5e5' }}>
+            {[
+              { img: main02, cat: 'Residential', title: '한강변 아파트 42PY', num: '02' },
+              { img: main03, cat: 'Residential', title: '성수동 복합주거 55PY', num: '03' },
+              { img: main04, cat: 'Commercial',  title: '청담동 플래그십 스토어', num: '04' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                borderRight: !isMobile && i < 2 ? '1px solid #e5e5e5' : 'none',
+                borderTop: isMobile && i > 0 ? '1px solid #e5e5e5' : 'none',
+              }}>
+                <div style={{ overflow: 'hidden', aspectRatio: isMobile ? '16/9' : '4/5' }}>
+                  <motion.img
+                    src={item.img} alt={item.title}
+                    whileHover={{ scale: 1.04 }}
+                    transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onContextMenu={e => e.preventDefault()}
+                  />
+                </div>
+                <div style={{ padding: '18px 24px 26px', borderTop: '1px solid #e5e5e5' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#bbb', textTransform: 'uppercase' }}>{item.cat}</span>
+                    <span style={{ fontSize: '10px', color: '#ddd' }}>{item.num}</span>
+                  </div>
+                  <p style={{ fontSize: '16px', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif", color: '#1a1a1a', margin: 0, fontWeight: 400 }}>{item.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Commercial dark panel ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', borderTop: '1px solid #e5e5e5' }}>
+            <div style={{
+              background: '#141414',
+              padding: isMobile ? '48px 24px' : '72px 60px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              order: isMobile ? 2 : 0,
+            }}>
+              <span style={{ fontSize: '9px', letterSpacing: '4px', color: '#555', textTransform: 'uppercase', marginBottom: '22px', display: 'block' }}>05 / Commercial</span>
+              <h3 style={{
+                fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+                fontSize: isMobile ? '24px' : '30px', fontWeight: 400,
+                color: '#f0efed', lineHeight: 1.45, marginBottom: '22px',
+              }}>브랜드의 철학을<br />공간에 담다</h3>
+              <p style={{ fontSize: '14px', lineHeight: 1.95, color: '#666', marginBottom: '36px', maxWidth: '340px' }}>
+                상업공간은 브랜드와 고객이 처음 만나는 접점입니다. design LUKA는 브랜드의 본질을 공간 언어로 번역합니다.
+              </p>
+              <Link to="/portfolio?category=commercial" style={{
+                fontSize: '10px', letterSpacing: '3px', color: '#f0efed',
+                textDecoration: 'none', textTransform: 'uppercase',
+                display: 'inline-flex', alignItems: 'center', gap: '14px',
+              }}>
+                View Project
+                <span style={{ display: 'block', width: '40px', height: '1px', background: '#f0efed' }} />
+              </Link>
+            </div>
+            <div style={{ overflow: 'hidden', minHeight: isMobile ? '300px' : '500px', order: isMobile ? 1 : 0 }}>
+              <motion.img
+                src={main05} alt="상업공간"
+                whileHover={{ scale: 1.04 }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onContextMenu={e => e.preventDefault()}
+              />
+            </div>
+          </div>
+
+          {/* ── Asymmetric 2/1 ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', borderTop: '1px solid #e5e5e5' }}>
+            <div style={{ overflow: 'hidden', minHeight: isMobile ? '280px' : '440px' }}>
+              <motion.img
+                src={main06} alt="인테리어"
+                whileHover={{ scale: 1.04 }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onContextMenu={e => e.preventDefault()}
+              />
+            </div>
+            <div style={{
+              padding: isMobile ? '40px 24px' : '60px 48px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+              background: '#f0eeea',
+              borderLeft: isMobile ? 'none' : '1px solid #e5e5e5',
+              borderTop: isMobile ? '1px solid #e5e5e5' : 'none',
+            }}>
+              <span style={{ fontSize: '9px', letterSpacing: '4px', color: '#bbb', textTransform: 'uppercase', marginBottom: '16px', display: 'block' }}>06 / Detail</span>
+              <p style={{ fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif", fontSize: isMobile ? '20px' : '22px', fontWeight: 400, color: '#1a1a1a', lineHeight: 1.6, margin: 0 }}>
+                "디테일이 완성도를<br />만들고, 완성도가<br />공간을 기억하게 합니다."
+              </p>
+            </div>
+          </div>
+
+          {/* ── CTA footer ── */}
+          <div style={{ padding: isMobile ? '60px 24px' : '88px 64px', textAlign: 'center', borderTop: '1px solid #e5e5e5' }}>
+            <p style={{ fontSize: '11px', letterSpacing: '4px', color: '#bbb', textTransform: 'uppercase', marginBottom: '28px' }}>design LUKA</p>
+            <h3 style={{
+              fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+              fontSize: isMobile ? '26px' : '34px', fontWeight: 400,
+              color: '#1a1a1a', marginBottom: '32px', lineHeight: 1.4,
+            }}>당신의 공간을<br />함께 설계합니다</h3>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link to="/portfolio" style={{
+                display: 'inline-block', padding: '15px 40px', background: '#1a1a1a',
+                fontSize: '10px', letterSpacing: '3px', color: '#fff',
+                textDecoration: 'none', textTransform: 'uppercase',
+              }}>Portfolio</Link>
+              <Link to="/contact" style={{
+                display: 'inline-block', padding: '15px 40px',
+                border: '1px solid #1a1a1a',
+                fontSize: '10px', letterSpacing: '3px', color: '#1a1a1a',
+                textDecoration: 'none', textTransform: 'uppercase',
+              }}>Contact</Link>
+            </div>
+          </div>
+        </div>
+        {/* ── End Grid section ──────────────────────────────────────────── */}
+
+        {/* Brand text (fixed, inside container for wheel-event bubbling) */}
+        <motion.div style={{
+          position: 'fixed', top: 0, left: '50%',
+          translateX: '-50%', y: textY, opacity: textOpacity,
+          fontSize, letterSpacing,
+          color: 'white', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+          fontWeight: 400, zIndex: 35, whiteSpace: 'nowrap',
+          userSelect: 'none', pointerEvents: 'none',
+        }}>
+          design LUKA
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div style={{
+          position: 'fixed', bottom: '2.5rem', left: '50%',
+          translateX: '-50%', opacity: indicatorOpacity,
+          zIndex: 20, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', gap: '6px',
+          color: 'rgba(255,255,255,0.65)', pointerEvents: 'none',
+        }}>
+          <span style={{ fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif", fontWeight: 300 }}>scroll</span>
+          <motion.div animate={{ y: [0, 7, 0] }} transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </motion.div>
+        </motion.div>
+      </div>
     </>
   );
 };
 
-export default HomePage; 
+export default HomePage;

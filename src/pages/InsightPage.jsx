@@ -495,7 +495,7 @@ export default function InsightPage() {
                 
                 {/* Category badge */}
                 <div className="absolute top-4 right-4">
-                  <span className={`${getCategoryColor(insight.category)} text-white text-xs px-3 py-1 rounded-full font-medium font-['Noto_Sans_KR']`}>
+                  <span className={`${getCategoryColor(insight.category)} text-white text-xs px-3 py-1 rounded-full font-medium font-sans`}>
                     {getCategoryLabel(insight.category)}
                   </span>
                 </div>
@@ -507,23 +507,23 @@ export default function InsightPage() {
               {/* Content */}
               <div className="p-6">
                 {/* Date */}
-                <div className="text-sm text-gray-500 mb-3 font-['Noto_Sans_KR']">
+                <div className="text-sm text-gray-500 mb-3 font-sans">
                   {formatDate(insight.date)}
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-bold mb-3 line-clamp-2 text-gray-900 group-hover:text-gray-700 transition-colors font-['Noto_Sans_KR']">
+                <h3 className="text-lg font-bold mb-3 line-clamp-2 text-gray-900 group-hover:text-gray-700 transition-colors font-sans">
                   {insight.title}
                 </h3>
 
                 {/* Preview */}
-                <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 font-['Noto_Sans_KR']">
+                <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 font-sans">
                   {extractPreviewText(insight.content)}
                 </p>
 
                 {/* Read more */}
                 <div className="mt-4">
-                  <span className="text-gray-900 text-sm font-medium group-hover:text-gray-600 transition-colors font-['Noto_Sans_KR']">
+                  <span className="text-gray-900 text-sm font-medium group-hover:text-gray-600 transition-colors font-sans">
                     자세히 보기 →
                   </span>
                 </div>
@@ -538,7 +538,7 @@ export default function InsightPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+      <div className="min-h-screen bg-white font-sans">
         {/* Navbar */}
         <Navbar />
         
@@ -552,7 +552,7 @@ export default function InsightPage() {
   // Empty state
   if (insights.length === 0) {
     return (
-      <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+      <div className="min-h-screen bg-white font-sans">
         {/* Navbar */}
         <Navbar />
 
@@ -607,15 +607,15 @@ export default function InsightPage() {
 
   // Main render
   return (
-    <div className="flex flex-col min-h-screen bg-white font-['Noto_Sans_KR']">
+    <div className="flex flex-col min-h-screen bg-white font-sans">
       {/* Navbar */}
       <Navbar />
       
 
       {/* Main Content */}
-      <main className="flex-1 pt-16 py-0 font-['Noto_Sans_KR']">
+      <main className="flex-1 pt-16 py-0 font-sans">
         {/* Hero Section - Simplified */}
-        <section className="py-0 bg-gradient-to-br from-gray-50 to-white font-['Noto_Sans_KR']">
+        <section className="py-0 bg-gradient-to-br from-gray-50 to-white font-sans">
           <div className="w-full px-4">
             <motion.div
               className="text-center"
@@ -623,7 +623,7 @@ export default function InsightPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-['Noto_Sans_KR']">Insight and Contents</h1>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-sans">Insight and Contents</h1>
             </motion.div>
           </div>
           <section className="py-8"></section>
@@ -632,10 +632,10 @@ export default function InsightPage() {
         {/* Content Section */}
         <section className="">
           <div className="w-full px-4">
-            <div className="flex flex-col lg:flex-row gap-8 font-['Noto_Sans_KR']">
+            <div className="flex flex-col lg:flex-row gap-8 font-sans">
               
               {/* Left Sidebar - 3/12 */}
-              <div className="lg:w-3/12 pl-4 font-['Noto_Sans_KR']">
+              <div className="lg:w-3/12 pl-4 font-sans">
                 <div className="sticky top-24 space-y-8">
                   
                   {/* Category Navigation */}
@@ -645,7 +645,7 @@ export default function InsightPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 font-['Noto_Sans_KR']">
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 font-sans">
                       카테고리
                     </h3>
                     <LayoutGroup>
@@ -653,7 +653,7 @@ export default function InsightPage() {
                         <motion.button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
-                          className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden font-['Noto_Sans_KR'] ${
+                          className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 relative overflow-hidden font-sans ${
                             activeTab === tab.id
                               ? 'text-white'
                               : 'text-gray-600 hover:text-gray-900'
@@ -672,7 +672,7 @@ export default function InsightPage() {
                           }`} />
                           
                           {/* Text */}
-                          <span className="relative z-10 font-['Noto_Sans_KR']">{tab.label}</span>
+                          <span className="relative z-10 font-sans">{tab.label}</span>
                           
                           {/* Active indicator */}
                           {activeTab === tab.id && (
@@ -700,7 +700,7 @@ export default function InsightPage() {
                     <MasonryGrid insights={filteredInsights} />
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-gray-600 font-['Noto_Sans_KR']">
+                      <p className="text-gray-600 font-sans">
                         {activeTab === 'all' ? '등록된 글이 없습니다.' : `${getCategoryLabel(activeTab)} 카테고리에 등록된 글이 없습니다.`}
                       </p>
                     </div>
@@ -739,7 +739,7 @@ export default function InsightPage() {
           initial={{ opacity: 0, y: 50, scale: 0.3 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.3 }}
-          className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg font-medium text-sm font-['Noto_Sans_KR'] ${
+          className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg font-medium text-sm font-sans ${
             toast.type === 'info' 
               ? 'bg-gray-900 text-white' 
               : toast.type === 'success' 

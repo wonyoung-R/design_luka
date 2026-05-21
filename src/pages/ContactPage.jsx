@@ -88,7 +88,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR'] flex flex-col">
+    <div className="min-h-screen bg-white font-sans flex flex-col">
       {/* Navbar */}
       <Navbar />
 
@@ -104,7 +104,7 @@ export default function ContactPage() {
               transition={{ duration: 0.8 }}
             >
               <motion.h1 
-                className="text-4xl md:text-5xl font-black text-gray-600 mb-2 md:mb-4 tracking-tight font-['Noto_Sans_KR']"
+                className="text-4xl md:text-5xl font-black text-gray-600 mb-2 md:mb-4 tracking-tight font-sans"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -128,7 +128,7 @@ export default function ContactPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-['Noto_Sans_KR'] transition-all duration-300 focus:outline-none ${
+                      className={`flex-1 md:w-64 h-12 rounded-xl text-base md:text-lg font-sans transition-all duration-300 focus:outline-none ${
                         activeTab === tab.id
                           ? 'bg-gray-900 text-white'
                           : 'bg-white text-gray-900 hover:bg-gray-50'
@@ -152,7 +152,7 @@ export default function ContactPage() {
                     className="text-center"
                   >
                     <motion.h2 
-                      className="hidden md:block text-2xl md:text-3xl font-bold mb-6 md:mb-8 font-['Noto_Sans_KR']"
+                      className="hidden md:block text-2xl md:text-3xl font-bold mb-6 md:mb-8 font-sans"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -160,7 +160,7 @@ export default function ContactPage() {
                       상담 신청
                     </motion.h2>
                     <motion.p 
-                      className="text-sm md:text-base text-gray-600 mb-10 font-['Noto_Sans_KR']"
+                      className="text-sm md:text-base text-gray-600 mb-10 font-sans"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
@@ -191,10 +191,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-sans">
                                 주거 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-sans">
                                 Residential
                               </p>
                             </div>
@@ -217,10 +217,10 @@ export default function ContactPage() {
                           {/* Overlay Text */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <h3 className="text-2xl font-bold mb-2 text-transparent group-hover:text-white transition-colors duration-500 font-sans">
                                 상업 공간
                               </h3>
-                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-['Noto_Sans_KR']">
+                              <p className="text-transparent group-hover:text-gray-300 transition-colors duration-500 font-sans">
                                 Commercial
                               </p>
                             </div>
@@ -239,7 +239,7 @@ export default function ContactPage() {
                   >
                     <div className="text-center mb-6">
                       <motion.h2 
-                        className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-['Noto_Sans_KR']"
+                        className="hidden md:block text-2xl md:text-3xl font-bold mb-4 font-sans"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
@@ -247,7 +247,7 @@ export default function ContactPage() {
                         고객 Q&A
                       </motion.h2>
                       <motion.p 
-                        className="text-sm md:text-base text-gray-600 font-['Noto_Sans_KR']"
+                        className="text-sm md:text-base text-gray-600 font-sans"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}

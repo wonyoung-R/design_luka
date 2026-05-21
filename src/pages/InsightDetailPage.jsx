@@ -269,7 +269,7 @@ const InsightDetailPage = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+      <div className="min-h-screen bg-white font-sans">
         {/* Navbar */}
         <Navbar />
         
@@ -283,7 +283,7 @@ const InsightDetailPage = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+      <div className="min-h-screen bg-white font-sans">
         {/* Navbar */}
         <Navbar />
 
@@ -317,7 +317,7 @@ const InsightDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-['Noto_Sans_KR']">
+    <div className="min-h-screen bg-white font-sans">
       {/* Navbar */}
       <Navbar />
       {/* Main Content */}
@@ -325,7 +325,7 @@ const InsightDetailPage = () => {
         {/* Title Section */}
         <section className="py-6">
           <div className="w-full px-4">
-            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight font-['Noto_Sans_KR']">
+            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight font-sans">
               {insight.title}
             </h1>
           </div>
@@ -334,7 +334,7 @@ const InsightDetailPage = () => {
         {/* Content Section */}
         <section className="pb-12 md:pb-16">
           <div className="max-w-3xl mx-auto px-4">
-            <div className="prose prose-lg max-w-none font-['Noto_Sans_KR']">
+            <div className="prose prose-lg max-w-none font-sans">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -360,25 +360,25 @@ const InsightDetailPage = () => {
                     </a>
                   ),
                   h1: ({ node, ...props }) => (
-                    <h1 {...props} className="text-3xl font-bold text-gray-900 mb-6 mt-8 font-['Noto_Sans_KR']" />
+                    <h1 {...props} className="text-3xl font-bold text-gray-900 mb-6 mt-8 font-sans" />
                   ),
                   h2: ({ node, ...props }) => (
-                    <h2 {...props} className="text-2xl font-bold text-gray-900 mb-4 mt-6 font-['Noto_Sans_KR']" />
+                    <h2 {...props} className="text-2xl font-bold text-gray-900 mb-4 mt-6 font-sans" />
                   ),
                   h3: ({ node, ...props }) => (
-                    <h3 {...props} className="text-xl font-bold text-gray-900 mb-3 mt-4 font-['Noto_Sans_KR']" />
+                    <h3 {...props} className="text-xl font-bold text-gray-900 mb-3 mt-4 font-sans" />
                   ),
                   p: ({ node, ...props }) => (
-                    <p {...props} className="text-gray-700 leading-relaxed mb-6 text-lg font-['Noto_Sans_KR']" />
+                    <p {...props} className="text-gray-700 leading-relaxed mb-6 text-lg font-sans" />
                   ),
                   ul: ({ node, ...props }) => (
-                    <ul {...props} className="list-disc pl-6 mb-6 space-y-2 font-['Noto_Sans_KR']" />
+                    <ul {...props} className="list-disc pl-6 mb-6 space-y-2 font-sans" />
                   ),
                   ol: ({ node, ...props }) => (
-                    <ol {...props} className="list-decimal pl-6 mb-6 space-y-2 font-['Noto_Sans_KR']" />
+                    <ol {...props} className="list-decimal pl-6 mb-6 space-y-2 font-sans" />
                   ),
                   blockquote: ({ node, ...props }) => (
-                    <blockquote {...props} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-6 bg-gray-50 p-4 rounded-r-lg font-['Noto_Sans_KR']" />
+                    <blockquote {...props} className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-6 bg-gray-50 p-4 rounded-r-lg font-sans" />
                   ),
                   code: ({ node, inline, ...props }) => {
                     if (inline) {
