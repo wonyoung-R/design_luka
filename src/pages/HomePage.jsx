@@ -199,7 +199,7 @@ const HomePage = () => {
                 fontSize: isMobile ? '24px' : '30px', fontWeight: 400,
                 color: '#1a1a1a', lineHeight: 1.45, marginBottom: '22px',
               }}>공간을 통해<br />삶의 격을 높이다</h3>
-              <p style={{ fontSize: '14px', lineHeight: 1.95, color: '#777', marginBottom: '36px', maxWidth: '340px' }}>
+              <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#777', marginBottom: '36px', maxWidth: '340px' }}>
                 자연의 질감과 고요한 빛을 담은 주거공간. 소재의 진정성과 비례의 아름다움이 일상의 품격을 만듭니다.
               </p>
               <Link to="/portfolio?category=residential" style={{
@@ -258,7 +258,7 @@ const HomePage = () => {
                 fontSize: isMobile ? '24px' : '30px', fontWeight: 400,
                 color: '#f0efed', lineHeight: 1.45, marginBottom: '22px',
               }}>브랜드의 철학을<br />공간에 담다</h3>
-              <p style={{ fontSize: '14px', lineHeight: 1.95, color: '#666', marginBottom: '36px', maxWidth: '340px' }}>
+              <p style={{ fontSize: '14px', lineHeight: 1.7, color: '#666', marginBottom: '36px', maxWidth: '340px' }}>
                 상업공간은 브랜드와 고객이 처음 만나는 접점입니다. design LUKA는 브랜드의 본질을 공간 언어로 번역합니다.
               </p>
               <Link to="/portfolio?category=commercial" style={{
