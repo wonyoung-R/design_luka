@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { SCROLL_RANGE, SPRING_SETTLE, SCROLL_ROOM } from '../constants/homeScroll';
+import { SCROLL_RANGE, SCROLL_ROOM } from '../constants/homeScroll';
 
 // Hero background images (crossfade rotation)
 import main09 from '../images/main/main09.JPG';
@@ -83,11 +83,12 @@ const HomePage = () => {
   const fontSize       = useTransform(smoothFont,    v => `${Math.max(11, Math.min(heroFont, v)).toFixed(1)}px`);
   const letterSpacing  = useTransform(smoothSpacing, v => `${v.toFixed(1)}px`);
 
-  // Brand text fades out as it approaches navbar (timed with spring settling)
-  const textOpacity = useTransform(
+  // Brand wordmark stays pinned in the navbar (no fade). Its colour flips
+  // white -> dark just after the navbar turns opaque (SCROLL_ROOM) so it stays legible.
+  const textColor = useTransform(
     scrollY,
-    [SCROLL_RANGE - 40, SCROLL_RANGE + SPRING_SETTLE - 20],
-    [1, 0]
+    [SCROLL_ROOM, SCROLL_ROOM + 60],
+    ['#ffffff', '#1a1a1a']
   );
 
   // Scroll indicator fades quickly
@@ -331,18 +332,6 @@ const HomePage = () => {
         </div>
         {/* ── End Grid section ──────────────────────────────────────────── */}
 
-        {/* Brand text (fixed, inside container for wheel-event bubbling) */}
-        <motion.div style={{
-          position: 'fixed', top: 0, left: '50%',
-          translateX: '-50%', y: textY, opacity: textOpacity,
-          fontSize, letterSpacing,
-          color: 'white', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
-          fontWeight: 400, zIndex: 35, whiteSpace: 'nowrap',
-          userSelect: 'none', pointerEvents: 'none',
-        }}>
-          design LUKA
-        </motion.div>
-
         {/* Scroll indicator */}
         <motion.div style={{
           position: 'fixed', bottom: '2.5rem', left: '50%',
@@ -359,6 +348,20 @@ const HomePage = () => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Brand wordmark — pinned above the navbar (z-50) so it stays visible as a
+          centred logo once the navbar turns opaque. pointer-events:none lets the
+          wheel/trackpad scroll pass through to the container below. */}
+      <motion.div style={{
+        position: 'fixed', top: 0, left: '50%',
+        translateX: '-50%', y: textY,
+        fontSize, letterSpacing,
+        color: textColor, fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
+        fontWeight: 400, zIndex: 50, whiteSpace: 'nowrap',
+        userSelect: 'none', pointerEvents: 'none',
+      }}>
+        design LUKA
+      </motion.div>
     </>
   );
 };
