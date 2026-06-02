@@ -1,21 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.31ac8344.css",
-    "main.js": "/static/js/main.787bdd99.js",
-    "static/media/4.jpg": "/static/media/4.28f9aa5a51cd58ecaa96.jpg",
-    "static/media/main09.JPG": "/static/media/main09.c9649ac96571723a9145.JPG",
+    "main.css": "/static/css/main.d9dfb2da.css",
+    "main.js": "/static/js/main.e0f8850f.js",
     "static/media/luka_design.png": "/static/media/luka_design.8ffd09b34bc8ed19d693.png",
-    "static/media/3.jpg": "/static/media/3.be041e0e86175a1e5549.jpg",
     "static/media/luka_cusotmize.png": "/static/media/luka_cusotmize.529c3c7125e127c20203.png",
-    "static/media/main10.JPG": "/static/media/main10.a335df8a34a67d92b60a.JPG",
-    "static/media/10.jpg": "/static/media/10.079047c412191bd5581f.jpg",
-    "static/media/5.jpg": "/static/media/5.938c4efb0a40df0411ce.jpg",
-    "static/media/6.jpg": "/static/media/6.dbdadcad6e804eb080b1.jpg",
-    "static/media/9.jpg": "/static/media/9.5fab4dd2514b25333531.jpg",
-    "static/media/1.jpg": "/static/media/1.a85d9f3247598752fead.jpg",
     "static/media/luka_stability.png": "/static/media/luka_stability.05e801b0c7268e3a7dd5.png",
-    "static/media/8.jpg": "/static/media/8.ce5add85e6074eda21f5.jpg",
-    "static/media/2.jpg": "/static/media/2.1a930d53573cbd21dd5e.jpg",
     "static/media/commercia_btn.jpg": "/static/media/commercia_btn.efa1130f6a7dff4cb945.jpg",
     "static/media/regidential_btn.jpg": "/static/media/regidential_btn.30148d91d1f7fea8e708.jpg",
     "static/media/main06.jpg": "/static/media/main06.bb7b45220229684c088c.jpg",
@@ -24,17 +13,18 @@
     "static/media/main02.jpg": "/static/media/main02.a937dbc06a9350c92fc8.jpg",
     "static/media/main04.jpg": "/static/media/main04.7b820f82cfd7d8c52b9f.jpg",
     "static/media/main07.jpg": "/static/media/main07.1562665e66148eecafa6.jpg",
-    "static/media/7.jpg": "/static/media/7.df834abe2ae965df9c38.jpg",
     "static/media/main08.jpg": "/static/media/main08.d4b15d5f244504bf5af8.jpg",
     "static/media/main03.jpg": "/static/media/main03.3c0873d112c5c2ba7c0e.jpg",
+    "static/media/1.jpg": "/static/media/1.0bb641346399bec004e1.jpg",
+    "static/media/main09.JPG": "/static/media/main09.00282f45bb994f0fc40c.JPG",
     "static/media/LUKA(W).png": "/static/media/LUKA(W).1cba20a6817cd11b426f.png",
     "static/media/LUKA slogan.png": "/static/media/LUKA slogan.0c9dd707cf413b3ee1a3.png",
     "index.html": "/index.html",
-    "main.31ac8344.css.map": "/static/css/main.31ac8344.css.map",
-    "main.787bdd99.js.map": "/static/js/main.787bdd99.js.map"
+    "main.d9dfb2da.css.map": "/static/css/main.d9dfb2da.css.map",
+    "main.e0f8850f.js.map": "/static/js/main.e0f8850f.js.map"
   },
   "entrypoints": [
-    "static/css/main.31ac8344.css",
-    "static/js/main.787bdd99.js"
+    "static/css/main.d9dfb2da.css",
+    "static/js/main.e0f8850f.js"
   ]
 }
