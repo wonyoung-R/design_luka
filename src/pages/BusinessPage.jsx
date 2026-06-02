@@ -99,6 +99,7 @@ const BusinessPage = () => {
         }}
       />
       <Navbar />
+      <h1 className="sr-only">Design LUKA Business — 인테리어 비즈니스 서비스</h1>
       <main className="pt-16 font-sans relative z-10 min-h-screen">
         {/* Hero Section */}
         <section className="min-h-[320px] flex items-center justify-center text-white">

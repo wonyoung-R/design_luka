@@ -53,6 +53,7 @@ const AboutPage = () => {
     <div className="bg-white font-sans">
       {/* Navbar */}
       <Navbar />
+      <h1 className="sr-only">About Design LUKA — 회사 소개 및 디자인 철학</h1>
 
       <main className="pt-16 min-h-screen">
         

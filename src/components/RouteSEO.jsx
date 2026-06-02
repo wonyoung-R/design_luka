@@ -6,6 +6,10 @@ const BASE = 'https://designluka.co.kr';
 
 // 라우트별 메타. 홈('/')은 index.html의 기본 메타를 그대로 사용(여기서 null).
 const META = {
+  '/': {
+    title: 'Design LUKA | 서울 프리미엄 인테리어 디자인 전문업체 | 강남·서초·송파',
+    desc: "'빛'을 의미하는 Design LUKA는 라이프스타일에 맞춘 맞춤형 인테리어 디자인으로 세련된 공간을 창조합니다. 서울 전역 서비스, 강남·서초·송파 전문, 논현점·반포점 운영.",
+  },
   '/about': {
     title: '회사소개 | Design LUKA',
     desc: "'빛'을 의미하는 Design LUKA의 철학과 팀을 소개합니다. 강남·서초·송파 맞춤형 인테리어 디자인 전문.",

@@ -623,7 +623,7 @@ export default function InsightPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-sans">Insight and Contents</h1>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-sans">Insight and Contents</h2>
             </motion.div>
           </div>
           <section className="py-8"></section>

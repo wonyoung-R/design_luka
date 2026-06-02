@@ -97,6 +97,7 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
+      <h1 className="sr-only">Design LUKA — 강남·서초·송파 인테리어 디자인 전문업체</h1>
 
       <div
         ref={scrollRef}

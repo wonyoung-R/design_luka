@@ -656,7 +656,7 @@ export default function PortfolioPage() {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 font-sans text-left">{project.title}</h1>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 font-sans text-left">{project.title}</h2>
 
               {/* Location */}
               <p className="text-base md:text-lg text-gray-600 font-sans text-left">{project.location}</p>
