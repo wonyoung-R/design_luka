@@ -1,3 +1,7 @@
+# Naver 검색로봇 (Yeti) 명시 + 모든 봇 허용
+User-agent: Yeti
+Allow: /
+
 User-agent: *
 Allow: /
 
