@@ -999,8 +999,8 @@ export default function PortfolioPage() {
                 </div>
               </div>
 
-              {/* Main Image Container */}
-              <div className="relative w-full h-full flex items-center justify-center p-2">
+              {/* Main Image Container — pt-16(header 회피) pb-28(썸네일 회피) px-4 */}
+              <div className="relative w-full h-full flex items-center justify-center pt-16 pb-28 px-4">
                 <motion.div
                   key={selectedImageIndex}
                   initial={{ opacity: 0, scale: 0.95 }}
