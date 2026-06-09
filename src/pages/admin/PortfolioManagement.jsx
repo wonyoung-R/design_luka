@@ -21,6 +21,7 @@ const PortfolioManagement = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [apiStatus, setApiStatus] = useState('Cloudinary 준비됨');
   const [formData, setFormData] = useState({
+    type: 'residential',
     title: '',
     address: '',
     area: '',
@@ -202,6 +203,7 @@ const PortfolioManagement = () => {
 
       setIsModalOpen(false);
       setFormData({
+        type: 'residential',
         title: '',
         address: '',
         area: '',
