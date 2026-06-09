@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 // Cloudinary 설정
 const CLOUDINARY_CLOUD_NAME = 'dti1gtd3u';
-const UPLOAD_PRESET = 'ml_default';
+const UPLOAD_PRESET = 'designluka_lossless';
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
 const PortfolioManagement = () => {

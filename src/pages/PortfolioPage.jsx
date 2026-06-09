@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+// Cloudinary 표시 변환은 단일 진실(utils)에서 import — 페이지 분산 차단
+import {
+  getResponsiveCloudinaryUrl,
+  generateResponsiveSrcSet,
+  convertToOptimizedUrl,
+  getCloudinaryUrlFromId,
+} from '../utils/cloudinary';
 import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import Navbar from '../components/Navbar';
@@ -12,54 +19,7 @@ const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
 ];
 
-// 반응형 이미지 URL 생성 함수들 (컴포넌트 외부로 이동)
-const getResponsiveCloudinaryUrl = (url, width = null) => {
-  if (!url) return null;
-  
-  // Cloudinary URL인 경우 반응형 최적화
-  if (url.includes('cloudinary.com')) {
-    const baseUrl = url.split('/upload/')[0] + '/upload/';
-    const imagePath = url.split('/upload/')[1];
-    
-    // 고화질 설정 (용량과 화질의 균형점)
-    let params = 'f_auto,q_100,fl_progressive';
-    
-    if (width) {
-      params += `,w_${width}`; // 특정 너비 지정
-    }
-    
-    return `${baseUrl}${params}/${imagePath}`;
-  }
-  
-  return url;
-};
-
-const generateResponsiveSrcSet = (url) => {
-  if (!url || !url.includes('cloudinary.com')) {
-    return url;
-  }
-  
-  // 다양한 화면 크기에 맞는 고화질 이미지 URL 생성
-  const widths = [640, 1280, 1920, 2560]; // 더 큰 해상도 지원
-  const srcSet = widths.map(width => {
-    const responsiveUrl = getResponsiveCloudinaryUrl(url, width);
-    return `${responsiveUrl} ${width}w`;
-  }).join(', ');
-  
-  return srcSet;
-};
-
-const convertToOptimizedUrl = (url) => {
-  if (!url) return null;
-  
-  // Cloudinary URL인 경우 원본 화질 유지
-  if (url.includes('cloudinary.com')) {
-    return getResponsiveCloudinaryUrl(url);
-  }
-  
-  // 기타 URL은 그대로 반환
-  return url;
-};
+// Cloudinary 변환은 utils로 통합 (import는 파일 최상단)
 
 const tabs = [
   { id: 'residential', label: '주거 공간' },
@@ -208,7 +168,7 @@ export default function PortfolioPage() {
                     }
                     // Cloudinary ID가 있는 경우 (public_id)
                     else if (img.id) {
-                      return `https://res.cloudinary.com/dti1gtd3u/image/upload/f_auto,q_100/${img.id}`;
+                      return getCloudinaryUrlFromId(img.id);
                     }
                   }
                   

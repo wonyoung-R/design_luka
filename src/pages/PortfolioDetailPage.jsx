@@ -6,27 +6,8 @@ import { database } from '../firebase/config';
 import { ref, onValue } from 'firebase/database';
 import Footer from '../components/Footer';
 
-// 고화질 Cloudinary URL 생성 함수
-const getHighQualityCloudinaryUrl = (url, width = null) => {
-  if (!url) return null;
-  
-  // Cloudinary URL인 경우 고화질 최적화
-  if (url.includes('cloudinary.com')) {
-    const baseUrl = url.split('/upload/')[0] + '/upload/';
-    const imagePath = url.split('/upload/')[1];
-    
-    // 고화질 파라미터 추가
-    let params = 'f_auto,q_100,fl_progressive';
-    
-    if (width) {
-      params += `,w_${width}`; // 특정 너비 지정
-    }
-    
-    return `${baseUrl}${params}/${imagePath}`;
-  }
-  
-  return url;
-};
+// Cloudinary 변환은 utils로 통합 (alias 사용으로 호출부 무변경)
+import { getHighQualityCloudinaryUrl } from '../utils/cloudinary';
 
 export default function PortfolioDetailPage() {
   const { id, type } = useParams();
