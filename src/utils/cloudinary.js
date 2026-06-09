@@ -3,7 +3,7 @@
 // 표시 시점에 q_100·f_auto를 강제. 변환 정의가 페이지에 흩어져 4회 반복 재발한 구조를
 // 차단하기 위해 하나의 모듈로 통합. 호출부 시그니처는 기존과 동일(점진 마이그레이션 안전).
 
-const BASE_PARAMS = 'f_auto,q_100,fl_progressive';
+const BASE_PARAMS = 'f_auto,q_100,fl_progressive,w_2048,c_limit';
 const CLOUD_NAME = 'dti1gtd3u';
 
 // Cloudinary 전체 URL에 변환 파라미터 삽입 (반응형 너비 옵션)
@@ -20,7 +20,7 @@ export const getResponsiveCloudinaryUrl = (url, width = null) => {
 // public_id만 있을 때 직접 조립 (fl_progressive 의도적 제외 유지 — 기존 동작 보존)
 export const getCloudinaryUrlFromId = (publicId) => {
   if (!publicId) return null;
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_100/${publicId}`;
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_100,w_2048,c_limit/${publicId}`;
 };
 
 // srcset 생성
