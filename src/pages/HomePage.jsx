@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { SCROLL_RANGE, SCROLL_ROOM } from '../constants/homeScroll';
+import lukaSlogan from '../images/logo/luka-slogan.png';
 
 // Hero background images (crossfade rotation)
 import main09 from '../images/main/main09.JPG';
@@ -18,11 +19,10 @@ import main04 from '../images/main/main04.jpg';
 import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
 
-// Hero brand-text start font size (px). Reduced on mobile so "design LUKA"
-// fits within narrow viewports (it overflowed ~22px at 375px width).
-// Desktop value is unchanged from the original design.
-const HERO_FONT_DESKTOP = 46;
-const HERO_FONT_MOBILE = 32;
+// Brand slogan image (2340x540, ratio ~4.33:1) — height drives the animation.
+const HERO_IMG_H_DESKTOP = 88;  // hero-center height (px)
+const HERO_IMG_H_MOBILE = 56;   // smaller on mobile so width fits 375px
+const NAV_IMG_H = 38;           // pinned navbar height (px)
 const SPRING_CFG = { stiffness: 52, damping: 19, mass: 1 };
 
 const BG_DESKTOP = [main09, main08, main07];
@@ -52,7 +52,7 @@ const HomePage = () => {
     return () => window.removeEventListener('resize', upd);
   }, []);
 
-  const heroFont = isMobile ? HERO_FONT_MOBILE : HERO_FONT_DESKTOP;
+  const heroImgH = isMobile ? HERO_IMG_H_MOBILE : HERO_IMG_H_DESKTOP;
 
   // Notify Navbar when grid section enters view
   const handleScroll = useCallback(() => {
@@ -71,25 +71,19 @@ const HomePage = () => {
 
   const bgOpacities = [bg0Opacity, bg1Opacity, bg2Opacity];
 
-  // ─── Text animation (spring smoothed) ──────────────────────────────────
-  const rawY           = useTransform(scrollY, [0, SCROLL_RANGE], [viewportH / 2 - heroFont * 0.6, 24]);
-  const rawFontSize    = useTransform(scrollY, [0, SCROLL_RANGE], [heroFont, 12]);
-  const rawSpacing     = useTransform(scrollY, [0, SCROLL_RANGE], [12, 3]);
+  // ─── Brand slogan image animation (spring smoothed) ─────────────────────
+  // Scales from hero-center down to the navbar and pins there.
+  const rawY       = useTransform(scrollY, [0, SCROLL_RANGE], [viewportH / 2 - heroImgH / 2, (64 - NAV_IMG_H) / 2]);
+  const rawImgH    = useTransform(scrollY, [0, SCROLL_RANGE], [heroImgH, NAV_IMG_H]);
 
-  const textY          = useSpring(rawY,        SPRING_CFG);
-  const smoothFont     = useSpring(rawFontSize, SPRING_CFG);
-  const smoothSpacing  = useSpring(rawSpacing,  SPRING_CFG);
+  const brandY     = useSpring(rawY,    SPRING_CFG);
+  const smoothImgH = useSpring(rawImgH, SPRING_CFG);
 
-  const fontSize       = useTransform(smoothFont,    v => `${Math.max(11, Math.min(heroFont, v)).toFixed(1)}px`);
-  const letterSpacing  = useTransform(smoothSpacing, v => `${v.toFixed(1)}px`);
+  const imgHeight  = useTransform(smoothImgH, v => `${Math.max(NAV_IMG_H, Math.min(heroImgH, v)).toFixed(1)}px`);
 
-  // Brand wordmark stays pinned in the navbar (no fade). Its colour flips
-  // white -> dark just after the navbar turns opaque (SCROLL_ROOM) so it stays legible.
-  const textColor = useTransform(
-    scrollY,
-    [SCROLL_ROOM, SCROLL_ROOM + 60],
-    ['#ffffff', '#1a1a1a']
-  );
+  // White over the bright hero photo (invert black->white); flips to black just
+  // after the navbar turns opaque (SCROLL_ROOM) so it stays legible on white.
+  const brandFilter = useTransform(scrollY, [SCROLL_ROOM, SCROLL_ROOM + 60], ['invert(1)', 'invert(0)']);
 
   // Scroll indicator fades quickly
   const indicatorOpacity = useTransform(scrollY, [0, 100], [1, 0]);
@@ -235,13 +229,6 @@ const HomePage = () => {
                     onContextMenu={e => e.preventDefault()}
                   />
                 </div>
-                <div style={{ padding: '18px 24px 26px', borderTop: '1px solid #e5e5e5' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#bbb', textTransform: 'uppercase' }}>{item.cat}</span>
-                    <span style={{ fontSize: '10px', color: '#ddd' }}>{item.num}</span>
-                  </div>
-                  <p style={{ fontSize: '16px', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif", color: '#1a1a1a', margin: 0, fontWeight: 400 }}>{item.title}</p>
-                </div>
               </div>
             ))}
           </div>
@@ -350,19 +337,20 @@ const HomePage = () => {
         </motion.div>
       </div>
 
-      {/* Brand wordmark — pinned above the navbar (z-50) so it stays visible as a
-          centred logo once the navbar turns opaque. pointer-events:none lets the
-          wheel/trackpad scroll pass through to the container below. */}
-      <motion.div style={{
-        position: 'fixed', top: 0, left: '50%',
-        translateX: '-50%', y: textY,
-        fontSize, letterSpacing,
-        color: textColor, fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif",
-        fontWeight: 400, zIndex: 50, whiteSpace: 'nowrap',
-        userSelect: 'none', pointerEvents: 'none',
-      }}>
-        design LUKA
-      </motion.div>
+      {/* Brand slogan image — scales from hero-center and pins to the navbar (z-50).
+          pointer-events:none lets the wheel/trackpad scroll pass through below. */}
+      <motion.img
+        src={lukaSlogan}
+        alt="design LUKA — SHINE YOUR PLACE, FINE YOUR LIFE."
+        draggable={false}
+        style={{
+          position: 'fixed', top: 0, left: '50%',
+          translateX: '-50%', y: brandY,
+          height: imgHeight, width: 'auto',
+          filter: brandFilter,
+          zIndex: 50, userSelect: 'none', pointerEvents: 'none',
+        }}
+      />
     </>
   );
 };
