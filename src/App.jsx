@@ -4,6 +4,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 import RouteSEO from './components/RouteSEO';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Components
 import ScrollToTop from './components/ScrollToTop';
@@ -67,11 +68,11 @@ function App() {
             {/* Debug Route */}
             <Route path="/debug" element={<MobileDebug />} />
             
-            {/* Admin Routes */}
+            {/* Admin Routes — /admin/login is public, the rest require auth (P-14) */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/portfolio" element={<PortfolioManagement />} />
-            <Route path="/admin/insight" element={<InsightManagement />} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/portfolio" element={<ProtectedRoute><PortfolioManagement /></ProtectedRoute>} />
+            <Route path="/admin/insight" element={<ProtectedRoute><InsightManagement /></ProtectedRoute>} />
             
             {/* Catch all route - 잘못된 경로는 홈으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" replace />} />
