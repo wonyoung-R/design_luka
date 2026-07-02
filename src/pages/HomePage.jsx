@@ -12,9 +12,9 @@ import main07 from '../images/main/main07.jpg';
 import mobile01 from '../images/main/mobile/1.jpg';
 
 // Grid section images
-import main01 from '../images/main/main01.jpg';
-import main02 from '../images/main/main02.jpg';
-import main03 from '../images/main/main03.jpg';
+import main01Gangdong from '../images/main/main01-gangdong.jpg'; // 실제 '래미안 강동팰리스 36py' 프로젝트 사진 (admin 지정 썸네일)
+import main02 from '../images/main/main02-jamsil.jpg'; // 실제 '잠실 트리지움 33py' 프로젝트 사진 (admin 지정 썸네일)
+import main03 from '../images/main/main03-gwanak.jpg'; // 실제 '관악 드림타운 33py' 프로젝트 사진 (admin 지정 썸네일)
 import main04 from '../images/main/main04.jpg';
 import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
@@ -168,7 +168,7 @@ const HomePage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr' }}>
             <div style={{ position: 'relative', overflow: 'hidden', minHeight: isMobile ? '300px' : '520px' }}>
               <motion.img
-                src={main01} alt="주거공간"
+                src={main01Gangdong} alt="래미안 강동팰리스 36py"
                 whileHover={{ scale: 1.04 }}
                 transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -180,7 +180,7 @@ const HomePage = () => {
                 padding: '10px 16px',
               }}>
                 <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#999', display: 'block', textTransform: 'uppercase', marginBottom: '3px' }}>Residential</span>
-                <span style={{ fontSize: '13px', color: '#111', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif" }}>강동 래미안 36PY</span>
+                <span style={{ fontSize: '13px', color: '#111', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif" }}>래미안 강동팰리스 36py</span>
               </div>
             </div>
 
@@ -212,8 +212,8 @@ const HomePage = () => {
           {/* ── 3-column grid ── */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', borderTop: '1px solid #e5e5e5' }}>
             {[
-              { img: main02, cat: 'Residential', title: '한강변 아파트 42PY', num: '02' },
-              { img: main03, cat: 'Residential', title: '성수동 복합주거 55PY', num: '03' },
+              { img: main02, cat: 'Residential', title: '잠실 트리지움 33py', num: '02' },
+              { img: main03, cat: 'Residential', title: '관악 드림타운 33py', num: '03' },
               { img: main04, cat: 'Residential', title: '한남동 리버뷰 45PY',     num: '04' },
             ].map((item, i) => (
               <div key={i} style={{
