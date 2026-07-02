@@ -214,7 +214,7 @@ const HomePage = () => {
             {[
               { img: main02, cat: 'Residential', title: '한강변 아파트 42PY', num: '02' },
               { img: main03, cat: 'Residential', title: '성수동 복합주거 55PY', num: '03' },
-              { img: main04, cat: 'Commercial',  title: '청담동 플래그십 스토어', num: '04' },
+              { img: main04, cat: 'Residential', title: '한남동 리버뷰 45PY',     num: '04' },
             ].map((item, i) => (
               <div key={i} style={{
                 borderRight: !isMobile && i < 2 ? '1px solid #e5e5e5' : 'none',
@@ -228,6 +228,13 @@ const HomePage = () => {
                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onContextMenu={e => e.preventDefault()}
                   />
+                </div>
+                <div style={{ padding: '18px 24px 26px', borderTop: '1px solid #e5e5e5' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '9px', letterSpacing: '3px', color: '#bbb', textTransform: 'uppercase' }}>{item.cat}</span>
+                    <span style={{ fontSize: '10px', color: '#ddd' }}>{item.num}</span>
+                  </div>
+                  <p style={{ fontSize: '16px', fontFamily: "'Pretendard Variable', Pretendard, system-ui, sans-serif", color: '#1a1a1a', margin: 0, fontWeight: 400 }}>{item.title}</p>
                 </div>
               </div>
             ))}
