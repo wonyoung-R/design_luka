@@ -1,10 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.bb27de2d.css",
-    "main.js": "/static/js/main.a0d9b8b8.js",
-    "static/media/luka_design.png": "/static/media/luka_design.8ffd09b34bc8ed19d693.png",
-    "static/media/luka_cusotmize.png": "/static/media/luka_cusotmize.529c3c7125e127c20203.png",
-    "static/media/luka_stability.png": "/static/media/luka_stability.05e801b0c7268e3a7dd5.png",
+    "main.css": "/static/css/main.6bf1d18c.css",
+    "main.js": "/static/js/main.c308060e.js",
     "static/media/commercia_btn.jpg": "/static/media/commercia_btn.efa1130f6a7dff4cb945.jpg",
     "static/media/regidential_btn.jpg": "/static/media/regidential_btn.30148d91d1f7fea8e708.jpg",
     "static/media/main06.jpg": "/static/media/main06.bb7b45220229684c088c.jpg",
@@ -21,11 +18,11 @@
     "static/media/main02-jamsil.jpg": "/static/media/main02-jamsil.0f68d442c4dd0137bcf0.jpg",
     "static/media/main03-gwanak.jpg": "/static/media/main03-gwanak.a2238aeeee7f1acce9e2.jpg",
     "index.html": "/index.html",
-    "main.bb27de2d.css.map": "/static/css/main.bb27de2d.css.map",
-    "main.a0d9b8b8.js.map": "/static/js/main.a0d9b8b8.js.map"
+    "main.6bf1d18c.css.map": "/static/css/main.6bf1d18c.css.map",
+    "main.c308060e.js.map": "/static/js/main.c308060e.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb27de2d.css",
-    "static/js/main.a0d9b8b8.js"
+    "static/css/main.6bf1d18c.css",
+    "static/js/main.c308060e.js"
   ]
 }
