@@ -1,53 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/Navbar';
 
-import { motion } from 'framer-motion';
-import { database } from '../firebase/config';
+import { database, insightsRef } from '../firebase/config';
 import { ref, get } from 'firebase/database';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-
-// Firebase imports (실제 프로젝트에서 사용)
-// import { useParams, useNavigate } from 'react-router-dom';
-// import { database } from '../firebase/config';
-// import { ref, get } from 'firebase/database';
-
-// 실제 프로젝트 적용 방법:
-// 1. Router imports 주석 해제
-// 2. Firebase 연결 코드 주석 해제  
-// 3. Mock data 제거
-// 4. useParams()로 URL에서 ID 가져오기
-// 5. useNavigate()로 뒤로가기 구현
+// 마크다운 본문에서 meta description용 텍스트 추출
+const extractPlainText = (content, maxLength = 160) => {
+  if (!content) return '';
+  let text = content
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
 
 const InsightDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [insight, setInsight] = useState(null);
+  // 목록과 동일하게 최신순 정렬된 [{id, ...}] — 이전/다음 글 내비게이션용
+  const [neighbors, setNeighbors] = useState({ prev: null, next: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchInsight = async () => {
       try {
-        console.log('InsightDetailPage: 인사이트 ID로 데이터 요청:', id);
         const insightRef = ref(database, `insights/${id}`);
         const snapshot = await get(insightRef);
-        
+
         if (snapshot.exists()) {
           const rawData = snapshot.val();
           // 기존 데이터에 thumbnail 필드가 없는 경우를 위한 호환성 처리
-          const insightData = { 
-            id, 
+          const insightData = {
+            id,
             ...rawData,
             thumbnail: rawData.thumbnail || '', // thumbnail이 없으면 빈 문자열로 설정
             url: rawData.url || '' // url이 없으면 빈 문자열로 설정
           };
-          console.log('InsightDetailPage: 받은 인사이트 데이터:', insightData);
           setInsight(insightData);
         } else {
-          console.log('InsightDetailPage: 해당 ID의 인사이트를 찾을 수 없음:', id);
           setError('인사이트를 찾을 수 없습니다.');
         }
       } catch (error) {
@@ -58,7 +59,31 @@ const InsightDetailPage = () => {
       }
     };
 
+    // 전체 목록에서 현재 글의 이전/다음 id 계산 (목록 페이지와 동일한 최신순 정렬)
+    const fetchNeighbors = async () => {
+      try {
+        const snapshot = await get(insightsRef());
+        const data = snapshot.val();
+        if (!data) return;
+        const sorted = Object.entries(data)
+          .map(([key, value]) => ({ id: key, date: value.date }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+        const idx = sorted.findIndex((item) => item.id === id);
+        if (idx === -1) return;
+        setNeighbors({
+          prev: idx > 0 ? sorted[idx - 1].id : null,
+          next: idx < sorted.length - 1 ? sorted[idx + 1].id : null,
+        });
+      } catch (error) {
+        console.error('InsightDetailPage: 이전/다음 글 목록 로드 오류:', error);
+      }
+    };
+
+    setLoading(true);
+    setError(null);
+    setNeighbors({ prev: null, next: null });
     fetchInsight();
+    fetchNeighbors();
   }, [id]);
 
   const getCategoryLabel = (category) => {
@@ -306,25 +331,48 @@ const InsightDetailPage = () => {
     return null;
   }
 
-  // Dummy prev/next navigation (replace with real logic if needed)
   const handlePrev = () => {
-    // TODO: implement real prev navigation
-    window.alert('이전 글로 이동 (구현 필요)');
+    if (neighbors.prev) navigate(`/insight/${neighbors.prev}`);
   };
   const handleNext = () => {
-    // TODO: implement real next navigation
-    window.alert('다음 글로 이동 (구현 필요)');
+    if (neighbors.next) navigate(`/insight/${neighbors.next}`);
   };
+
+  const description = extractPlainText(insight.content);
 
   return (
     <div className="min-h-screen bg-white font-sans">
+      <Helmet>
+        <title>{`${insight.title} | Design LUKA`}</title>
+        {description && <meta name="description" content={description} />}
+        <link rel="canonical" href={`https://designluka.co.kr/insight/${id}`} />
+        <meta property="og:title" content={`${insight.title} | Design LUKA`} />
+        {description && <meta property="og:description" content={description} />}
+        <meta property="og:url" content={`https://designluka.co.kr/insight/${id}`} />
+        {insight.thumbnail && <meta property="og:image" content={insight.thumbnail} />}
+      </Helmet>
       {/* Navbar */}
       <Navbar />
       {/* Main Content */}
       <main className="pt-16">
         {/* Title Section */}
         <section className="py-6">
-          <div className="w-full px-4">
+          <div className="max-w-3xl mx-auto px-4">
+            <button
+              onClick={handleBackClick}
+              className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 transition-colors duration-200 mb-6 font-sans"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              인사이트 목록
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`${getCategoryColor(insight.category)} text-white text-xs px-3 py-1 rounded-full font-medium font-sans`}>
+                {getCategoryLabel(insight.category)}
+              </span>
+              <span className="text-sm text-gray-500 font-sans">{formatDate(insight.date)}</span>
+            </div>
             <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-8 leading-tight font-sans">
               {insight.title}
             </h1>
@@ -402,22 +450,34 @@ const InsightDetailPage = () => {
 
         {/* Prev/Next Navigation */}
         <section className="pb-12">
-          <div className="max-w-3xl mx-auto px-4 flex justify-between items-center">
+          <div className="max-w-3xl mx-auto px-4 flex justify-between items-center border-t border-gray-100 pt-8">
             <button
               onClick={handlePrev}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 group text-lg font-bold"
+              disabled={!neighbors.prev}
+              className={`flex items-center gap-2 transition-colors duration-200 text-base font-bold font-sans ${
+                neighbors.prev ? 'text-gray-600 hover:text-gray-900' : 'text-gray-300 cursor-default'
+              }`}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               이전 글
             </button>
             <button
+              onClick={handleBackClick}
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors duration-200 font-sans"
+            >
+              목록
+            </button>
+            <button
               onClick={handleNext}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 group text-lg font-bold"
+              disabled={!neighbors.next}
+              className={`flex items-center gap-2 transition-colors duration-200 text-base font-bold font-sans ${
+                neighbors.next ? 'text-gray-600 hover:text-gray-900' : 'text-gray-300 cursor-default'
+              }`}
             >
               다음 글
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

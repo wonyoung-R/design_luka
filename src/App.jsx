@@ -1,6 +1,7 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // # 제거하려면 이 줄 사용
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// HashRouter → BrowserRouter 전환 (2026-07): 검색엔진 색인 가능한 path형 URL.
+// gh-pages 딥링크는 public/404.html(spa-github-pages) + scripts/postbuild.js(라우트별 html 사본)가 처리.
 import { AuthProvider } from './contexts/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 import RouteSEO from './components/RouteSEO';

@@ -12,16 +12,16 @@
     
     <!-- SEO Meta Tags -->
     <title>Design LUKA | 서울 프리미엄 인테리어 디자인 전문업체 | 강남·서초·송파</title>
-    <meta name="description" content="'빛'을 의미하는 Design LUKA는 라이프스타일에 맞춘 맞춤형 인테리어 디자인으로 세련된 공간을 창조합니다. 서울 전역 서비스 | 강남구·서초구·송파구 전문 | 논현점·반포점 운영" />
+    <meta data-rh="true" name="description" content="'빛'을 의미하는 Design LUKA는 라이프스타일에 맞춘 맞춤형 인테리어 디자인으로 세련된 공간을 창조합니다. 서울 전역 서비스 | 강남구·서초구·송파구 전문 | 논현점·반포점 운영" />
     <meta name="keywords" content="인테리어디자인, 서울인테리어, 강남인테리어, 서초인테리어, 송파인테리어, 맞춤형디자인, 프리미엄인테리어, 리모델링, Design LUKA, 디자인루카" />
     <meta name="author" content="Design LUKA" />
     <meta name="robots" content="index, follow" />
     
     <!-- Open Graph Meta Tags (Facebook, Instagram) -->
-    <meta property="og:title" content="Design LUKA | 인테리어 디자인 전문업체 | 강남·서초·송파" />
-    <meta property="og:description" content="'빛'을 의미하는 Design LUKA는 라이프스타일에 맞춘 맞춤형 인테리어 디자인으로 세련된 공간을 창조합니다. 서울 전역 서비스 | 강남구·서초구·송파구 전문 | 논현점·반포점 운영" />
+    <meta data-rh="true" property="og:title" content="Design LUKA | 인테리어 디자인 전문업체 | 강남·서초·송파" />
+    <meta data-rh="true" property="og:description" content="'빛'을 의미하는 Design LUKA는 라이프스타일에 맞춘 맞춤형 인테리어 디자인으로 세련된 공간을 창조합니다. 서울 전역 서비스 | 강남구·서초구·송파구 전문 | 논현점·반포점 운영" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://designluka.co.kr" />
+    <meta data-rh="true" property="og:url" content="https://designluka.co.kr" />
     <meta property="og:image" content="https://designluka.co.kr/og-image-new.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -72,7 +72,7 @@
             return s.replace(/~and~/g, '&')
           }).join('?');
           window.history.replaceState(null, null,
-              l.pathname + decoded + l.hash
+              l.pathname.slice(0, -1) + decoded + l.hash
           );
         }
       }(window.location))

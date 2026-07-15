@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { motion, LayoutGroup } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { database } from '../firebase/config';
-import { ref, onValue } from 'firebase/database';
+import { onValue } from 'firebase/database';
 import { insightsRef } from '../firebase/config';
 import { addTestInsights } from '../utils/testData';
-import InsightDetailModal from './InsightDetailModal';
 import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
 
 
@@ -15,14 +14,10 @@ import lukaSlogan from '../images/aboutluka/LUKA slogan.png';
 //import { onValue } from 'firebase/database';
 
 export default function InsightPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedInsightIndex, setSelectedInsightIndex] = useState(null);
-  // Toast notification state
-  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
 
   // 안전한 날짜 처리 함수
   const formatDate = (dateValue) => {
@@ -423,47 +418,6 @@ export default function InsightPage() {
     ? insights 
     : insights.filter(insight => insight.category === activeTab);
 
-  // Modal open/close handlers
-  const openModal = (index) => {
-    setSelectedInsightIndex(index);
-    setIsModalOpen(true);
-  };
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedInsightIndex(null);
-  };
-  // Toast notification function
-  const showToast = (message, type = 'info') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 2000);
-  };
-
-  // Prev/Next navigation
-  const handlePrev = () => {
-    if (selectedInsightIndex > 0) {
-      setSelectedInsightIndex(selectedInsightIndex - 1);
-    } else {
-      showToast('첫 번째 글입니다.', 'info');
-    }
-  };
-  const handleNext = () => {
-    if (selectedInsightIndex < filteredInsights.length - 1) {
-      setSelectedInsightIndex(selectedInsightIndex + 1);
-    } else {
-      showToast('마지막 글입니다.', 'info');
-    }
-  };
-
-  // ESC/뒤로가기 핸들링
-  useEffect(() => {
-    if (!isModalOpen) return;
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') closeModal();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen]);
-
   // Masonry layout component
   const MasonryGrid = ({ insights }) => {
     return (
@@ -477,7 +431,7 @@ export default function InsightPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             whileHover={{ y: -4 }}
-            onClick={() => openModal(index)}
+            onClick={() => navigate(`/insight/${insight.id}`)}
           >
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Thumbnail */}
@@ -723,33 +677,6 @@ export default function InsightPage() {
         </div>
       </footer>
 
-      {/* Modal */}
-      {isModalOpen && selectedInsightIndex !== null && (
-        <InsightDetailModal
-          insight={filteredInsights[selectedInsightIndex]}
-          onClose={closeModal}
-          onPrev={handlePrev}
-          onNext={handleNext}
-        />
-      )}
-
-      {/* Toast Notification */}
-      {toast.show && (
-        <motion.div
-          initial={{ opacity: 0, y: 50, scale: 0.3 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 50, scale: 0.3 }}
-          className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full shadow-lg font-medium text-sm font-sans ${
-            toast.type === 'info' 
-              ? 'bg-gray-900 text-white' 
-              : toast.type === 'success' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-red-500 text-white'
-          }`}
-        >
-          {toast.message}
-        </motion.div>
-      )}
     </div>
   );
 }

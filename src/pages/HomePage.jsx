@@ -15,7 +15,7 @@ import mobile01 from '../images/main/mobile/1.jpg';
 import main01Gangdong from '../images/main/main01-gangdong.jpg'; // 실제 '래미안 강동팰리스 36py' 프로젝트 사진 (admin 지정 썸네일)
 import main02 from '../images/main/main02-jamsil.jpg'; // 실제 '잠실 트리지움 33py' 프로젝트 사진 (admin 지정 썸네일)
 import main03 from '../images/main/main03-gwanak.jpg'; // 실제 '관악 드림타운 33py' 프로젝트 사진 (admin 지정 썸네일)
-import main04 from '../images/main/main04.jpg';
+import main04Banpo from '../images/main/main04-banpojai.jpg'; // 실제 '반포 자이 50py' 프로젝트 사진 (admin 지정 썸네일)
 import main05 from '../images/main/main05.jpg';
 import main06 from '../images/main/main06.jpg';
 
@@ -214,7 +214,7 @@ const HomePage = () => {
             {[
               { img: main02, cat: 'Residential', title: '잠실 트리지움 33py', num: '02' },
               { img: main03, cat: 'Residential', title: '관악 드림타운 33py', num: '03' },
-              { img: main04, cat: 'Residential', title: '한남동 리버뷰 45PY',     num: '04' },
+              { img: main04Banpo, cat: 'Residential', title: '반포 자이 50py', num: '04' },
             ].map((item, i) => (
               <div key={i} style={{
                 borderRight: !isMobile && i < 2 ? '1px solid #e5e5e5' : 'none',
