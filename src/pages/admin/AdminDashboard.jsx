@@ -192,6 +192,25 @@ const AdminDashboard = () => {
               </div>
             </motion.div>
 
+            {/* About Content Management Card */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="bg-white overflow-hidden shadow rounded-lg"
+            >
+              <div className="p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">About 콘텐츠 관리</h2>
+                <p className="text-gray-500 mb-4">
+                  About 페이지(메인 비주얼·LUKA is·4P·PARTNER)의 문구와 이미지를 수정할 수 있습니다.
+                </p>
+                <button
+                  onClick={() => navigate('/admin/content')}
+                  className="w-full px-4 py-2 bg-[#2C3E50] text-white rounded-md hover:bg-[#34495E] transition-colors"
+                >
+                  About 콘텐츠 관리하기
+                </button>
+              </div>
+            </motion.div>
+
             {/* Q&A Sheet Card */}
             <motion.div
               whileHover={{ scale: 1.02 }}

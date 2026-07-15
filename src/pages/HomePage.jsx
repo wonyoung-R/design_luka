@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import AboutSections from '../components/about/AboutSections';
 import { SCROLL_RANGE, SCROLL_ROOM } from '../constants/homeScroll';
 import lukaSlogan from '../images/logo/luka-slogan.png';
 
@@ -300,6 +301,11 @@ const HomePage = () => {
                 "디테일이 완성도를<br />만들고, 완성도가<br />공간을 기억하게 합니다."
               </p>
             </div>
+          </div>
+
+          {/* ── ABOUT LUKA — 메인 콘텐츠에 이어지는 어바웃 섹션 (C안: /about과 공유) ── */}
+          <div id="about">
+            <AboutSections variant="home" />
           </div>
 
           {/* ── CTA footer ── */}

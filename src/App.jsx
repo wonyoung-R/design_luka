@@ -32,6 +32,7 @@ import BizConsultingPage from './pages/business/BizConsultingPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import PortfolioManagement from './pages/admin/PortfolioManagement';
 import InsightManagement from './pages/admin/InsightManagement';
+import SiteContentManagement from './pages/admin/SiteContentManagement';
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/portfolio" element={<ProtectedRoute><PortfolioManagement /></ProtectedRoute>} />
             <Route path="/admin/insight" element={<ProtectedRoute><InsightManagement /></ProtectedRoute>} />
+            <Route path="/admin/content" element={<ProtectedRoute><SiteContentManagement /></ProtectedRoute>} />
             
             {/* Catch all route - 잘못된 경로는 홈으로 리다이렉트 */}
             <Route path="*" element={<Navigate to="/" replace />} />
