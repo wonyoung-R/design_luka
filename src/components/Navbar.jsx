@@ -36,6 +36,9 @@ export default function Navbar() {
   const location = useLocation();
 
   const isHomePage = location.pathname === '/';
+  // /about은 페이지 자체의 핀 로고(스크롤 시 navbar 중앙 도킹)가 브랜드를 대체 — 좌측 로고 숨김
+  const isAboutPage = location.pathname === '/about';
+  const hideNavLogo = isHomePage || isAboutPage;
 
   // Listen to internal scroll from HomePage (bypasses window scroll which is always 0)
   useEffect(() => {
@@ -81,12 +84,12 @@ export default function Navbar() {
         <>
           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
-              {/* Logo - Left side (hidden on homepage; animated brand text takes over) */}
+              {/* Logo - Left side (hidden on home/about; animated brand image takes over) */}
               <motion.div
                 className="flex-shrink-0 flex items-center"
-                style={{ opacity: isHomePage ? 0 : 1, pointerEvents: isHomePage ? 'none' : 'auto' }}
-                whileHover={isHomePage ? {} : { scale: 1.05 }}
-                whileTap={isHomePage ? {} : { scale: 0.95 }}
+                style={{ opacity: hideNavLogo ? 0 : 1, pointerEvents: hideNavLogo ? 'none' : 'auto' }}
+                whileHover={hideNavLogo ? {} : { scale: 1.05 }}
+                whileTap={hideNavLogo ? {} : { scale: 0.95 }}
               >
                 <Link to="/" className="flex items-center">
                   <img

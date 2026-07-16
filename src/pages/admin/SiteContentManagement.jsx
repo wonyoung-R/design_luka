@@ -178,20 +178,7 @@ const SiteContentManagement = () => {
           </div>
         </section>
 
-        {/* PARTNER */}
-        <section className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-2">4. PARTNER</h2>
-          <p className="text-xs text-amber-600 mb-4">
-            ※ 리퍼럴 제도 문구는 실제 운영 조건·지급 기준 확정 후 반드시 갱신해주세요.
-          </p>
-          {content.partner.map((item, i) => (
-            <div key={i} className="border border-gray-200 rounded-md p-4 mb-4">
-              <p className="text-sm font-bold text-gray-900 mb-3">{String(i + 1).padStart(2, '0')}. {item.name} | {item.korName}</p>
-              <Field label="부제" rows={1} value={item.subtitle} onChange={(v) => patch((c) => { c.partner[i].subtitle = v; return c; })} />
-              <Field label="본문 (줄바꿈 가능)" rows={3} value={item.body} onChange={(v) => patch((c) => { c.partner[i].body = v; return c; })} />
-            </div>
-          ))}
-        </section>
+        {/* PARTNER(Fair Partnership) 섹션은 민감정보 비공개 방침으로 페이지에서 삭제됨 (2026-07-16) */}
       </main>
     </div>
   );

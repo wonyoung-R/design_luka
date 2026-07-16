@@ -103,8 +103,9 @@ export default function ContactPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <motion.h1 
-                className="text-4xl md:text-5xl font-black text-gray-600 mb-2 md:mb-4 tracking-tight font-sans"
+              {/* 페이지 제목 공통 기준: text-2xl md:text-3xl font-normal tracking-wide (Portfolio/Insight와 통일) */}
+              <motion.h1
+                className="text-2xl md:text-3xl font-normal text-gray-900 mb-2 md:mb-4 tracking-wide font-sans"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}

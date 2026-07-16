@@ -832,7 +832,8 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 md:mb-4 tracking-tight font-sans">Portfolio</h1>
+                  {/* 페이지 제목 공통 기준: text-2xl md:text-3xl font-normal tracking-wide (Insight/Contact와 통일) */}
+                  <h1 className="text-2xl md:text-3xl font-normal text-gray-900 mb-2 md:mb-4 tracking-wide font-sans">Portfolio</h1>
                 </motion.div>
               </div>
             </section>

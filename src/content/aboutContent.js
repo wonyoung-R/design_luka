@@ -40,34 +40,15 @@ export const DEFAULT_ABOUT_CONTENT = {
       image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1767919479/ejqajbhi1k4ufdaehgdz.jpg',
     },
     {
+      // 제도 상세는 비공개 방침(2026-07-16 클라이언트) — 제도명 노출 없는 중립 문구 사용
       name: 'Partner',
       subtitle: 'FAIR PARTNERSHIP',
-      desc: '오픈북, 디퍼, 리퍼럴 제도를 활용한\n상생 파트너십',
+      desc: '고객·협력사와 함께하는\n상생 파트너십',
       // 92도씨 로스터리 카페 — 상업 파트너 프로젝트
       image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1775700001/mhvp8svsmgbeuy9kqnaq.jpg',
     },
   ],
-  partner: [
-    {
-      name: 'Open-book',
-      korName: '오픈북 제도',
-      subtitle: '투명한 예산 운영',
-      body: '항목별 원가 공개: 자재비, 인건비, 경비 등 모든 자재 및 공정의 원가를 100% 공개합니다.\n증빙 제공: 세금계산서, 견적서(또는 내역서)를 숨김없이 공유해 드립니다.',
-    },
-    {
-      name: 'Defer',
-      korName: '디퍼 제도',
-      subtitle: '고객 초기 부담 완화',
-      body: '착공~완공 구간에서는 공사 원가(자재비, 인건비, 경비 등 실비)만 먼저 정산하고, 기업 이윤과 보험료 등의 잔여분은 6개월간 분할 납부하는 방식입니다.',
-    },
-    {
-      // ⚠️ 실제 운영 조건·지급 기준 확정본 반영 전 임시 문구(시안 기준) — 사장 확정 후 CMS에서 수정
-      name: 'Referral',
-      korName: '리퍼럴 제도',
-      subtitle: '지인 소개 감사제',
-      body: '디퍼 기간 중 소개 계약 성사 시 분납금에서 50만 원 차감 또는 동등 가치의 사은품을 제공합니다.\n디퍼 종료 후 소개 계약 성사 시 현금 50만 원 또는 동등 가치의 사은품을 제공합니다.',
-    },
-  ],
+  // PARTNER(Fair Partnership) 섹션은 민감정보 비공개 방침으로 삭제됨 (2026-07-16)
 };
 
 // RTDB 부분 저장(일부 필드만 수정)에도 안전하도록 기본값 위에 섹션·항목 단위로 병합
@@ -78,6 +59,5 @@ export function mergeAboutContent(remote) {
     hero: { ...d.hero, ...(remote.hero || {}) },
     lukaIs: { ...d.lukaIs, ...(remote.lukaIs || {}) },
     fourP: d.fourP.map((card, i) => ({ ...card, ...((remote.fourP && remote.fourP[i]) || {}) })),
-    partner: d.partner.map((item, i) => ({ ...item, ...((remote.partner && remote.partner[i]) || {}) })),
   };
 }

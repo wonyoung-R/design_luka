@@ -13,6 +13,7 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
     date: editingInsight?.date || formatCurrentDateTime(),
     url: editingInsight?.url || '',
     thumbnail: editingInsight?.thumbnail || '',
+    thumbFocus: editingInsight?.thumbFocus || 'center',
     content: editingInsight?.content || ''
   });
 
@@ -25,6 +26,7 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
         date: editingInsight.date || formatCurrentDateTime(),
         url: editingInsight.url || '',
         thumbnail: editingInsight.thumbnail || '',
+        thumbFocus: editingInsight.thumbFocus || 'center',
         content: editingInsight.content || ''
       });
     }
@@ -357,6 +359,7 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
         date: normalizedDate, // 날짜 형식 정규화
         url: formData.url.trim(),
         thumbnail: formData.thumbnail.trim(),
+        thumbFocus: formData.thumbFocus || 'center', // 목록 썸네일 노출 위치
         content: formData.content.trim(),
         updatedAt: new Date().toISOString()
       };
@@ -496,6 +499,25 @@ const InsightEditor = ({ onClose, onSave, editingInsight }) => {
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   헤더에 표시될 이미지 URL을 입력하세요. 비워두면 기본 이미지가 사용됩니다.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">썸네일 노출 위치</label>
+                <select
+                  name="thumbFocus"
+                  value={formData.thumbFocus}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="center">가운데 (기본)</option>
+                  <option value="top">위쪽</option>
+                  <option value="bottom">아래쪽</option>
+                  <option value="left">왼쪽</option>
+                  <option value="right">오른쪽</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  목록 썸네일(4:3)에서 이미지가 잘릴 때 어느 부분을 보여줄지 선택합니다.
                 </p>
               </div>
             </div>

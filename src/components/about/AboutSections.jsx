@@ -4,13 +4,14 @@ import useAboutContent from '../../hooks/useAboutContent';
 import { getResponsiveCloudinaryUrl } from '../../utils/cloudinary';
 
 /*
- * ABOUT LUKA 4섹션 — 홈 하단(variant="home")과 /about(variant="page") 양쪽에서 렌더 (C안).
- * 모션은 Monolith Studio 레퍼런스 분석 결과를 차분하게 이식:
- *  - InkText  : 텍스트가 연회색으로 자리 잡은 뒤 순차적으로 검정으로 '점등' (레퍼런스 GIF의 핵심 패턴.
- *               이동 없는 opacity 전환이라 모바일에서도 버벅임 없음)
- *  - ImageReveal : 이미지 fade + 미세 scale(1.05→1) 정착
- *  - GrowLine : 얇은 가로선이 왼쪽에서 자라남 (PARTNER 구분선)
- * 공통: whileInView + once, 0.6~1.2s, 과한 이동 없음 — "차분하고 자연스럽게" 요구 반영.
+ * ABOUT LUKA 섹션 — 홈 하단(variant="home")과 /about(variant="page") 양쪽에서 렌더 (C안).
+ * 모션:
+ *  - InkText  : 텍스트 연회색 → 검정 순차 점등 (Monolith Studio 레퍼런스. opacity 전환만이라 모바일 부담 0)
+ *  - ImageReveal : 이미지 fade + 미세 scale 정착 (히어로·LUKA is)
+ *  - CurtainReveal : 4P 카드 — 마스크 안에서 이미지가 좌/우에서 와이프되며 등장
+ *                    (Vimeo spacelong2 레퍼런스, clip-path+transform만 사용해 GPU 가속)
+ *  - GrowLine : 얇은 가로선이 왼쪽에서 자라남
+ * 2026-07-16 2차 피드백 반영: LUKA is 풀와이드 / 4P 톱 정렬+카드별 비율 상이 / PARTNER 섹션 삭제(민감정보).
  */
 
 const EASE = [0.22, 0.61, 0.36, 1];
@@ -64,6 +65,27 @@ const ImageReveal = ({ src, alt, delay = 0, className = '', imgClassName = '' })
   </motion.div>
 );
 
+// 4P 카드 — 좌/우에서 커튼처럼 와이프되며 등장.
+// 애니메이션은 clip-path 단일 속성만 사용(내부 이미지 이동·스케일 제거) —
+// 요소 1개·속성 1개라 합성 단계에서만 처리되어 모바일에서도 버벅임이 없다.
+const CurtainReveal = ({ src, alt, delay = 0, fromRight = false, className = '' }) => (
+  <motion.div
+    className={`overflow-hidden ${className}`}
+    initial={{ clipPath: fromRight ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' }}
+    whileInView={{ clipPath: 'inset(0 0 0 0)' }}
+    viewport={{ once: true, margin: '-10% 0px' }}
+    transition={{ duration: 1.8, delay, ease: [0.25, 0.1, 0.25, 1] }}
+  >
+    <img
+      src={getResponsiveCloudinaryUrl(src)}
+      alt={alt}
+      loading="lazy"
+      className="w-full h-full object-cover"
+      onContextMenu={(e) => e.preventDefault()}
+    />
+  </motion.div>
+);
+
 const GrowLine = ({ delay = 0 }) => (
   <motion.div
     className="h-px bg-neutral-300 origin-left"
@@ -76,18 +98,18 @@ const GrowLine = ({ delay = 0 }) => (
 
 // 섹션 제목 공통 타이포 — "LUKA is" / "LUKA Way : 4P" (볼드+라이트 위계, 시안 준수)
 const SectionTitle = ({ bold, light }) => (
-  <h2 className="text-3xl md:text-4xl lg:text-[44px] leading-none text-neutral-900 font-sans">
+  <h2 className="font-sans text-3xl md:text-4xl lg:text-[44px] leading-none text-neutral-900">
     <span className="font-bold">{bold}</span>
     <span className="font-light"> {light}</span>
   </h2>
 );
 
+// 4P 카드별 이미지 비율 — 톱 라인은 정렬, 세로 높이는 서로 다르게 (2차 피드백)
+const CARD_ASPECTS = ['aspect-[2/3]', 'aspect-[4/5]', 'aspect-[3/4]', 'aspect-square'];
+
 export default function AboutSections({ variant = 'page' }) {
   const content = useAboutContent();
-  const { hero, lukaIs, fourP, partner } = content;
-
-  // 4P 카드 상하 스태거 오프셋 (PC만, 시안 배치) — 모바일에서는 제거
-  const cardOffsets = ['lg:mt-0', 'lg:mt-12', 'lg:mt-24', 'lg:mt-36'];
+  const { hero, lukaIs, fourP } = content;
 
   return (
     <div className="bg-white font-sans" style={{ wordBreak: 'keep-all' }}>
@@ -135,7 +157,7 @@ export default function AboutSections({ variant = 'page' }) {
         </div>
       </section>
 
-      {/* ── S-B. LUKA is ──────────────────────────────────────── */}
+      {/* ── S-B. LUKA is — 화면 꽉 차게 (2차 피드백: 좌편중 해소) ── */}
       <section className="px-6 lg:px-16 py-16 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
           <div className="lg:col-span-4">
@@ -143,20 +165,23 @@ export default function AboutSections({ variant = 'page' }) {
               <SectionTitle bold="LUKA" light="is" />
             </InkText>
           </div>
-          <div className="lg:col-span-8 lg:max-w-2xl">
-            <InkText delay={0.15} className="text-sm md:text-base leading-[1.9] text-neutral-600">
+          <div className="lg:col-span-8">
+            <InkText delay={0.15} className="text-sm md:text-base lg:text-[17px] leading-[1.9] text-neutral-600">
               {lukaIs.body1}
             </InkText>
-            <InkText delay={0.3} className="text-sm md:text-base leading-[1.9] text-neutral-600 mt-6">
+            <InkText delay={0.3} className="text-sm md:text-base lg:text-[17px] leading-[1.9] text-neutral-600 mt-6">
               {lukaIs.body2}
             </InkText>
-            <ImageReveal
-              src={lukaIs.image}
-              alt="design LUKA 상업공간 프로젝트"
-              delay={0.2}
-              className="mt-12 aspect-[16/10]"
-            />
           </div>
+        </div>
+        {/* 이미지는 메인 비주얼과 같은 풀블리드 스케일 */}
+        <div className="-mx-6 lg:-mx-16 mt-12 lg:mt-16">
+          <ImageReveal
+            src={lukaIs.image}
+            alt="design LUKA 상업공간 프로젝트"
+            delay={0.15}
+            className="aspect-[16/9] md:aspect-[21/9]"
+          />
         </div>
       </section>
 
@@ -164,64 +189,33 @@ export default function AboutSections({ variant = 'page' }) {
         <GrowLine />
       </div>
 
-      {/* ── S-C. LUKA Way : 4P ───────────────────────────────── */}
+      {/* ── S-C. LUKA Way : 4P — 톱 정렬 + 카드별 높이 상이 + 커튼 리빌 ── */}
       <section className="px-6 lg:px-16 py-16 lg:py-28">
         <InkText>
           <SectionTitle bold="LUKA" light="Way : 4P" />
         </InkText>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-12 lg:mt-16 lg:pb-36">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-12 lg:mt-16 items-start">
           {fourP.map((card, i) => (
-            <FadeUp key={card.name} delay={i * 0.15} className={cardOffsets[i]}>
-              <ImageReveal src={card.image} alt={`${card.name} — ${card.subtitle}`} delay={i * 0.15} className="aspect-[4/5]" />
-              <div className="mt-5">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-sans text-base font-bold text-neutral-900">{card.name}</h3>
-                  <span className="text-[10px] text-neutral-300">{String(i + 1).padStart(2, '0')}</span>
-                </div>
-                <p className="text-[10px] tracking-[2.5px] text-neutral-400 uppercase mt-1">{card.subtitle}</p>
-                <p className="text-[13px] leading-relaxed text-neutral-500 mt-2 whitespace-pre-line">{card.desc}</p>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
-      </section>
-
-      <div className="px-6 lg:px-16">
-        <GrowLine />
-      </div>
-
-      {/* ── S-D. PARTNER ─────────────────────────────────────── */}
-      <section className="px-6 lg:px-16 py-16 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
-          <div className="lg:col-span-4">
-            <div className="lg:sticky lg:top-24">
-              <InkText>
-                <h2 className="font-sans text-3xl md:text-4xl lg:text-[44px] leading-none font-normal tracking-wide text-neutral-900">
-                  PARTNER
-                </h2>
-                <p className="text-sm text-neutral-400 mt-3">Fair Partnership</p>
-              </InkText>
-            </div>
-          </div>
-          <div className="lg:col-span-8 lg:max-w-2xl">
-            {partner.map((item, i) => (
-              <div key={item.name} className={i === 0 ? '' : 'mt-12'}>
-                <GrowLine delay={i * 0.12} />
-                <InkText delay={i * 0.15} className="pt-6">
-                  <div className="flex items-baseline gap-3">
+            <div key={card.name}>
+              <CurtainReveal
+                src={card.image}
+                alt={`${card.name} — ${card.subtitle}`}
+                delay={i * 0.2}
+                fromRight={i % 2 === 1}
+                className={CARD_ASPECTS[i % CARD_ASPECTS.length]}
+              />
+              <FadeUp delay={i * 0.2 + 0.45}>
+                <div className="mt-5">
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="font-sans text-base font-bold text-neutral-900">{card.name}</h3>
                     <span className="text-[10px] text-neutral-300">{String(i + 1).padStart(2, '0')}</span>
-                    <h3 className="font-sans text-base font-bold text-neutral-900">
-                      {item.name} <span className="font-normal text-neutral-400">|</span> {item.korName}
-                    </h3>
                   </div>
-                  <p className="text-sm font-bold text-neutral-700 mt-3">{item.subtitle}</p>
-                  <p className="text-[13px] md:text-sm leading-[1.9] text-neutral-500 mt-3 whitespace-pre-line">
-                    {item.body}
-                  </p>
-                </InkText>
-              </div>
-            ))}
-          </div>
+                  <p className="text-[10px] tracking-[2.5px] text-neutral-400 uppercase mt-1">{card.subtitle}</p>
+                  <p className="text-[13px] leading-relaxed text-neutral-500 mt-2 whitespace-pre-line">{card.desc}</p>
+                </div>
+              </FadeUp>
+            </div>
+          ))}
         </div>
       </section>
     </div>

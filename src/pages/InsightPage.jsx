@@ -194,21 +194,6 @@ export default function InsightPage() {
     }
   };
 
-  // 랜덤 aspect ratio 생성 (Firebase 데이터에 aspectRatio가 없을 때 사용)
-  const getRandomAspectRatio = () => {
-    const ratios = [
-      'aspect-[3/4]',   // 세로형
-      'aspect-[4/3]',   // 가로형  
-      'aspect-[1/1]',   // 정사각형
-      'aspect-[4/5]',   // 약간 세로형
-      'aspect-[5/4]',   // 약간 가로형
-      'aspect-[2/3]',   // 세로형
-      'aspect-[3/2]',   // 가로형
-      'aspect-[16/10]', // 와이드
-    ];
-    return ratios[Math.floor(Math.random() * ratios.length)];
-  };
-
   // content에서 첫 번째 이미지 URL 추출 함수
   const extractFirstImageUrl = (content) => {
     if (!content) return null;
@@ -327,8 +312,8 @@ export default function InsightPage() {
             date: insight.date || new Date().toISOString().split('T')[0],
             thumbnail: insight.thumbnail || '', // thumbnail이 없으면 빈 문자열로 설정
             url: insight.url || '', // url이 없으면 빈 문자열로 설정
-            // aspectRatio는 동적으로 생성하거나 데이터에 포함
-            aspectRatio: insight.aspectRatio || getRandomAspectRatio()
+            // 썸네일 노출 위치(글별 설정, admin 편집기) — 기본 중앙
+            thumbFocus: insight.thumbFocus || 'center'
           }));
           // 날짜 순으로 정렬 (최신순)
           setInsights(insightsList.sort((a, b) => new Date(b.date) - new Date(a.date)));
@@ -418,28 +403,30 @@ export default function InsightPage() {
     ? insights 
     : insights.filter(insight => insight.category === activeTab);
 
-  // Masonry layout component
+  // 카드 그리드 — 썸네일 비율 4:3 통일(랜덤 비율 제거, 2026-07-16 클라이언트 피드백),
+  // 노출 위치는 글별 thumbFocus(objectPosition)로 조정
   const MasonryGrid = ({ insights }) => {
     return (
-      <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {insights.map((insight, index) => (
           <motion.article
             key={insight.id}
-            className="break-inside-avoid mb-6 group cursor-pointer"
+            className="group cursor-pointer"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
             whileHover={{ y: -4 }}
             onClick={() => navigate(`/insight/${insight.id}`)}
           >
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
-              {/* Thumbnail */}
-              <div className={`relative overflow-hidden ${insight.aspectRatio || 'aspect-[4/5]'}`}>
+              {/* Thumbnail — 4:3 통일 */}
+              <div className="relative overflow-hidden aspect-[4/3]">
                 <img
                   src={getThumbnailUrl(insight, index)}
                   alt={insight.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  style={{ objectPosition: insight.thumbFocus || 'center' }}
                   onError={(e) => handleImageError(e, insight, index)}
                   loading="lazy"
                 />
@@ -520,13 +507,10 @@ export default function InsightPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <h1 className="text-6xl md:text-7xl font-black text-gray-900 mb-6 tracking-tight">
-                  Design
-                  <span className="block text-4xl md:text-5xl font-light text-gray-600 mt-2">
-                    Insights
-                  </span>
+                <h1 className="text-2xl md:text-3xl font-normal text-gray-900 mb-6 tracking-wide font-sans">
+                  Insight and Contents
                 </h1>
-                <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto">
+                <p className="text-base text-gray-500 font-light max-w-2xl mx-auto">
                   영감을 주는 공간 이야기
                 </p>
               </motion.div>
@@ -577,7 +561,8 @@ export default function InsightPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-sans">Insight and Contents</h2>
+              {/* 페이지 제목 공통 기준: text-2xl md:text-3xl font-normal tracking-wide (Portfolio/Contact와 통일) */}
+              <h2 className="text-2xl md:text-3xl font-normal text-gray-900 mb-4 tracking-wide font-sans">Insight and Contents</h2>
             </motion.div>
           </div>
           <section className="py-8"></section>
