@@ -23,15 +23,15 @@ export const DEFAULT_ABOUT_CONTENT = {
       name: 'Personalize',
       subtitle: 'CUSTOMIZE',
       desc: '고객 맞춤형 설계\n생활 방식과 브랜드에 기반한 디자인',
-      // 패브릭·자재 스와치를 고르는 손 (Unsplash photo-1633655442356-ab2dbc69c772)
-      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784211594/zgxgl2pmtuerpjzsaprk.jpg',
+      // 클라이언트 제공 personalise.png 1080x1350 (2026-07-22 3차 피드백)
+      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784646196/cgwln6vsyliuwhkl57vr.png',
     },
     {
       name: 'Polish',
       subtitle: 'DESIGN EXCELLENCE',
       desc: '고객의 공간을 빛내는\n완성도 높은 디자인 구현',
-      // 웜 라이트가 비추는 인테리어 디테일 (Unsplash photo-1543067361-5521e0ed8f3d)
-      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784211596/eib4llhncctdnl2hljds.jpg',
+      // 클라이언트 제공 polish.png 1080x1350 (2026-07-22 3차 피드백)
+      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784646199/ufxw1h0mbtbqgp9hcnlk.png',
     },
     {
       name: 'Protect',
@@ -45,8 +45,8 @@ export const DEFAULT_ABOUT_CONTENT = {
       name: 'Partner',
       subtitle: 'FAIR PARTNERSHIP',
       desc: '고객·협력사와 함께하는\n상생 파트너십',
-      // 서류 위에서 팀이 주먹을 맞대는 협업 컷 — 시안 무드 (Unsplash photo-1583321500900-82807e458f3c)
-      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784211600/oydcl1pg2nzcyby9o9mw.jpg',
+      // 클라이언트 제공 partner.png 1080x1350 (2026-07-22 3차 피드백)
+      image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784646193/zorxoojo22pdcztjfyfb.png',
     },
   ],
   // PARTNER(Fair Partnership) 섹션은 민감정보 비공개 방침으로 삭제됨 (2026-07-16)

@@ -12,6 +12,7 @@ import { getResponsiveCloudinaryUrl } from '../../utils/cloudinary';
  *                    (Vimeo spacelong2 레퍼런스, clip-path+transform만 사용해 GPU 가속)
  *  - GrowLine : 얇은 가로선이 왼쪽에서 자라남
  * 2026-07-16 2차 피드백 반영: LUKA is 풀와이드 / 4P 톱 정렬+카드별 비율 상이 / PARTNER 섹션 삭제(민감정보).
+ * 2026-07-22 3차 피드백 반영: LUKA is 이미지 본문 좌측정렬(풀와이드 철회) / 4P 클라 제공 사진 3장 + 한 화면 수렴.
  */
 
 const EASE = [0.22, 0.61, 0.36, 1];
@@ -104,8 +105,10 @@ const SectionTitle = ({ bold, light }) => (
   </h2>
 );
 
-// 4P 카드별 이미지 비율 — 톱 라인은 정렬, 세로 높이는 서로 다르게 (2차 피드백)
-const CARD_ASPECTS = ['aspect-[2/3]', 'aspect-[4/5]', 'aspect-[3/4]', 'aspect-square'];
+// 4P 카드별 이미지 비율 — 톱 라인은 정렬, 세로 높이는 서로 다르게 (2차 피드백).
+// 3차 피드백: PC에서 섹션이 한 화면을 넘어 최장 카드가 잘림 → 최장 비율을 2:3에서
+// 4:5(클라이언트 제공 사진 1080x1350 원본 비율 = 무크롭)로 낮추고 전체 단차 압축.
+const CARD_ASPECTS = ['aspect-[4/5]', 'aspect-[7/8]', 'aspect-[5/6]', 'aspect-square'];
 
 export default function AboutSections({ variant = 'page' }) {
   const content = useAboutContent();
@@ -157,7 +160,8 @@ export default function AboutSections({ variant = 'page' }) {
         </div>
       </section>
 
-      {/* ── S-B. LUKA is — 화면 꽉 차게 (2차 피드백: 좌편중 해소) ── */}
+      {/* ── S-B. LUKA is — 3차 피드백: 이미지를 본문 텍스트 시작 위치에 좌측 정렬,
+           풀블리드 대신 본문 폭 흐름에 맞춘 배치 (시안 레퍼런스 준수) ── */}
       <section className="px-6 lg:px-16 py-16 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
           <div className="lg:col-span-4">
@@ -173,15 +177,14 @@ export default function AboutSections({ variant = 'page' }) {
               {lukaIs.body2}
             </InkText>
           </div>
-        </div>
-        {/* 이미지는 메인 비주얼과 같은 풀블리드 스케일 */}
-        <div className="-mx-6 lg:-mx-16 mt-12 lg:mt-16">
-          <ImageReveal
-            src={lukaIs.image}
-            alt="design LUKA 상업공간 프로젝트"
-            delay={0.15}
-            className="aspect-[16/9] md:aspect-[21/9]"
-          />
+          <div className="lg:col-start-5 lg:col-span-6">
+            <ImageReveal
+              src={lukaIs.image}
+              alt="design LUKA 상업공간 프로젝트"
+              delay={0.15}
+              className="aspect-[4/3]"
+            />
+          </div>
         </div>
       </section>
 
@@ -189,12 +192,13 @@ export default function AboutSections({ variant = 'page' }) {
         <GrowLine />
       </div>
 
-      {/* ── S-C. LUKA Way : 4P — 톱 정렬 + 카드별 높이 상이 + 커튼 리빌 ── */}
-      <section className="px-6 lg:px-16 py-16 lg:py-28">
+      {/* ── S-C. LUKA Way : 4P — 톱 정렬 + 카드별 높이 상이 + 커튼 리빌.
+           3차 피드백: PC 한 화면에 섹션 전체가 들어오도록 세로 패딩·간격 축소 ── */}
+      <section className="px-6 lg:px-16 py-16 lg:py-20">
         <InkText>
           <SectionTitle bold="LUKA" light="Way : 4P" />
         </InkText>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-12 lg:mt-16 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mt-12 items-start">
           {fourP.map((card, i) => (
             <div key={card.name}>
               <CurtainReveal
