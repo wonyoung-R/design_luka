@@ -160,29 +160,25 @@ export default function AboutSections({ variant = 'page' }) {
         </div>
       </section>
 
-      {/* ── S-B. LUKA is — 3차 피드백: 이미지를 본문 텍스트 시작 위치에 좌측 정렬,
-           풀블리드 대신 본문 폭 흐름에 맞춘 배치 (시안 레퍼런스 준수) ── */}
+      {/* ── S-B. LUKA is — 4차 피드백: 본문·이미지를 한 래퍼로 묶어 폭 동일,
+           시작선은 상단 designLuka 워드마크 왼쪽 선(중앙 고정 260px → 50%−130px)에 정렬 ── */}
       <section className="px-6 lg:px-16 py-16 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
-          <div className="lg:col-span-4">
-            <InkText>
-              <SectionTitle bold="LUKA" light="is" />
-            </InkText>
-          </div>
-          <div className="lg:col-span-8">
+        <div className="lg:relative">
+          <InkText className="lg:absolute lg:left-0 lg:top-0">
+            <SectionTitle bold="LUKA" light="is" />
+          </InkText>
+          <div className="mt-10 lg:mt-0 lg:ml-[calc(50%-130px)]">
             <InkText delay={0.15} className="text-sm md:text-base lg:text-[17px] leading-[1.9] text-neutral-600">
               {lukaIs.body1}
             </InkText>
             <InkText delay={0.3} className="text-sm md:text-base lg:text-[17px] leading-[1.9] text-neutral-600 mt-6">
               {lukaIs.body2}
             </InkText>
-          </div>
-          <div className="lg:col-start-5 lg:col-span-6">
             <ImageReveal
               src={lukaIs.image}
               alt="design LUKA 상업공간 프로젝트"
               delay={0.15}
-              className="aspect-[4/3]"
+              className="aspect-[4/3] mt-10 lg:mt-8"
             />
           </div>
         </div>

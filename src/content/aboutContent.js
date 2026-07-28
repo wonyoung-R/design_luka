@@ -5,8 +5,8 @@
 
 export const DEFAULT_ABOUT_CONTENT = {
   hero: {
-    // 우드 톤 프리미엄 주거 거실 와이드 2560px (Unsplash photo-1751806524609-ce4550a4aae6)
-    image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784211590/whhiolrux6qayormyi23.jpg',
+    // 사장 제공 복도 실프로젝트 컷 IMG_0487 3000x2000 (2026-07-28 4차 피드백)
+    image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1785213862/n2jnpgwcm2odgfasqmda.jpg',
     line1: 'DESIGN LUKA라는 이름은',
     line2: '슬로베니아어로 ‘빛’을 의미하는 ‘LUKA’에서 비롯되었습니다.',
   },
@@ -15,8 +15,8 @@ export const DEFAULT_ABOUT_CONTENT = {
       '우리가 디자인하는 공간에 담긴 철학을 반영한 이름으로, 단순한 리모델링을 넘어 라이프스타일과 브랜드에 맞춘 맞춤형 디자인을 통해 세련되고 감각적인 공간을 창조합니다.',
     body2:
       '저희는 강남구, 서초구, 송파구를 중심으로 서울 전역에서 다양한 인테리어 프로젝트를 진행하고 있습니다. 2022년 4월 1일에 설립된 저희는 아직 젊은 회사이지만, 짧은 역사 속에서도 긴 호흡과 장기적인 관점으로 기본에 충실하면서도 세련된 감각을 잃지 않기 위해 구성원 모두가 매 프로젝트에 최선을 다하고 있습니다.',
-    // 햇살 커튼 거실 — '빛(LUKA)' 브랜드 서사 (Unsplash photo-1631510390389-c1e4fb20ff31)
-    image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1784211592/mkx9mlk7xna3kscnniby.jpg',
+    // 사장 제공 바버샵 실프로젝트 컷 IMG_0486 3000x2000 (2026-07-28 4차 피드백)
+    image: 'https://res.cloudinary.com/dti1gtd3u/image/upload/v1785213865/j72ryaj1t4h0r2cytgly.jpg',
   },
   fourP: [
     {
