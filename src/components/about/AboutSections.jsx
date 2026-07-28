@@ -161,13 +161,14 @@ export default function AboutSections({ variant = 'page' }) {
       </section>
 
       {/* ── S-B. LUKA is — 4차 피드백: 본문·이미지를 한 래퍼로 묶어 폭 동일,
-           시작선은 상단 designLuka 워드마크 왼쪽 선(중앙 고정 260px → 50%−130px)에 정렬 ── */}
+           시작선은 navbar에 핀 고정된 최소 워드마크 왼쪽 선에 정렬
+           (핀 높이 34px × 2340/540 = 폭 147.33px 중앙 고정 → 50%−73.67px) ── */}
       <section className="px-6 lg:px-16 py-16 lg:py-28">
         <div className="lg:relative">
           <InkText className="lg:absolute lg:left-0 lg:top-0">
             <SectionTitle bold="LUKA" light="is" />
           </InkText>
-          <div className="mt-10 lg:mt-0 lg:ml-[calc(50%-130px)]">
+          <div className="mt-10 lg:mt-0 lg:ml-[calc(50%-73.67px)]">
             <InkText delay={0.15} className="text-sm md:text-base lg:text-[17px] leading-[1.9] text-neutral-600">
               {lukaIs.body1}
             </InkText>
